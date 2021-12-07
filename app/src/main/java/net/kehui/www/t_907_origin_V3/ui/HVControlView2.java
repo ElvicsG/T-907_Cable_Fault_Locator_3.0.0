@@ -18,7 +18,7 @@ import net.kehui.www.t_907_origin_V3.R;
 
 /**
  * @author yangle
- * @date 2016/11/29
+ * @date  2021/12/03
  */
 public class HVControlView2 extends View {
 
@@ -50,11 +50,11 @@ public class HVControlView2 extends View {
     private int temperature = 0;
     // 最低增益
     private int minTemp = 0;
-    //最高数值      //GC20211203 private int maxTemp = 100;
+    //最高数值              //private int maxTemp = 100;    //GC20211203 重新定义
     private int maxTemp = 16;
-    //1格代表增益1度      //GC20211203 private float angleRate = 0.2f;
+    //1格代表增益1度          //private float angleRate = 0.2f;
     private float angleRate = 1.25f;
-    //每格的角度     //GC20211203 private float angleOne = (float) 270 / (100) / angleRate;
+    //每格的角度             //private float angleOne = (float) 270 / (100) / angleRate;
     private float angleOne = (float) 270 / (16) / angleRate;
     // 按钮图片
     private Bitmap buttonImage = BitmapFactory.decodeResource(getResources(), R.drawable.btn_rotate_3);

@@ -187,7 +187,8 @@
     <string name="DC">D.C.</string>
     <string name="PULSE">PULSE</string>
     <string name="CYCLIC">CYCLIC</string>
-    <string name="TIME">TIME:</string>
+    <string name="TIME">TIME</string>
+    <string name="PULSE2">PULSE</string>
     <string name="HVINDICATOR">H.V.INDICATOR:</string>
     <string name="set_voltage">Set Voltage</string>
     <string name="test_method">TEST METHOD:</string>

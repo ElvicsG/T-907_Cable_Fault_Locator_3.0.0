@@ -325,20 +325,18 @@ public class ModeActivity extends BaseActivity {
     TextView tvvopu;
 
     /**
-     * 全自动升压界面
+     * 信息栏  //GC20211201
      */
-    @BindView(R.id.iv_info_PULSE)
-    ImageView ivPULSE;
-    @BindView(R.id.iv_AUTO)
-    ImageView ivAUTO;
     @BindView(R.id.tv_info_working_mode)
     TextView tvInfoWorkingMode;
-    @BindView(R.id.tv_info_set_voltage)
-    TextView tvInfoSetVoltage;
     @BindView(R.id.tv_info_TIME)
     TextView tvInfoTIME;
+    @BindView(R.id.tv_info_set_voltage)
+    TextView tvInfoSetVoltage;
     @BindView(R.id.tv_info_HV)
     TextView tvInfoHV;
+    @BindView(R.id.iv_info_PULSE)
+    ImageView ivPULSE;
 
     private int index;
     //计算滑动时的基数
@@ -373,7 +371,7 @@ public class ModeActivity extends BaseActivity {
     public static final String BUNDLE_COMMAND_KEY = "command";
     public static final String BUNDLE_DATA_TRANSFER_KEY = "dataTransfer";
     public static final String BUNDLE_PARAM_KEY = "bundle_param_key";
-    public static final String BUNDLE_HV_KEY = "isHV";
+    public static final String BUNDLE_HV_KEY = "isHV";  //与连接服务ConnectService进行参数传递 //GC20211206
     public static final String BUNDLE_DATA_TRANSFER_KEY2 = "dataTransfer2";
     public static final String BUNDLE_DATA_TRANSFER_KEY3 = "dataTransfer3";
 
@@ -8254,7 +8252,7 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
-     * 弹出高压操作对话框  //GC20211202
+     * 弹出高压操作界面对话框  //GC20211202
      */
     public int currentWorkingMode = 0;
     public int currentGear = 2;
@@ -8266,7 +8264,7 @@ public class ModeActivity extends BaseActivity {
         Constant.ModeValue = mode;
         if (!autoDialog.isShowing()) {
             autoDialog.show();
-            //工作模式初始化
+            //工作模式初始化   //信息栏与高压操作界面参数传递和初始化    //GC20211207
             currentWorkingMode = Constant.WorkingMode;
             autoDialog.spWorkingMode.setSelection(currentWorkingMode);
             //监听工作方式变化
@@ -8281,7 +8279,7 @@ public class ModeActivity extends BaseActivity {
 
                 }
             });
-            //档位初始化 //GC20211203
+            //档位初始化
             currentGear = Constant.gear;
             switch (currentGear) {
                 case 1:
@@ -8578,7 +8576,7 @@ public class ModeActivity extends BaseActivity {
         bundle.putInt(BUNDLE_MODE_KEY, mode);
         bundle.putInt(BUNDLE_COMMAND_KEY, command);
         bundle.putInt(BUNDLE_DATA_TRANSFER_KEY, dataTransfer);
-        //发送高压模块指令  //GC20211206
+        //比普通指令增加2个字节的数据和一个判断  //GC20211206
         bundle.putBoolean(BUNDLE_HV_KEY, isHV);
         bundle.putInt(BUNDLE_DATA_TRANSFER_KEY2, dataTransfer2);
         bundle.putInt(BUNDLE_DATA_TRANSFER_KEY3, dataTransfer3);

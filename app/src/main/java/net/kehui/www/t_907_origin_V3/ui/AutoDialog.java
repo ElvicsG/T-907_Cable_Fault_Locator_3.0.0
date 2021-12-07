@@ -37,7 +37,7 @@ import static net.kehui.www.t_907_origin_V3.base.BaseActivity.TDR;
 
 /**
  * @author gong
- * @date 2021/10/13
+ * @date 2021/12/02
  */
 public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
@@ -55,7 +55,6 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     public HVControlView controlVoltage;
     public HVControlView2 controlVoltage2;
     public TimeControlView controlTime;
-
 
     private View view;
     private ParamInfo paramInfo;
@@ -82,6 +81,8 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
         view = LayoutInflater.from(getContext()).inflate(R.layout.layout_auto_dialog, null, false);
         setContentView(view);
+
+        //自定义高压操作界面对话框    //GC20211202
         initView();
         final WindowManager.LayoutParams params = getWindow().getAttributes();
         params.width = (int) (ScreenUtils.getScreenWidth(getContext()) * 0.98);
@@ -93,6 +94,7 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     }
 
     private void initView() {
+        //对话框初始化
         ivClose = view.findViewById(R.id.iv_close);
         etMethod = view.findViewById(R.id.et_method);
         etHVINDICATOR = view.findViewById(R.id.et_HVINDICATOR);
@@ -113,23 +115,24 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         controlTime.setValueColor("#00ec03");
         controlTime.setCurrentValueColor("#026b02");
         controlTime.setTitle(getContext().getResources().getString(R.string.time));
-        //设定电压效果
+        //32kV档位设定电压效果
         controlVoltage.setArcColor("#a03225");
         controlVoltage.setDialColor1("#a03225");
         controlVoltage.setDialColor2("#01eeff");
         controlVoltage.setValueColor("#d0210e");
         controlVoltage.setCurrentValueColor("#a03225");
         controlVoltage.setTitle(getContext().getResources().getString(R.string.voltage));
-        //设定电压效果2
+        //16kV档位设定电压效果
         controlVoltage2.setArcColor("#ff0000");
         controlVoltage2.setDialColor1("#ff0000");
         controlVoltage2.setDialColor2("#01eeff");
         controlVoltage2.setValueColor("#d0210e");
         controlVoltage2.setCurrentValueColor("#ff0000");
         controlVoltage2.setTitle(getContext().getResources().getString(R.string.voltage));
+        //档位
         rgGear = view.findViewById(R.id.rg_gear);
         rbGear1 = view.findViewById(R.id.rb_gear1);
-        rbGear2 = view.findViewById(R.id.rb_gear2);//对话框初始化
+        rbGear2 = view.findViewById(R.id.rb_gear2);
 
     }
 

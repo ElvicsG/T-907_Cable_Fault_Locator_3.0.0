@@ -264,7 +264,7 @@ public class BaseActivity extends AppCompatActivity {
      * 0x70 工作方式指令
      * eb90aa55 03 70 00 sum    00：直流 01：单次 02：周期
      */
-    public boolean isHV;
+    public boolean isHV;    //是设定电压命令
     public final static int COMMAND_VOLTAGE_SET = 0x60;
     public final static int COMMAND_VOLTAGE_SWITCH = 0x61;
     public final static int COMMAND_VOLTAGE_QUERY = 0x62;
@@ -501,7 +501,8 @@ public class BaseActivity extends AppCompatActivity {
 /**
  * 3.0.0版本整理
  */
-//GC20211201    主界面添加信息栏
-//GC20211202    高压操作界面
-//GC20211203    添加自定义旋钮控件
-//GC20211206    发送高压模块指令
+//GC20211201    添加主界面信息栏
+//GC20211202    添加自定义高压操作界面对话框
+//GC20211203    添加自定义旋钮控件、档位选择按钮
+//GC20211206    添加高压模块指令协议、添加通过服务传递的相关参数
+//GC20211207    添加信息栏与高压操作界面参数传递和初始化

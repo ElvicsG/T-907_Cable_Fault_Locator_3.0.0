@@ -305,6 +305,7 @@ public class ConnectService extends Service {
             mode = bundle.getInt(BUNDLE_MODE_KEY);
             command = bundle.getInt(BUNDLE_COMMAND_KEY);
             dataTransfer = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY);
+            //比普通指令增加2个字节的数据和一个判断   //GC20211206
             isHV = bundle.getBoolean(BUNDLE_HV_KEY);
             dataTransfer2 = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY2);
             dataTransfer3 = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY3);
@@ -322,7 +323,7 @@ public class ConnectService extends Service {
         canAskPower = false;
 
         if (isHV) {
-            //发送高压模块指令  //GC20211206
+            //发送高压模块指令——设定电压  //GC20211206
             byte[] request = new byte[10];//数据头
             request[0] = (byte) 0xeb;
             request[1] = (byte) 0x90;

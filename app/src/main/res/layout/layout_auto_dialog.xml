@@ -22,8 +22,8 @@
         <androidx.percentlayout.widget.PercentRelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_marginLeftPercent="10%"
-            app:layout_marginRightPercent="10%"
+            app:layout_marginLeftPercent="12%"
+            app:layout_marginRightPercent="12%"
             android:layout_centerVertical="true"
             android:gravity="center">
 
@@ -81,46 +81,21 @@
                         android:textSize="@dimen/sp_11" />
 
                     <ImageView
-                        android:id="@+id/iv_synchronize_status"
+                        android:id="@+id/iv_warning"
                         android:layout_width="@dimen/dp_40"
                         android:layout_height="@dimen/dp_40"
                         android:layout_below="@id/et_method"
                         android:layout_alignStart="@id/et_method"
-                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginTop="@dimen/dp_8"
+                        android:layout_marginStart="@dimen/dp_25"
                         android:src="@drawable/light_gray" />
 
-                    <TextView
-                        android:id="@+id/tv_TIME"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/iv_synchronize_status"
-                        android:layout_alignEnd="@id/tv_test_method"
-                        android:layout_marginTop="@dimen/dp_40"
-                        android:text="@string/TIME"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
-
                     <LinearLayout
-                        android:id="@+id/ll_TIME"
+                        android:id="@+id/ll_gear"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/iv_synchronize_status"
-                        android:layout_alignStart="@id/iv_synchronize_status"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:orientation="vertical">
-
-                        <net.kehui.www.t_907_origin_V3.ui.TimeControlView
-                            android:id="@+id/control_time"
-                            android:layout_width="@dimen/dp_80"
-                            android:layout_height="@dimen/dp_80"
-                            android:layout_gravity="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/ll_TIME"
-                        android:layout_alignStart="@id/tv_TIME"
+                        android:layout_below="@id/iv_warning"
+                        android:layout_marginTop="@dimen/dp_8"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -134,14 +109,14 @@
                                 android:id="@+id/rb_gear1"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/dp_15"
+                                android:layout_marginStart="@dimen/dp_10"
                                 android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
                                 android:drawablePadding="10dp"
                                 android:paddingStart="28dp"
-                                android:paddingTop="15dp"
+                                android:paddingTop="@dimen/dp_6"
                                 android:paddingEnd="28dp"
-                                android:paddingBottom="15dp"
+                                android:paddingBottom="@dimen/dp_6"
                                 android:text="@string/Gear1"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/sp_12" />
@@ -153,13 +128,48 @@
                                 android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
                                 android:paddingStart="28dp"
-                                android:paddingTop="15dp"
+                                android:paddingTop="@dimen/dp_6"
                                 android:paddingEnd="28dp"
-                                android:paddingBottom="15dp"
+                                android:paddingBottom="@dimen/dp_6"
                                 android:text="@string/Gear2"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/sp_12" />
                         </RadioGroup>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_set_voltage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ll_gear"
+                        android:layout_alignEnd="@id/tv_test_method"
+                        android:layout_marginTop="@dimen/dp_40"
+                        android:text="@string/set_voltage"
+                        android:textColor="@color/T_F2"
+                        android:textSize="@dimen/sp_11" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_control_voltage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ll_gear"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_toEndOf="@id/tv_set_voltage"
+                        android:layout_marginStart="@dimen/dp_25"
+                        android:orientation="vertical">
+
+                        <net.kehui.www.t_907_origin_V3.ui.HVControlView
+                            android:id="@+id/control_voltage"
+                            android:layout_width="@dimen/dp_80"
+                            android:layout_height="@dimen/dp_80"
+                            android:layout_gravity="center"/>
+
+                        <net.kehui.www.t_907_origin_V3.ui.HVControlView2
+                            android:id="@+id/control_voltage2"
+                            android:layout_width="@dimen/dp_80"
+                            android:layout_height="@dimen/dp_80"
+                            android:layout_gravity="center"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                 </RelativeLayout>
@@ -247,45 +257,40 @@
                         android:layout_alignEnd="@id/sp_working_mode"
                         android:background="@color/blue_72FBFD" />
 
-                    <TextView
-                        android:id="@+id/tv_set_voltage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/et_working_mode"
-                        android:layout_alignEnd="@id/tv_HVINDICATOR"
-                        android:layout_marginTop="@dimen/dp_40"
-                        android:text="@string/set_voltage"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
-
                     <LinearLayout
-                        android:id="@+id/ll_control_voltage"
+                        android:id="@+id/ll_TIME"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/et_working_mode"
-                        android:layout_alignStart="@id/et_working_mode"
-                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_alignStart="@id/tv_HVINDICATOR"
+                        android:layout_marginTop="@dimen/dp_30"
                         android:orientation="vertical">
 
-                        <net.kehui.www.t_907_origin_V3.ui.HVControlView
-                            android:id="@+id/control_voltage"
+                        <net.kehui.www.t_907_origin_V3.ui.TimeControlView
+                            android:id="@+id/control_time"
                             android:layout_width="@dimen/dp_80"
                             android:layout_height="@dimen/dp_80"
-                            android:layout_gravity="center"/>
+                            android:layout_gravity="center" />
 
-                        <net.kehui.www.t_907_origin_V3.ui.HVControlView2
-                            android:id="@+id/control_voltage2"
-                            android:layout_width="@dimen/dp_80"
-                            android:layout_height="@dimen/dp_80"
-                            android:layout_gravity="center"
-                            android:visibility="gone" />
+                        <TextView
+                            android:id="@+id/tv_TIME"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_2"
+                            android:layout_marginStart="@dimen/dp_19"
+                            android:text="@string/TIME"
+                            android:textColor="@color/T_F2"
+                            android:textSize="@dimen/sp_11" />
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="@dimen/dp_50"
-                        android:layout_height="@dimen/dp_50"
-                        android:layout_below="@id/ll_control_voltage"
-                        android:layout_alignStart="@id/ll_control_voltage"
+                        android:id="@+id/ll_PULSE"
+                        android:layout_width="@dimen/dp_60"
+                        android:layout_height="@dimen/dp_60"
+                        android:layout_below="@id/et_working_mode"
+                        android:layout_toEndOf="@id/ll_TIME"
+                        android:layout_marginTop="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_20"
                         android:orientation="vertical">
 
                         <ImageView
@@ -295,6 +300,17 @@
                             android:src="@drawable/bg_pulse_selector"
                             android:text="" />
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ll_PULSE"
+                        android:layout_alignStart="@id/ll_PULSE"
+                        android:layout_marginTop="@dimen/dp_12"
+                        android:layout_marginStart="@dimen/dp_9"
+                        android:text="@string/PULSE2"
+                        android:textColor="@color/T_F2"
+                        android:textSize="@dimen/sp_11" />
 
                 </RelativeLayout>
 
@@ -306,7 +322,8 @@
                 android:layout_height="@dimen/dp_25"
                 android:layout_below="@id/rl_info"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dp_15"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginBottom="@dimen/dp_10"
                 android:background="@drawable/shape_solide_0ff6ff"
                 android:gravity="center"
                 android:text="@string/btn_ensure"

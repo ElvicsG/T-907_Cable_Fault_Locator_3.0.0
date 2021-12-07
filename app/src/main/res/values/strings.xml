@@ -188,7 +188,8 @@
     <string name="DC">直流</string>
     <string name="PULSE">单次</string>
     <string name="CYCLIC">周期</string>
-    <string name="TIME">放电周期：</string>
+    <string name="TIME">放电周期</string>
+    <string name="PULSE2">单次放电</string>
     <string name="HVINDICATOR">当前电压：</string>
     <string name="set_voltage">设定电压：</string>
     <string name="test_method">测试方法：</string>
