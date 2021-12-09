@@ -197,8 +197,7 @@
     <string name="time">TM/s</string>
     <string name="Gear1">16kV</string>
     <string name="Gear2">32kV</string>
-    <string name="btn_ensure">ENSURE</string>
-    <string name="confirm">Confirm</string>
-    <string name="cancel">Cancel</string>
+    <string name="hv_confirm">Confirm</string>
+    <string name="quit">Quit</string>
 
 </resources>

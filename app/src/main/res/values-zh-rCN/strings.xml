@@ -8,7 +8,7 @@
     <string name="btn_setting">设置</string>
     <string name="btn_test">测试</string>
     <string name="btn_tdr">低压脉冲</string>
-    <string name="btn_icm">脉冲电流—冲闪</string>
+    <string name="btn_icm">脉冲电流-冲闪</string>
     <string name="btn_icm_decay">脉冲电流-直闪</string>
     <string name="btn_sim">多次脉冲</string>
     <string name="btn_decay">衰减法</string>
@@ -197,8 +197,7 @@
     <string name="time">时间/s</string>
     <string name="Gear1">16kV</string>
     <string name="Gear2">32kV</string>
-    <string name="btn_ensure">确认</string>
-    <string name="confirm">确认</string>
-    <string name="cancel">取消</string>
+    <string name="hv_confirm">电压确认</string>
+    <string name="quit">退出</string>
 
 </resources>

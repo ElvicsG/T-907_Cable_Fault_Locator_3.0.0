@@ -22,8 +22,8 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-/*        CrashHandler handler = CrashHandler.getInstance();
-        Thread.setDefaultUncaughtExceptionHandler(handler);*/
+/*        CrashHandler handlerAuto = CrashHandler.getInstance();
+        Thread.setDefaultUncaughtExceptionHandler(handlerAuto);*/
 
         instances = this;
         MultiLanguageUtil.init(getApplicationContext());

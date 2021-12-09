@@ -17,7 +17,8 @@
             android:layout_width="@dimen/dp_25"
             android:layout_height="@dimen/dp_25"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/bg_dialog_close_big" />
+            android:src="@drawable/bg_dialog_close_big"
+            android:visibility="gone" />
 
         <androidx.percentlayout.widget.PercentRelativeLayout
             android:layout_width="match_parent"
@@ -27,11 +28,85 @@
             android:layout_centerVertical="true"
             android:gravity="center">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_30"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/bg_main_msg"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="电压档位故障"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="   "
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="工作方式故障"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="   "
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="电容有残压"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="   "
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="高压包故障"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="   "
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+            </LinearLayout>
+
             <RelativeLayout
                 android:id="@+id/rl_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_marginTopPercent="10%"
+                app:layout_marginTopPercent="12%"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:gravity="center">
@@ -42,40 +117,10 @@
                     android:layout_alignParentStart="true">
 
                     <TextView
-                        android:id="@+id/tv_test_method"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/test_method"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
-
-                    <EditText
-                        android:id="@+id/et_method"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:layout_toEndOf="@id/tv_test_method"
-                        android:background="@null"
-                        android:minWidth="@dimen/dp_100"
-                        android:text=""
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
-
-                    <View
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dp_0_5"
-                        android:layout_below="@id/et_method"
-                        android:layout_alignStart="@id/et_method"
-                        android:layout_alignEnd="@id/et_method"
-                        android:background="@color/blue_72FBFD" />
-
-                    <TextView
                         android:id="@+id/tv_grounding_alarm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tv_test_method"
-                        android:layout_alignEnd="@id/tv_test_method"
-                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_12"
                         android:text="@string/grounding_alarm"
                         android:textColor="@color/T_F2"
                         android:textSize="@dimen/sp_11" />
@@ -84,10 +129,8 @@
                         android:id="@+id/iv_warning"
                         android:layout_width="@dimen/dp_40"
                         android:layout_height="@dimen/dp_40"
-                        android:layout_below="@id/et_method"
-                        android:layout_alignStart="@id/et_method"
-                        android:layout_marginTop="@dimen/dp_8"
-                        android:layout_marginStart="@dimen/dp_25"
+                        android:layout_toEndOf="@id/tv_grounding_alarm"
+                        android:layout_marginStart="@dimen/dp_36"
                         android:src="@drawable/light_gray" />
 
                     <LinearLayout
@@ -106,10 +149,9 @@
                             android:orientation="horizontal">
 
                             <RadioButton
-                                android:id="@+id/rb_gear1"
+                                android:id="@+id/rb_gear16"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/dp_10"
                                 android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
                                 android:drawablePadding="10dp"
@@ -122,7 +164,7 @@
                                 android:textSize="@dimen/sp_12" />
 
                             <RadioButton
-                                android:id="@+id/rb_gear2"
+                                android:id="@+id/rb_gear32"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -142,7 +184,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/ll_gear"
-                        android:layout_alignEnd="@id/tv_test_method"
+                        android:layout_alignEnd="@id/tv_grounding_alarm"
                         android:layout_marginTop="@dimen/dp_40"
                         android:text="@string/set_voltage"
                         android:textColor="@color/T_F2"
@@ -155,17 +197,17 @@
                         android:layout_below="@id/ll_gear"
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_toEndOf="@id/tv_set_voltage"
-                        android:layout_marginStart="@dimen/dp_25"
+                        android:layout_marginStart="@dimen/dp_15"
                         android:orientation="vertical">
 
                         <net.kehui.www.t_907_origin_V3.ui.HVControlView
-                            android:id="@+id/control_voltage"
+                            android:id="@+id/control_voltage32"
                             android:layout_width="@dimen/dp_80"
                             android:layout_height="@dimen/dp_80"
                             android:layout_gravity="center"/>
 
                         <net.kehui.www.t_907_origin_V3.ui.HVControlView2
-                            android:id="@+id/control_voltage2"
+                            android:id="@+id/control_voltage16"
                             android:layout_width="@dimen/dp_80"
                             android:layout_height="@dimen/dp_80"
                             android:layout_gravity="center"
@@ -183,7 +225,8 @@
                         android:id="@+id/tv_HVINDICATOR"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_alignEnd="@id/ll_TIME"
+                        android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/HVINDICATOR"
                         android:textColor="@color/T_F2"
                         android:textSize="@dimen/sp_11" />
@@ -193,16 +236,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/tv_HVINDICATOR"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginStart="@dimen/dp_10"
                         android:background="@null"
                         android:minWidth="@dimen/dp_100"
                         android:text="9"
-                        android:textColor="@color/T_F2"
+                        android:textColor="@color/T_red"
                         android:textSize="@dimen/sp_11" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignEnd="@id/et_HVINDICATOR"
+                        android:layout_marginTop="@dimen/dp_10"
                         android:text="kV"
                         android:textColor="@color/T_F2"
                         android:textSize="@dimen/sp_11" />
@@ -220,7 +266,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/et_HVINDICATOR"
-                        android:layout_alignEnd="@id/tv_HVINDICATOR"
+                        android:layout_alignEnd="@id/ll_TIME"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/working_mode"
                         android:textColor="@color/T_F2"
@@ -243,9 +289,9 @@
                         android:layout_width="@dimen/dp_100"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/et_HVINDICATOR"
+                        android:layout_toEndOf="@+id/tv_working_mode"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:layout_toEndOf="@+id/tv_working_mode"
                         android:gravity="end"
                         app:layout_column="4" />
 
@@ -262,8 +308,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/et_working_mode"
-                        android:layout_alignStart="@id/tv_HVINDICATOR"
-                        android:layout_marginTop="@dimen/dp_30"
+                        android:layout_marginTop="@dimen/dp_12"
                         android:orientation="vertical">
 
                         <net.kehui.www.t_907_origin_V3.ui.TimeControlView
@@ -289,7 +334,7 @@
                         android:layout_height="@dimen/dp_60"
                         android:layout_below="@id/et_working_mode"
                         android:layout_toEndOf="@id/ll_TIME"
-                        android:layout_marginTop="@dimen/dp_40"
+                        android:layout_marginTop="@dimen/dp_22"
                         android:layout_marginStart="@dimen/dp_20"
                         android:orientation="vertical">
 
@@ -306,29 +351,64 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/ll_PULSE"
                         android:layout_alignStart="@id/ll_PULSE"
-                        android:layout_marginTop="@dimen/dp_12"
+                        android:layout_marginTop="@dimen/dp_13"
                         android:layout_marginStart="@dimen/dp_9"
                         android:text="@string/PULSE2"
                         android:textColor="@color/T_F2"
                         android:textSize="@dimen/sp_11" />
 
+                    <LinearLayout
+                        android:layout_width="@dimen/dp_20"
+                        android:layout_height="@dimen/dp_60"
+                        android:layout_below="@id/et_working_mode"
+                        android:layout_toEndOf="@id/ll_PULSE"
+                        android:layout_marginTop="@dimen/dp_22"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/iv_voltage_height"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_magnetic_field_gain_0" />
+                    </LinearLayout>
+
                 </RelativeLayout>
 
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/tv_ensure"
-                android:layout_width="@dimen/dp_75"
-                android:layout_height="@dimen/dp_25"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/rl_info"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dp_10"
-                android:layout_marginBottom="@dimen/dp_10"
-                android:background="@drawable/shape_solide_0ff6ff"
-                android:gravity="center"
-                android:text="@string/btn_ensure"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/sp_13" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_confirm"
+                    android:layout_width="@dimen/dp_75"
+                    android:layout_height="@dimen/dp_25"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginBottom="@dimen/dp_10"
+                    android:background="@drawable/shape_solide_0ff6ff"
+                    android:gravity="center"
+                    android:text="@string/hv_confirm"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_13" />
+
+                <TextView
+                    android:id="@+id/tv_quit"
+                    android:layout_width="@dimen/dp_75"
+                    android:layout_height="@dimen/dp_25"
+                    android:layout_marginStart="@dimen/dp_190"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginBottom="@dimen/dp_10"
+                    android:background="@drawable/shape_solide_0ff6ff"
+                    android:gravity="center"
+                    android:text="@string/quit"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_13" />
+            </LinearLayout>
 
         </androidx.percentlayout.widget.PercentRelativeLayout>
 

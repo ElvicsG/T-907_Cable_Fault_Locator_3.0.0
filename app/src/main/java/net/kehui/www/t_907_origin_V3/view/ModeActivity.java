@@ -50,14 +50,14 @@ import net.kehui.www.t_907_origin_V3.fragment.SettingFragment;
 import net.kehui.www.t_907_origin_V3.fragment.WaveFragment;
 import net.kehui.www.t_907_origin_V3.ui.AppUpdateDialog;
 import net.kehui.www.t_907_origin_V3.ui.AutoDialog;
+import net.kehui.www.t_907_origin_V3.ui.HVControlView;
+import net.kehui.www.t_907_origin_V3.ui.HVControlView2;
 import net.kehui.www.t_907_origin_V3.ui.HelpModeDialog;
 import net.kehui.www.t_907_origin_V3.ui.MoveView;
 import net.kehui.www.t_907_origin_V3.ui.MoveWaveView;
 import net.kehui.www.t_907_origin_V3.ui.SaveRecordsDialog;
 import net.kehui.www.t_907_origin_V3.ui.ShowRecordsDialog;
 import net.kehui.www.t_907_origin_V3.ui.SparkView.SparkView;
-import net.kehui.www.t_907_origin_V3.ui.HVControlView;
-import net.kehui.www.t_907_origin_V3.ui.HVControlView2;
 import net.kehui.www.t_907_origin_V3.ui.TimeControlView;
 import net.kehui.www.t_907_origin_V3.util.AppUtils;
 import net.kehui.www.t_907_origin_V3.util.StateUtils;
@@ -97,6 +97,8 @@ import static net.kehui.www.t_907_origin_V3.application.Constant.MI_UNIT;
 import static net.kehui.www.t_907_origin_V3.application.Constant.batteryValue;
 import static net.kehui.www.t_907_origin_V3.application.Constant.hasSavedPulseWidth;
 import static net.kehui.www.t_907_origin_V3.application.Constant.waveLen;
+import static net.kehui.www.t_907_origin_V3.ui.AutoDialog.HVINDICATOR;
+import static net.kehui.www.t_907_origin_V3.ui.AutoDialog.WARNING;
 
 public class ModeActivity extends BaseActivity {
 
@@ -337,6 +339,12 @@ public class ModeActivity extends BaseActivity {
     TextView tvInfoHV;
     @BindView(R.id.iv_info_PULSE)
     ImageView ivPULSE;
+    @BindView(R.id.ll_AUTO)
+    LinearLayout llAUTO;
+    @BindView(R.id.tv_info_mode)
+    TextView tvInfoMode;
+    @BindView(R.id.ll_info_hv)
+    LinearLayout llInfoHv;
 
     private int index;
     //计算滑动时的基数
@@ -371,8 +379,7 @@ public class ModeActivity extends BaseActivity {
     public static final String BUNDLE_COMMAND_KEY = "command";
     public static final String BUNDLE_DATA_TRANSFER_KEY = "dataTransfer";
     public static final String BUNDLE_PARAM_KEY = "bundle_param_key";
-    public static final String BUNDLE_HV_KEY = "isHV";  //与连接服务ConnectService进行参数传递 //GC20211206
-    public static final String BUNDLE_DATA_TRANSFER_KEY2 = "dataTransfer2";
+    public static final String BUNDLE_DATA_TRANSFER_KEY2 = "dataTransfer2";  //与连接服务ConnectService进行参数传递    //GC20211206
     public static final String BUNDLE_DATA_TRANSFER_KEY3 = "dataTransfer3";
 
     /**
@@ -385,7 +392,7 @@ public class ModeActivity extends BaseActivity {
     public Handler handler = new Handler(msg -> {
         switch (msg.what) {
             case DO_WAVE:
-                //处理波形数据
+                //处理波形数据wifiStreamNew（通过广播获取）   //GC20211208
                 int[] wifiStreamNew = msg.getData().getIntArray("WAVE");
                 assert wifiStreamNew != null;
                 doWifiWave(wifiStreamNew);
@@ -428,7 +435,7 @@ public class ModeActivity extends BaseActivity {
                 ConnectService.canAskPower = true;
                 allowSetRange = true;
                 tvTest.setEnabled(true);
-                Log.e("【请求电量时机控制】", "波形绘制完毕，允许请求电量。");
+                Log.e("【请求电量时机控制】", "波形绘制完毕，允许请求电量。");  //GC20211209 是否需要添加波形和高压指令的判断？
                 break;
             case DISPLAY_DATABASE:
                 //数据库打开算法结果显示调试 //GT20200629
@@ -535,7 +542,7 @@ public class ModeActivity extends BaseActivity {
                     batteryValue = -1;
                     break;
                 case BROADCAST_ACTION_DOWIFI_COMMAND:
-                    //处理获取到的命令数据
+                    //处理命令数据wifiStream（通过广播获取）  //GC20211208
                     wifiStream = intent.getIntArrayExtra(INTENT_KEY_COMMAND);
                     assert wifiStream != null;
                     doWifiCommand(wifiStream);
@@ -545,6 +552,7 @@ public class ModeActivity extends BaseActivity {
                     //int[] wifiStreamNew = ConnectService.mExtra;
                     //wifiStream = ConnectService.mExtra;
                     //assert wifiStreamNew != null;
+                    //通过广播得到波形数据wifiStreamNew    //GC20211208
                     int[] wifiStreamNew = intent.getIntArrayExtra(INTENT_KEY_WAVE);
                     if (wifiStreamNew[3] == WAVE_TDR_ICM_DECAY || wifiStreamNew[3] == WAVE_SIM) {
                         setWaveParameter();
@@ -574,14 +582,13 @@ public class ModeActivity extends BaseActivity {
         if (MainActivity.baseset == 1) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_mode);
-            Log.e("【启动页面】", "进入mode页面。");
-            Log.e("【启动页面】", "baseset" + MainActivity.baseset);
+            Log.e("【启动页面】", "进入mode页面。" + "baseset" + MainActivity.baseset);
             ButterKnife.bind(this);
 
             tvZoomPlus.setVisibility(View.GONE); //jk20210126
-            tvZoomMin.setVisibility(View.GONE);//jk20210126
-            tvSet1.setVisibility(View.GONE);//jk20210128
-            tvFile1.setVisibility(View.GONE);//jk20210128
+            tvZoomMin.setVisibility(View.GONE);
+            tvSet1.setVisibility(View.GONE);    //jk20210128
+            tvFile1.setVisibility(View.GONE);
             tvHelp.setVisibility(View.GONE);//jk20210319 去掉帮助
 
             alreadyDisplayWave = false;
@@ -1021,6 +1028,9 @@ public class ModeActivity extends BaseActivity {
      * 初始化界面框架
      */
     public void initFrame() {
+        //高压操作按钮和信息栏隐藏  //GC20211207
+        llAUTO.setVisibility(View.GONE);
+        llInfoHv.setVisibility(View.GONE);
         //jk20210123
         fragmentManager = getSupportFragmentManager();
         //setTabSelection(0);
@@ -1400,7 +1410,7 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
-     * 处理APP接收的命令
+     * 处理APP接收的命令 + 电池电量接收
      */
     private void doWifiCommand(int[] wifiArray) {
         //判断仪器触发时：APP发送接收数据命令
@@ -1437,6 +1447,43 @@ public class ModeActivity extends BaseActivity {
                 ivBatteryStatus.setImageResource(R.drawable.ic_battery_four);
             }
         }
+        //处理收到的高压数值   //GC20211210
+        else if (wifiArray[5] == COMMAND_VOLTAGE) {
+            int hvValue = wifiArray[6] * 256 + wifiArray[7];
+            //0x0ccc（3276）：32kV   0x0666：16kV   显示数值需要换算一下
+            Constant.currentVoltage = hvValue / 3276.0 * 32;
+            //主界面信息栏当前电压
+            tvInfoHV.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
+            //高压操作对话框当前电压
+            handler.sendEmptyMessage(HVINDICATOR);
+        }
+        //添加处理高压模块反馈    //GC20211210
+        else if (wifiArray[5] == COMMAND_QUERY_FEEDBACK) {
+            byte temp = (byte) wifiArray[6];
+            byte[] array;
+            array = getBooleanArray(temp);
+            //接地报警
+            if (array[3] == 1) {
+                handler.sendEmptyMessage(WARNING);
+            }
+            //高压包故障
+            if (array[4] == 1) {
+
+            }
+            //电容有残压
+            if (array[5] == 1) {
+
+            }
+            //工作方式故障
+            if (array[6] == 1) {
+
+            }
+            //电压档位故障
+            if (array[7] == 1) {
+
+            }
+
+        }
         //TODO 20200407 普通命令解析完毕，允许请求电量
         if (!Constant.isTesting) {
             ConnectService.canAskPower = true;
@@ -1445,9 +1492,23 @@ public class ModeActivity extends BaseActivity {
 
     }
 
+    /**
+     * 将byte转换为一个长度为8的byte数组，数组每个值代表bit
+     */
+    public static byte[] getBooleanArray(byte b) {
+        byte[] array = new byte[8];
+        for (int i = 7; i >= 0; i--) {
+            array[i] = (byte) (b & 1);
+            b = (byte) (b >> 1);
+        }
+        return array;
+    }
+
     private void initTDRView() {
         viewMoveVerticalWave.setVisibility(View.INVISIBLE);
         tvMode.setText(getResources().getText(R.string.btn_tdr));
+        //信息栏方式初始化  //GC20211207
+        tvInfoMode.setText(getResources().getText(R.string.btn_tdr));
         tvWaveNext.setVisibility(View.GONE);
         tvWavePre.setVisibility(View.GONE);
         tvDelayValue.setVisibility(View.GONE);
@@ -1466,6 +1527,9 @@ public class ModeActivity extends BaseActivity {
     }
 
     private void initICMSURGEView() {
+        tvMode.setText(getResources().getText(R.string.btn_icm));
+        //信息栏方式初始化  //GC20211207
+        tvInfoMode.setText(getResources().getText(R.string.btn_icm));
         viewMoveVerticalWave.setVisibility(View.INVISIBLE);
         tvWaveNext.setVisibility(View.GONE);
         tvWavePre.setVisibility(View.GONE);
@@ -1476,7 +1540,6 @@ public class ModeActivity extends BaseActivity {
         tvBalanceValue.setVisibility(View.GONE);
         tvPulseWidth.setVisibility(View.GONE);
         tvOrigin.setVisibility(View.GONE);
-        tvMode.setText(getResources().getText(R.string.btn_icm));
         tvWaveValue.setVisibility(View.GONE);
         tvWaveText.setVisibility(View.GONE);
         tvWaveSpace.setVisibility(View.GONE);
@@ -1486,6 +1549,9 @@ public class ModeActivity extends BaseActivity {
     }
 
     private void initICMDECAYView() {
+        tvMode.setText(getResources().getText(R.string.btn_icm_decay));
+        //信息栏方式初始化  //GC20211207
+        tvInfoMode.setText(getResources().getText(R.string.btn_icm_decay));
         viewMoveVerticalWave.setVisibility(View.INVISIBLE);
         tvWaveNext.setVisibility(View.GONE);
         tvWavePre.setVisibility(View.GONE);
@@ -1499,10 +1565,8 @@ public class ModeActivity extends BaseActivity {
         tvDelayText.setVisibility(View.GONE);
         tvDelaySpace.setVisibility(View.GONE);
         tvTriggerDelay.setVisibility(View.GONE);
-
         tvPulseWidth.setVisibility(View.GONE);
         tvOrigin.setVisibility(View.GONE);
-        tvMode.setText(getResources().getText(R.string.btn_icm_decay));
         tvWaveValue.setVisibility(View.GONE);
         tvWaveText.setVisibility(View.GONE);
         tvWaveSpace.setVisibility(View.GONE);
@@ -1510,10 +1574,11 @@ public class ModeActivity extends BaseActivity {
 
     private void initSIMView() {
         tvMode.setText(getResources().getText(R.string.btn_sim));
+        //信息栏方式初始化  //GC20211207
+        tvInfoMode.setText(getResources().getText(R.string.btn_sim));
         viewMoveVerticalWave.setVisibility(View.VISIBLE);
         tvWaveNext.setVisibility(View.VISIBLE);
         tvWavePre.setVisibility(View.VISIBLE);
-
         tvBalanceMin.setVisibility(View.GONE);
         tvBalancePlus.setVisibility(View.GONE);
         tvCompare.setVisibility(View.GONE);
@@ -1523,7 +1588,6 @@ public class ModeActivity extends BaseActivity {
         tvDelayValue.setVisibility(View.VISIBLE);
         tvDelayText.setVisibility(View.VISIBLE);
         tvPulseWidth.setVisibility(View.GONE);
-
         //SIM模式切换图片宽度   //20200521
         tvGainAdd.setImageResource(R.drawable.bg_gain_plus_s_selector);
         tvGainMin.setImageResource(R.drawable.bg_gain_min_s_selector);
@@ -1549,6 +1613,8 @@ public class ModeActivity extends BaseActivity {
 
     private void initDecayView() {
         tvMode.setText(getResources().getText(R.string.btn_decay));
+        //信息栏方式初始化  //GC20211207
+        tvInfoMode.setText(getResources().getText(R.string.btn_decay));
         viewMoveVerticalWave.setVisibility(View.INVISIBLE);
         tvWaveNext.setVisibility(View.GONE);
         tvWavePre.setVisibility(View.GONE);
@@ -5811,13 +5877,14 @@ public class ModeActivity extends BaseActivity {
         switch (mode) {
             case TDR:
                 tvMode.setText(getResources().getString(R.string.btn_tdr));
+                //高压操作按钮和信息栏隐藏  //GC20211207
+                llAUTO.setVisibility(View.GONE);
+                llInfoHv.setVisibility(View.GONE);
+
                 //GC20190709
                 initTDRView();//jk20210125
                 switchDensity();
                 initCursor();
-
-                //adjustFragment.btnBalancePlus.setVisibility(View.GONE);
-                //adjustFragment.btnBalanceMinus.setVisibility(View.VISIBLE);
                 /*调节栏显示*/
                 adjustFragment.btnBalancePlus.setVisibility(View.VISIBLE);
                 adjustFragment.btnBalanceMinus.setVisibility(View.VISIBLE);
@@ -5836,11 +5903,13 @@ public class ModeActivity extends BaseActivity {
                 settingFragment.btnPulse.setVisibility(View.VISIBLE);
                 adjustFragment.btnGainPlus.setEnabled(true);
                 adjustFragment.btnGainMinus.setEnabled(true);
-
-
                 break;
             case ICM:
                 tvMode.setText(getResources().getString(R.string.btn_icm));
+                //GC20211207
+                llAUTO.setVisibility(View.VISIBLE);
+                llInfoHv.setVisibility(View.VISIBLE);
+
                 initSparkView();//jk20210130changshi
                 initICMSURGEView();
                 switchDensity();
@@ -5870,6 +5939,10 @@ public class ModeActivity extends BaseActivity {
                 break;
             case ICM_DECAY:
                 tvMode.setText(getResources().getString(R.string.btn_icm_decay));
+                //GC20211207
+                llAUTO.setVisibility(View.VISIBLE);
+                llInfoHv.setVisibility(View.VISIBLE);
+
                 initSparkView();//jk20210130changshi
                 initICMDECAYView();
                 switchDensity();
@@ -5892,6 +5965,11 @@ public class ModeActivity extends BaseActivity {
                 break;
             case SIM:
                 tvMode.setText(getResources().getString(R.string.btn_sim));
+                //GC20211207
+                llAUTO.setVisibility(View.VISIBLE);
+                llInfoHv.setVisibility(View.VISIBLE);
+
+
                 initSparkView();//jk20210130changshi
                 initSIMView();
                 switchDensity();
@@ -5922,6 +6000,10 @@ public class ModeActivity extends BaseActivity {
                 break;
             case DECAY:
                 tvMode.setText(getResources().getString(R.string.btn_decay));
+                //GC20211207
+                llAUTO.setVisibility(View.VISIBLE);
+                llInfoHv.setVisibility(View.VISIBLE);
+
                 initSparkView();//jk20210130changshi
                 initDecayView();
                 switchDensity();
@@ -6133,7 +6215,7 @@ public class ModeActivity extends BaseActivity {
                 gain = 13;
                 //增益转为百分比   //GC20200313
                 tvGainValue.setText("41");
-                //handler.postDelayed(this::clickTest, 50);//jk20210125
+                //handlerAuto.postDelayed(this::clickTest, 50);//jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_500:
@@ -6161,7 +6243,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 13;
                 tvGainValue.setText("41");
-                //handler.postDelayed(this::clickTest, 50); //jk20210125
+                //handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_1_KM:
@@ -6188,7 +6270,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 13;
                 tvGainValue.setText("41");
-                // handler.postDelayed(this::clickTest, 50); //jk20210125
+                // handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_2_KM:
@@ -6215,7 +6297,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 10;
                 tvGainValue.setText("32");
-                // handler.postDelayed(this::clickTest, 50); //jk20210125
+                // handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_4_KM:
@@ -6242,7 +6324,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 10;
                 tvGainValue.setText("32");
-                //handler.postDelayed(this::clickTest, 50); //jk20210125
+                //handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_8_KM:
@@ -6269,7 +6351,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 10;
                 tvGainValue.setText("32");
-                //handler.postDelayed(this::clickTest, 50); //jk20210125
+                //handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_16_KM:
@@ -6296,7 +6378,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 9;
                 tvGainValue.setText("29");
-                //handler.postDelayed(this::clickTest, 50); //jk20210125
+                //handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_32_KM:
@@ -6323,7 +6405,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 9;
                 tvGainValue.setText("29");
-                //handler.postDelayed(this::clickTest, 50); //jk20210125
+                //handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             case RANGE_64_KM:
@@ -6350,7 +6432,7 @@ public class ModeActivity extends BaseActivity {
                 }
                 gain = 9;
                 tvGainValue.setText("29");
-                //handler.postDelayed(this::clickTest, 50); //jk20210125
+                //handlerAuto.postDelayed(this::clickTest, 50); //jk20210125
                 llAdjust.setVisibility(View.GONE); //jk20210125
                 break;
             default:
@@ -7050,7 +7132,18 @@ public class ModeActivity extends BaseActivity {
         //未与硬件连接状态下可以响应的按钮  //GC20200630
         switch (view.getId()) {
             case R.id.iv_info_PULSE:
-                //单次放电按键预留    //GC20211201
+                //发送单次放电指令  //GC20211209
+                command = COMMAND_SINGLE_PULSE;
+                //数据
+                dataTransfer = 0x01;
+                startService();
+                //GTT
+                /*Constant.currentVoltage = 3000 / 3276.0 * 32;
+                //主界面信息栏当前电压
+                tvInfoHV.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
+                //高压操作对话框当前电压
+//                handlerAuto.sendEmptyMessage(HVINDICATOR);
+                handler.sendEmptyMessage(WARNING);*/
                 break;
             case R.id.iv_AUTO:
                 //进入高压操作界面按键  //GC20211202
@@ -7631,7 +7724,7 @@ public class ModeActivity extends BaseActivity {
     }
 
     /*
-     handler.postDelayed(this::clickTest, 50);changshi
+     handlerAuto.postDelayed(this::clickTest, 50);changshi
      */
     public void test1() {
         handler.postDelayed(() -> {
@@ -8254,24 +8347,55 @@ public class ModeActivity extends BaseActivity {
     /**
      * 弹出高压操作界面对话框  //GC20211202
      */
-    public int currentWorkingMode = 0;
     public int currentGear = 2;
     public int currentSetVoltage = 0;
     public int currentSetTime = 5;
+    public boolean sendWorkingMode;
+    public int workingModeData;
 
     private void showAutoDialog() {
         AutoDialog autoDialog = new AutoDialog(this);
         Constant.ModeValue = mode;
         if (!autoDialog.isShowing()) {
             autoDialog.show();
-            //工作模式初始化   //信息栏与高压操作界面参数传递和初始化    //GC20211207
-            currentWorkingMode = Constant.WorkingMode;
-            autoDialog.spWorkingMode.setSelection(currentWorkingMode);
+
+            //信息栏与高压操作界面参数传递和初始化    //GC20211207
+            //打开对话框工作模式初始化
+            autoDialog.spWorkingMode.setSelection(Constant.WorkingMode);
             //监听工作方式变化
             autoDialog.spWorkingMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    currentWorkingMode = position;    //0,1,2
+                    if (Constant.WorkingMode != position) {
+                        sendWorkingMode = true;     //如果和记录的位置不一样，发送工作模式指令
+                    }
+                    //记录工作模式变化
+                    Constant.WorkingMode = position;    //position=0,1,2
+                    //mode界面工作模式同步
+                    switch (position) {
+                        case 0:
+                            tvInfoWorkingMode.setText(R.string.PULSE);
+                            workingModeData = 0x01;
+                            break;
+                        case 1:
+                            tvInfoWorkingMode.setText(R.string.CYCLIC);
+                            workingModeData = 0x02;
+                            break;
+                        case 2:
+                            tvInfoWorkingMode.setText(R.string.DC);
+                            workingModeData = 0x00;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (sendWorkingMode) {
+                        sendWorkingMode = false;
+                        //发送工作模式指令  //GC20211209
+                        command = COMMAND_WORKING_MODE;
+                        //数据
+                        dataTransfer = workingModeData;
+                        startService();
+                    }
                 }
 
                 @Override
@@ -8283,58 +8407,57 @@ public class ModeActivity extends BaseActivity {
             currentGear = Constant.gear;
             switch (currentGear) {
                 case 1:
-                    autoDialog.rgGear.check(autoDialog.rbGear1.getId());
+                    autoDialog.rgGear.check(autoDialog.rbGear32.getId());
                     break;
                 case 2:
-                    autoDialog.rgGear.check(autoDialog.rbGear2.getId());
+                    autoDialog.rgGear.check(autoDialog.rbGear16.getId());
                     break;
                 default:
                     break;
             }
-            //监听档位选项变化
+            //监听电压档位选项变化
             autoDialog.setRadioGroup(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if (autoDialog.rbGear1.getId() == checkedId) {
-                        autoDialog.rgGear.check(autoDialog.rbGear1.getId());
-                        currentGear = 1;
-                        //改变档位设定电压初始化为0
-                        Constant.setVoltage = 0;
-                        autoDialog.controlVoltage.setVisibility(View.GONE);
-                        autoDialog.controlVoltage2.setVisibility(View.VISIBLE);
-                        autoDialog.controlVoltage2.setTemp(0, 16, 0);
-                    } else if (autoDialog.rbGear2.getId() == checkedId) {
-                        autoDialog.rgGear.check(autoDialog.rbGear2.getId());
+                    if (autoDialog.rbGear16.getId() == checkedId) {
+                        autoDialog.rgGear.check(autoDialog.rbGear16.getId());
                         currentGear = 2;
                         //改变档位设定电压初始化为0
                         Constant.setVoltage = 0;
-                        autoDialog.controlVoltage2.setVisibility(View.GONE);
-                        autoDialog.controlVoltage.setVisibility(View.VISIBLE);
-                        autoDialog.controlVoltage.setTemp(0, 32, 0);
+                        autoDialog.controlVoltage32.setVisibility(View.GONE);
+                        autoDialog.controlVoltage16.setVisibility(View.VISIBLE);
+                        autoDialog.controlVoltage16.setTemp(0, 16, 0);
+                    } else if (autoDialog.rbGear32.getId() == checkedId) {
+                        autoDialog.rgGear.check(autoDialog.rbGear32.getId());
+                        currentGear = 1;
+                        //改变档位设定电压初始化为0
+                        Constant.setVoltage = 0;
+                        autoDialog.controlVoltage16.setVisibility(View.GONE);
+                        autoDialog.controlVoltage32.setVisibility(View.VISIBLE);
+                        autoDialog.controlVoltage32.setTemp(0, 32, 0);
                     }
                 }
             });
             //设定电压初始化
             currentSetVoltage = Constant.setVoltage;
-            if (currentGear == 2) { //32kV档位
-                autoDialog.controlVoltage2.setVisibility(View.GONE);
-                autoDialog.controlVoltage.setVisibility(View.VISIBLE);
-                autoDialog.controlVoltage.setTemp(0, 32, currentSetVoltage);
-            } else if (currentGear == 1) {//16kV档位
-                autoDialog.controlVoltage.setVisibility(View.GONE);
-                autoDialog.controlVoltage2.setVisibility(View.VISIBLE);
-                autoDialog.controlVoltage2.setTemp(0, 16, currentSetVoltage);
-
+            if (currentGear == 1) { //32kV档位
+                autoDialog.controlVoltage16.setVisibility(View.GONE);
+                autoDialog.controlVoltage32.setVisibility(View.VISIBLE);
+                autoDialog.controlVoltage32.setTemp(0, 32, currentSetVoltage);
+            } else if (currentGear == 2) {//16kV档位
+                autoDialog.controlVoltage32.setVisibility(View.GONE);
+                autoDialog.controlVoltage16.setVisibility(View.VISIBLE);
+                autoDialog.controlVoltage16.setTemp(0, 16, currentSetVoltage);
             }
             //监听32kV设定电压变化
-            autoDialog.controlVoltage.setOnTempChangeListener(new HVControlView.OnTempChangeListener() {
+            autoDialog.controlVoltage32.setOnTempChangeListener(new HVControlView.OnTempChangeListener() {
                 @Override
                 public void change(int temp) {
                     currentSetVoltage = temp;
                 }
             });
             //监听16kV设定电压变化
-            autoDialog.controlVoltage2.setOnTempChangeListener(new HVControlView2.OnTempChangeListener() {
+            autoDialog.controlVoltage16.setOnTempChangeListener(new HVControlView2.OnTempChangeListener() {
                 @Override
                 public void change(int temp) {
                     currentSetVoltage = temp;
@@ -8348,44 +8471,74 @@ public class ModeActivity extends BaseActivity {
                 @Override
                 public void change(int temp) {
                     currentSetTime = temp;
-                }
-            });
-            //点击单次按键执行的事件
-            autoDialog.setIvHVPULSE(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-            //点击确认按键执行的事件
-            autoDialog.setTvEnsureButton(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //改变工作模式    //同时mode界面也变化
-                    Constant.WorkingMode = currentWorkingMode;
-                    switch (currentWorkingMode) {
-                        case 0:
-                            tvInfoWorkingMode.setText(R.string.PULSE);
-                            break;
-                        case 1:
-                            tvInfoWorkingMode.setText(R.string.CYCLIC);
-                            break;
-                        case 2:
-                            tvInfoWorkingMode.setText(R.string.DC);
-                            break;
-                        default:
-                            break;
-                    }
-                    //改变电压档位
-                    Constant.gear = currentGear;
-                    //改变设定电压
-                    Constant.setVoltage = currentSetVoltage;
-                    tvInfoSetVoltage.setText(currentSetVoltage + "");
                     //改变放电周期
                     Constant.time = currentSetTime;
                     tvInfoTIME.setText(currentSetTime + "");
+                }
+            });
 
-                    autoDialog.dismiss();
+            //点击单次放电按钮事件
+            autoDialog.setIvHVPULSE(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //发送单次放电指令  //GC20211209
+                    command = COMMAND_SINGLE_PULSE;
+                    //数据
+                    dataTransfer = 0x01;
+                    startService();
+                }
+            });
+            //发送高压设定电压指令
+            autoDialog.setTvConfirmButton(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //记录改变的电压档位
+                    Constant.gear = currentGear;
+                    //记录改变的设定电压
+                    Constant.setVoltage = currentSetVoltage;
+                    tvInfoSetVoltage.setText(currentSetVoltage + "");
+
+                    //发送高压设定电压指令    //GC20211209
+                    /*ConnectService.isHV = true;
+                    command = COMMAND_VOLTAGE_SET;
+                    //电压数值
+                    int temp =  currentSetVoltage * 3276 / 32;
+                    dataTransfer = (byte) (temp >> 8 & 0xff);
+                    dataTransfer2 = (byte) (temp & 0xff);
+                    //档位
+                    dataTransfer3 = currentGear;    //同 GEAR1 = 0x01 GEAR2 = 0x02
+                    startService();*/
+
+                    //GTT
+                    byte temp = (byte) 23;
+                    byte[] array;
+                    array = getBooleanArray(temp);
+                    //接地报警
+                    if (array[3] == 1) {
+
+                    }
+                    //高压包故障
+                    if (array[4] == 1) {
+
+                    }
+                    //电容有残压
+                    if (array[5] == 1) {
+
+                    }
+                    //工作方式故障
+                    if (array[6] == 1) {
+
+                    }
+                    //电压档位故障
+                    if (array[7] == 1) {
+
+                    }
+                    /*Constant.currentVoltage = 3000 / 3276.0 * 32;
+                    //主界面信息栏当前电压
+                    tvInfoHV.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
+                    //高压操作对话框当前电压
+                    handler.sendEmptyMessage(HVINDICATOR);
+                    //handlerAuto.sendEmptyMessage(WARNING);*/
                 }
             });
         }
@@ -8576,8 +8729,7 @@ public class ModeActivity extends BaseActivity {
         bundle.putInt(BUNDLE_MODE_KEY, mode);
         bundle.putInt(BUNDLE_COMMAND_KEY, command);
         bundle.putInt(BUNDLE_DATA_TRANSFER_KEY, dataTransfer);
-        //比普通指令增加2个字节的数据和一个判断  //GC20211206
-        bundle.putBoolean(BUNDLE_HV_KEY, isHV);
+        //比普通指令增加2个字节的数据    //GC20211206
         bundle.putInt(BUNDLE_DATA_TRANSFER_KEY2, dataTransfer2);
         bundle.putInt(BUNDLE_DATA_TRANSFER_KEY3, dataTransfer3);
         intent.putExtra(BUNDLE_PARAM_KEY, bundle);

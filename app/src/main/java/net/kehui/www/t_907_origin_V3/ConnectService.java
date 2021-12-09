@@ -38,7 +38,6 @@ import static net.kehui.www.t_907_origin_V3.view.ModeActivity.BUNDLE_MODE_KEY;
 import static net.kehui.www.t_907_origin_V3.view.ModeActivity.BUNDLE_COMMAND_KEY;
 import static net.kehui.www.t_907_origin_V3.view.ModeActivity.BUNDLE_DATA_TRANSFER_KEY;
 import static net.kehui.www.t_907_origin_V3.view.ModeActivity.BUNDLE_PARAM_KEY;
-import static net.kehui.www.t_907_origin_V3.view.ModeActivity.BUNDLE_HV_KEY;
 import static net.kehui.www.t_907_origin_V3.view.ModeActivity.BUNDLE_DATA_TRANSFER_KEY2;
 import static net.kehui.www.t_907_origin_V3.view.ModeActivity.BUNDLE_DATA_TRANSFER_KEY3;
 
@@ -53,7 +52,6 @@ public class ConnectService extends Service {
     public int[] wifiStream;
     public static final int PORT = 9000;
     public static int[] mExtra;
-    public boolean isHV;
     public int dataTransfer2;
     public int dataTransfer3;
     /**
@@ -72,6 +70,7 @@ public class ConnectService extends Service {
      * 发送命令
      */
     public static boolean canAskPower = true;
+    public static boolean isHV;
 
     private BufferedReader br;
     private ConnectThread connectThread;
@@ -132,7 +131,7 @@ public class ConnectService extends Service {
             public void run() {
                 //如果连接正常并且允许收取电量，发送获取电池电量命令     //EN20200324
                 if (isConnected && canAskPower) {
-                    canAskPower = false;
+                    canAskPower = false;    //G?? sendCommand();里面有重复？
                     command = 0x06;
                     dataTransfer = 0x13;
                     sendCommand();
@@ -305,8 +304,7 @@ public class ConnectService extends Service {
             mode = bundle.getInt(BUNDLE_MODE_KEY);
             command = bundle.getInt(BUNDLE_COMMAND_KEY);
             dataTransfer = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY);
-            //比普通指令增加2个字节的数据和一个判断   //GC20211206
-            isHV = bundle.getBoolean(BUNDLE_HV_KEY);
+            //比普通指令增加2个字节的数据   //GC20211206
             dataTransfer2 = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY2);
             dataTransfer3 = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY3);
             sendCommand();
@@ -323,14 +321,15 @@ public class ConnectService extends Service {
         canAskPower = false;
 
         if (isHV) {
-            //发送高压模块指令——设定电压  //GC20211206
+            isHV = false;
+            //发送高压设定指令  //GC20211206
             byte[] request = new byte[10];//数据头
             request[0] = (byte) 0xeb;
             request[1] = (byte) 0x90;
             request[2] = (byte) 0xaa;
             request[3] = (byte) 0x55;
             //数据长度
-            request[4] = (byte) 0x03;
+            request[4] = (byte) 0x05;
             //指令
             request[5] = (byte) command;
             //数据

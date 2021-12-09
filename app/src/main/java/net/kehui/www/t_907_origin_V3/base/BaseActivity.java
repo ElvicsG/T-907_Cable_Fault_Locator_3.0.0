@@ -190,7 +190,7 @@ public class BaseActivity extends AppCompatActivity {
 
     public int[] wifiStream;
     /**
-     * APP下发的命令(16进制)（8个字节）
+     * APP下发的命令协议(16进制)（8个字节）
      * 数据头     数据长度  指令  传输数据  校验和
      * eb90aa55     03      01      11       15
      * 指令0x01测试命令
@@ -253,7 +253,7 @@ public class BaseActivity extends AppCompatActivity {
     public final static int RANGE_32_KM = 0x77;
     public final static int RANGE_64_KM = 0x88;
     /**
-     * 发送高压模块指令  //GC20211206
+     * 发送高压模块指令协议  //GC20211206
      * 0x60 高压设定（10个字节）
      * eb90aa55 05 60 0c cc 01 sum   0x0ccc：32kV 0x01：30mA档位
      * eb90aa55 05 60 06 66 02 sum   0x0666：16kV 0x02：60mA档位
@@ -263,12 +263,14 @@ public class BaseActivity extends AppCompatActivity {
      * eb90aa55 03 62 00 sum
      * 0x70 工作方式指令
      * eb90aa55 03 70 00 sum    00：直流 01：单次 02：周期
+     * 0x71 单次放电指令
+     * eb90aa55 03 71 01 sum    01：放电   //GC20211209
      */
-    public boolean isHV;    //是设定电压命令
     public final static int COMMAND_VOLTAGE_SET = 0x60;
     public final static int COMMAND_VOLTAGE_SWITCH = 0x61;
     public final static int COMMAND_VOLTAGE_QUERY = 0x62;
     public final static int COMMAND_WORKING_MODE = 0x70;
+    public final static int COMMAND_SINGLE_PULSE = 0x71;
 
     public final static int OPEN = 0x01;
     public final static int CLOSE = 0x02;
@@ -501,8 +503,12 @@ public class BaseActivity extends AppCompatActivity {
 /**
  * 3.0.0版本整理
  */
-//GC20211201    添加主界面信息栏
-//GC20211202    添加自定义高压操作界面对话框
+//GC20211201    添加主界面信息栏UI
+//GC20211202    添加自定义高压操作界面对话框UI
 //GC20211203    添加自定义旋钮控件、档位选择按钮
-//GC20211206    添加高压模块指令协议、添加通过服务传递的相关参数
-//GC20211207    添加信息栏与高压操作界面参数传递和初始化
+//GC20211206    添加高压模块指令协议、增加服务下发高压模块指令**
+//GC20211207    添加信息栏与高压操作界面UI参数传递和初始化
+//GC20211208    wifi连接线程将收到的数据通过服务传递给主界面处理**
+//GC20211209    下发高压模块指令
+//GC20211210    接收高压模块反馈并处理
+//GTT

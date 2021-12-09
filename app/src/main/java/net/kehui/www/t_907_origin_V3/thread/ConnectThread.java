@@ -48,6 +48,8 @@ public class ConnectThread extends Thread {
      * 循环接收数据，判断数据头，区分是命令还是波形。
      * 收到的数据可能会混杂命令和数据，从数据头去判断，如果是命令，则处理完，未处理数据前移，依次处理。
      * 采用了生产者消费者模式，本线程只接收数据，处理数据放到单独的线程。
+     *
+     * APP接收数据
      */
     @Override
     public void run() {
@@ -105,7 +107,7 @@ public class ConnectThread extends Thread {
                             if ((tempBuffer[2] & 0xff) == 170 && (tempBuffer[3] & 0xff) == COMMAND && (tempBuffer[4] & 0xff) == 3) {
                                 byte[] cmdBytes = new byte[8];
                                 System.arraycopy(tempBuffer, 0, cmdBytes, 0, 8);
-                                //加入队列
+                                //加入队列          //在接收数据的线程里面截取普通命令数据放入服务的队列中等待处理  //GC20211208
                                 ConnectService.bytesDataQueue.put(cmdBytes);
                                 Log.e("【新数据处理】", "提取普通命令消息，加入处理队列");
                                 //已经处理过的字节数累加8
@@ -131,10 +133,10 @@ public class ConnectThread extends Thread {
                             else if ((tempBuffer[2] & 0xff) == 170 && (tempBuffer[3] & 0xff) == COMMAND && (tempBuffer[4] & 0xff) == 4) {
                                 byte[] powerBytes = new byte[9];
                                 System.arraycopy(tempBuffer, 0, powerBytes, 0, 9);
-                                //加入队列
+                                //加入队列              //在接收数据的线程里面截取电量或者电压数值放入服务的队列中等待处理  //GC20211208
                                 ConnectService.bytesDataQueue.put(powerBytes);
                                 Log.e("【新数据处理】", "提取电量，加入处理队列");
-                                //已经处理过的字节数累加8
+                                //已经处理过的字节数累加9
                                 processedByte += 9;
                                 //剩余字节数减9
                                 remainByte = bytes - processedByte;

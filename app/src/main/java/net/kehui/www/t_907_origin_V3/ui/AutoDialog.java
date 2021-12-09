@@ -2,6 +2,7 @@ package net.kehui.www.t_907_origin_V3.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,19 +43,20 @@ import static net.kehui.www.t_907_origin_V3.base.BaseActivity.TDR;
 public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
     ImageView ivClose;
-    EditText etMethod;
     EditText etHVINDICATOR;
     EditText etWorkingMode;
 
-    TextView tvEnsure;
+    TextView tvConfirm;
+    TextView tvQuit;
     ImageView ivHVPULSE;
     public RadioGroup rgGear;
-    public RadioButton rbGear1;
-    public RadioButton rbGear2;
+    public RadioButton rbGear16;
+    public RadioButton rbGear32;
     public Spinner spWorkingMode;
-    public HVControlView controlVoltage;
-    public HVControlView2 controlVoltage2;
+    public HVControlView controlVoltage32;
+    public HVControlView2 controlVoltage16;
     public TimeControlView controlTime;
+    public ImageView ivWaring;
 
     private View view;
     private ParamInfo paramInfo;
@@ -62,6 +64,32 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
     private int positionVirtual;
     private int positionReal;
+
+    /**
+     * 全局的handler对象用来执行UI更新
+     */
+    public static final int HVINDICATOR = 1;
+    public static final int WARNING = 2;
+    public static final int CANCEL_WARNING = 3;
+
+    public Handler handlerAuto = new Handler(msg -> {
+        switch (msg.what) {
+            case HVINDICATOR:
+                etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
+                break;
+            case WARNING:
+                Constant.isWarning = true;
+                ivWaring.setImageResource(R.drawable.light_red);
+                break;
+            case CANCEL_WARNING:
+                Constant.isWarning = false;
+                ivWaring.setImageResource(R.drawable.light_gray);
+                break;
+            default:
+                break;
+        }
+        return false;
+    });
 
     public void setPositionReal(int positionReal) {
         this.positionReal = positionReal;
@@ -96,18 +124,22 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     private void initView() {
         //对话框初始化
         ivClose = view.findViewById(R.id.iv_close);
-        etMethod = view.findViewById(R.id.et_method);
         etHVINDICATOR = view.findViewById(R.id.et_HVINDICATOR);
         etWorkingMode = view.findViewById(R.id.et_working_mode);
         spWorkingMode = view.findViewById(R.id.sp_working_mode);
-        tvEnsure = view.findViewById(R.id.tv_ensure);
-        tvEnsure.setOnClickListener(this);
+        tvConfirm = view.findViewById(R.id.tv_confirm);
+        tvQuit = view.findViewById(R.id.tv_quit);
+
+        tvConfirm.setOnClickListener(this);
+        tvQuit.setOnClickListener(this);
         ivClose.setOnClickListener(this);
 
+        //GC20211203
         controlTime = view.findViewById(R.id.control_time);
-        controlVoltage = view.findViewById(R.id.control_voltage);
-        controlVoltage2 = view.findViewById(R.id.control_voltage2);
+        controlVoltage32 = view.findViewById(R.id.control_voltage32);
+        controlVoltage16 = view.findViewById(R.id.control_voltage16);
         ivHVPULSE = view.findViewById(R.id.iv_HV_PULSE);
+        ivWaring = view.findViewById(R.id.iv_warning);
         //放电周期效果
         controlTime.setArcColor("#026b02");
         controlTime.setDialColor1("#026b02");
@@ -116,86 +148,47 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         controlTime.setCurrentValueColor("#026b02");
         controlTime.setTitle(getContext().getResources().getString(R.string.time));
         //32kV档位设定电压效果
-        controlVoltage.setArcColor("#a03225");
-        controlVoltage.setDialColor1("#a03225");
-        controlVoltage.setDialColor2("#01eeff");
-        controlVoltage.setValueColor("#d0210e");
-        controlVoltage.setCurrentValueColor("#a03225");
-        controlVoltage.setTitle(getContext().getResources().getString(R.string.voltage));
+        controlVoltage32.setArcColor("#a03225");
+        controlVoltage32.setDialColor1("#a03225");
+        controlVoltage32.setDialColor2("#01eeff");
+        controlVoltage32.setValueColor("#d0210e");
+        controlVoltage32.setCurrentValueColor("#a03225");
+        controlVoltage32.setTitle(getContext().getResources().getString(R.string.voltage));
         //16kV档位设定电压效果
-        controlVoltage2.setArcColor("#ff0000");
-        controlVoltage2.setDialColor1("#ff0000");
-        controlVoltage2.setDialColor2("#01eeff");
-        controlVoltage2.setValueColor("#d0210e");
-        controlVoltage2.setCurrentValueColor("#ff0000");
-        controlVoltage2.setTitle(getContext().getResources().getString(R.string.voltage));
+        controlVoltage16.setArcColor("#ff0000");
+        controlVoltage16.setDialColor1("#ff0000");
+        controlVoltage16.setDialColor2("#01eeff");
+        controlVoltage16.setValueColor("#d0210e");
+        controlVoltage16.setCurrentValueColor("#ff0000");
+        controlVoltage16.setTitle(getContext().getResources().getString(R.string.voltage));
         //档位
         rgGear = view.findViewById(R.id.rg_gear);
-        rbGear1 = view.findViewById(R.id.rb_gear1);
-        rbGear2 = view.findViewById(R.id.rb_gear2);
+        rbGear16 = view.findViewById(R.id.rb_gear16);
+        rbGear32 = view.findViewById(R.id.rb_gear32);
 
     }
 
     private void initData() {
-        getMainParamInfo();
-        setEtMethod();
+        //接地报警初始化   、、？
+        /*if (Constant.isWarning) {
+            ivWaring.setImageResource(R.drawable.light_red);
+        } else {
+            ivWaring.setImageResource(R.drawable.light_gray);
+        }*/
         setEtHVINDICATOR();
         setSpWorkingMode();
     }
 
-    private void getMainParamInfo() {
-        paramInfo = (ParamInfo) StateUtils.getObject(getContext(), Constant.PARAM_INFO_KEY);
-
-    }
-
     /**
-     * 测试方法
-     */
-    private void setEtMethod() {
-        int mode = Constant.ModeValue;
-        switch (mode) {
-            case TDR:
-                etMethod.setText(getContext().getResources().getString(R.string.btn_tdr));
-                Constant.Mode = TDR;
-                break;
-            case ICM:
-                etMethod.setText(getContext().getResources().getString(R.string.btn_icm));
-                Constant.Mode = ICM;
-                break;
-            case ICM_DECAY:
-                etMethod.setText(getContext().getResources().getString(R.string.btn_icm_decay));
-                Constant.Mode = ICM_DECAY;
-                break;
-            case SIM:
-                etMethod.setText(getContext().getResources().getString(R.string.btn_sim));
-                Constant.Mode = SIM;
-                break;
-            case DECAY:
-                etMethod.setText(getContext().getResources().getString(R.string.btn_decay));
-                Constant.Mode = DECAY;
-                break;
-            default:
-                break;
-        }
-        etMethod.setEnabled(false);
-
-    }
-
-    /**
-     * 当前电压数值预留
+     * 当前电压初始化
      */
     private void setEtHVINDICATOR() {
-        Constant.SaveLocation = Constant.CurrentLocation;
-        if (Constant.CurrentUnit == MI_UNIT) {
-            etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.SaveLocation));
-        } else {
-            etHVINDICATOR.setText(UnitUtils.miToFt(Constant.SaveLocation));
-        }
+        etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
         etHVINDICATOR.setEnabled(false);
     }
 
     /**
-     * 工作模式选择和传递    //GC21211203
+     * 工作模式初始化    //GC20211203
      */
     private void setSpWorkingMode() {
         workingModeList.add(getContext().getResources().getString(R.string.PULSE));
@@ -207,97 +200,40 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         spWorkingMode.setAdapter(adapter);
 
     }
-
+    /**
+     * 监听电压档位选项变化
+     */
     public void setRadioGroup(RadioGroup.OnCheckedChangeListener checkedChangeListener) {
         rgGear.setOnCheckedChangeListener(checkedChangeListener);
     }
 
     /**
-     * 设置确认按键点击事件
+     * 点击电压确认按钮事件
+     */
+    public void setTvConfirmButton(View.OnClickListener clickListener) {
+        tvConfirm.setOnClickListener(clickListener);
+    }
+
+    /**
+     * 点击单次放电按钮事件
      */
     public void setIvHVPULSE(View.OnClickListener clickListener) {
         ivHVPULSE.setOnClickListener(clickListener);
     }
 
-    /**
-     * 设置确认按键点击事件
-     */
-    public void setTvEnsureButton(View.OnClickListener clickListener) {
-        tvEnsure.setOnClickListener(clickListener);
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_HV_PULSE:
-                dismiss();
-                break;
             case R.id.iv_close:
                 dismiss();
                 break;
-            case R.id.tv_ensure:
-                /*final Data data = formatData(new Data());
-                Flowable.create((FlowableOnSubscribe<List>) e -> {
-                    dao.insertData(data);
-                    List list = Arrays.asList(dao.query());
-                    e.onNext(list);
-                    e.onComplete();
-                }, BackpressureStrategy.BUFFER)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List>() {
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        s.request(Long.MAX_VALUE);
-                    }
-
-                    @Override
-                    public void onNext(List list) {
-                        //数据库保存提示 //20200520
-//                        Toast.makeText(getContext(), list.size() + "", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        //数据库保存修改   //20200520
-                        Toast.makeText(getContext(), getContext().getResources().getString(R.string.save_success), Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-//                dismiss();
+            case R.id.tv_quit:
+                dismiss();
                 break;
             default:
                 break;
         }
 
-    }
-
-    private Data formatData(Data data) {
-        data.mode = Constant.Mode + "";
-        data.location = Constant.SaveLocation;
-        if (data.location == 0) {
-            if (!TextUtils.isEmpty(etHVINDICATOR.getText().toString())) {
-                data.location = Double.parseDouble(etHVINDICATOR.getText().toString());
-            }
-        }
-
-        if (paramInfo != null) {
-            data.line = paramInfo.getCableLength();
-        } else {
-            data.line = "";
-        }
-
-        data.waveData = Constant.WaveData;
-        data.waveDataSim = Constant.SimData;
-        //TODO 20191226 存储zero 和pointDistance
-        data.positionReal = positionReal;
-        data.positionVirtual = positionVirtual;
-        //参数数据 方式  范围 增益 波速度
-        data.para = new int[]{Constant.ModeValue, Constant.RangeValue, Constant.SaveToDBGain, (int) Constant.Velocity};
-        return data;
     }
 
 }

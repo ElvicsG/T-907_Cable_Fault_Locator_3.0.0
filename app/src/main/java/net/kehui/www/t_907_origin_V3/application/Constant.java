@@ -38,13 +38,15 @@ public class Constant {
     public static int[] Para;
 
     /**
-     * 全自动高压参数  //GC21211203
+     * 全自动高压参数  //GC20211203
      */
     public static int WorkingMode = 0;
-    public static int WorkingModeCommand;
-    public static int gear = 2; //初始化档位为32kV
+    public static int gear = 1; //初始化档位为32kV
     public static int setVoltage = 0;
+    public static double currentVoltage;
     public static int time = 5;
+    public static Boolean isWarning;
+
 
     /**
      * 非SIM波形和SIM第一条波形
