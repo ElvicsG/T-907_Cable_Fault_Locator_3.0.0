@@ -3,7 +3,6 @@ package net.kehui.www.t_907_origin_V3.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,22 +18,12 @@ import androidx.annotation.NonNull;
 
 import net.kehui.www.t_907_origin_V3.R;
 import net.kehui.www.t_907_origin_V3.application.Constant;
-import net.kehui.www.t_907_origin_V3.entity.Data;
 import net.kehui.www.t_907_origin_V3.entity.ParamInfo;
 import net.kehui.www.t_907_origin_V3.util.ScreenUtils;
-import net.kehui.www.t_907_origin_V3.util.StateUtils;
-import net.kehui.www.t_907_origin_V3.util.UnitUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.kehui.www.t_907_origin_V3.application.Constant.MI_UNIT;
-import static net.kehui.www.t_907_origin_V3.base.BaseActivity.DECAY;
-import static net.kehui.www.t_907_origin_V3.base.BaseActivity.ICM;
-import static net.kehui.www.t_907_origin_V3.base.BaseActivity.ICM_DECAY;
-import static net.kehui.www.t_907_origin_V3.base.BaseActivity.SIM;
-import static net.kehui.www.t_907_origin_V3.base.BaseActivity.TDR;
 
 /**
  * @author gong
@@ -43,12 +32,11 @@ import static net.kehui.www.t_907_origin_V3.base.BaseActivity.TDR;
 public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
     ImageView ivClose;
-    EditText etHVINDICATOR;
     EditText etWorkingMode;
 
     TextView tvConfirm;
     TextView tvQuit;
-    ImageView ivHVPULSE;
+    public ImageView ivHVPULSE;
     public RadioGroup rgGear;
     public RadioButton rbGear16;
     public RadioButton rbGear32;
@@ -57,47 +45,15 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     public HVControlView2 controlVoltage16;
     public TimeControlView controlTime;
     public ImageView ivWaring;
+    public EditText etHVINDICATOR;
+    public TextView tvHvGear;
+    public TextView tvHvWorkingMode;
+    public TextView tvHvCapacitor;
+    public TextView tvHvIgnitionCoil;
+    public ImageView ivVoltageHeight;
 
     private View view;
-    private ParamInfo paramInfo;
     private List<String> workingModeList = new ArrayList<>();
-
-    private int positionVirtual;
-    private int positionReal;
-
-    /**
-     * 全局的handler对象用来执行UI更新
-     */
-    public static final int HVINDICATOR = 1;
-    public static final int WARNING = 2;
-    public static final int CANCEL_WARNING = 3;
-
-    public Handler handlerAuto = new Handler(msg -> {
-        switch (msg.what) {
-            case HVINDICATOR:
-                etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
-                break;
-            case WARNING:
-                Constant.isWarning = true;
-                ivWaring.setImageResource(R.drawable.light_red);
-                break;
-            case CANCEL_WARNING:
-                Constant.isWarning = false;
-                ivWaring.setImageResource(R.drawable.light_gray);
-                break;
-            default:
-                break;
-        }
-        return false;
-    });
-
-    public void setPositionReal(int positionReal) {
-        this.positionReal = positionReal;
-    }
-
-    public void setPositionVirtual(int positionVirtual) {
-        this.positionVirtual = positionVirtual;
-    }
 
     public AutoDialog(@NonNull Context context) {
         super(context);
@@ -122,24 +78,30 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     }
 
     private void initView() {
-        //对话框初始化
+        //对话框初始化    //GC20211203
         ivClose = view.findViewById(R.id.iv_close);
         etHVINDICATOR = view.findViewById(R.id.et_HVINDICATOR);
         etWorkingMode = view.findViewById(R.id.et_working_mode);
         spWorkingMode = view.findViewById(R.id.sp_working_mode);
-        tvConfirm = view.findViewById(R.id.tv_confirm);
-        tvQuit = view.findViewById(R.id.tv_quit);
-
-        tvConfirm.setOnClickListener(this);
-        tvQuit.setOnClickListener(this);
-        ivClose.setOnClickListener(this);
-
-        //GC20211203
         controlTime = view.findViewById(R.id.control_time);
         controlVoltage32 = view.findViewById(R.id.control_voltage32);
         controlVoltage16 = view.findViewById(R.id.control_voltage16);
         ivHVPULSE = view.findViewById(R.id.iv_HV_PULSE);
         ivWaring = view.findViewById(R.id.iv_warning);
+        rgGear = view.findViewById(R.id.rg_gear);
+        rbGear16 = view.findViewById(R.id.rb_gear16);
+        rbGear32 = view.findViewById(R.id.rb_gear32);;
+        tvConfirm = view.findViewById(R.id.tv_confirm);
+        tvQuit = view.findViewById(R.id.tv_quit);
+        tvHvGear = view.findViewById(R.id.tv_hv_gear);
+        tvHvWorkingMode = view.findViewById(R.id.tv_hv_working_mode);
+        tvHvCapacitor = view.findViewById(R.id.tv_hv_capacitor);
+        tvHvIgnitionCoil = view.findViewById(R.id.tv_hv_ignition_coil);
+        ivVoltageHeight = view.findViewById(R.id.iv_voltage_height);
+        tvQuit.setOnClickListener(this);
+        ivClose.setOnClickListener(this);
+        tvConfirm.setOnClickListener(this);
+
         //放电周期效果
         controlTime.setArcColor("#026b02");
         controlTime.setDialColor1("#026b02");
@@ -161,20 +123,48 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         controlVoltage16.setValueColor("#d0210e");
         controlVoltage16.setCurrentValueColor("#ff0000");
         controlVoltage16.setTitle(getContext().getResources().getString(R.string.voltage));
-        //档位
-        rgGear = view.findViewById(R.id.rg_gear);
-        rbGear16 = view.findViewById(R.id.rb_gear16);
-        rbGear32 = view.findViewById(R.id.rb_gear32);
+        //接地报警初始化
+        if (!Constant.isWarning) {
+            ivWaring.setImageResource(R.drawable.light_red);
+        } else {
+            ivWaring.setImageResource(R.drawable.light_gray);
+        }
+        //电压档位故障
+        if (!Constant.isGear) {
+            tvHvGear.setText(R.string.hv_gear_note2);
+            tvHvGear.setTextColor(getContext().getResources().getColor(R.color.T_red));
+        } else {
+            tvHvGear.setText(R.string.hv_gear_note);
+            tvHvGear.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        }
+        //工作方式故障
+        if (!Constant.isWorkingMode) {
+            tvHvWorkingMode.setText(R.string.hv_working_mode_note2);
+            tvHvWorkingMode.setTextColor(getContext().getResources().getColor(R.color.T_red));
+        } else {
+            tvHvWorkingMode.setText(R.string.hv_working_mode_note);
+            tvHvWorkingMode.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        }
+        //电容有残压
+        if (!Constant.isCapacitor) {
+            tvHvCapacitor.setText(R.string.hv_capacity_note2);
+            tvHvCapacitor.setTextColor(getContext().getResources().getColor(R.color.T_red));
+        } else {
+            tvHvCapacitor.setText(R.string.hv_capacity_note);
+            tvHvCapacitor.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        }
+        //高压包状态初始化
+        if (!Constant.isIgnitionCoil) {
+            tvHvIgnitionCoil.setText(R.string.hv_ignition_coil_note2);
+            tvHvIgnitionCoil.setTextColor(getContext().getResources().getColor(R.color.T_red));
+        } else {
+            tvHvIgnitionCoil.setText(R.string.hv_ignition_coil_note);
+            tvHvIgnitionCoil.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        }
 
     }
 
     private void initData() {
-        //接地报警初始化   、、？
-        /*if (Constant.isWarning) {
-            ivWaring.setImageResource(R.drawable.light_red);
-        } else {
-            ivWaring.setImageResource(R.drawable.light_gray);
-        }*/
         setEtHVINDICATOR();
         setSpWorkingMode();
     }
@@ -185,6 +175,69 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     private void setEtHVINDICATOR() {
         etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
         etHVINDICATOR.setEnabled(false);
+        int heightPosition = 0;
+        //根据最大值计算进度条高度
+        double a = Constant.currentVoltage / Constant.setVoltage ;
+        int b = (int) (a * 100);
+        if (b >= 0 && b < 10) {
+        } else if (b >= 10 && b < 20) {
+            heightPosition = 1;
+        } else if (b >= 20 && b < 30) {
+            heightPosition = 2;
+        } else if (b >= 30 && b < 40) {
+            heightPosition = 3;
+        } else if (b >= 40 && b < 50) {
+            heightPosition = 4;
+        } else if (b >= 50 && b < 60) {
+            heightPosition = 5;
+        } else if (b >= 60 && b < 70) {
+            heightPosition = 6;
+        } else if (b >= 70 && b < 80) {
+            heightPosition = 7;
+        } else if (b >= 80 && b < 90) {
+            heightPosition = 8;
+        } else if (b >= 90 && b < 100) {
+            heightPosition = 9;
+        } else if (b >= 100) {
+            heightPosition = 10;
+        }
+        switch (heightPosition) {
+            case 0:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_0);
+                break;
+            case 1:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_1);
+                break;
+            case 2:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_2);
+                break;
+            case 3:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_3);
+                break;
+            case 4:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_4);
+                break;
+            case 5:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_5);
+                break;
+            case 6:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_6);
+                break;
+            case 7:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_7);
+                break;
+            case 8:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_8);
+                break;
+            case 9:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_9);
+                break;
+            case 10:
+                ivVoltageHeight.setImageResource(R.drawable.ic_vltage_height_10);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -221,6 +274,13 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         ivHVPULSE.setOnClickListener(clickListener);
     }
 
+    /**
+     * 点击退出按钮事件
+     */
+    public void setQuit(View.OnClickListener clickListener) {
+        tvQuit.setOnClickListener(clickListener);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -228,7 +288,16 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
                 dismiss();
                 break;
             case R.id.tv_quit:
-                dismiss();
+                //GTT   高压操作退出清状态
+//                Constant.currentVoltage = 0;
+//                Constant.isWarning = true;
+//                Constant.isIgnitionCoil = true;
+//                Constant.isCapacitor = true;
+//                Constant.isWorkingMode = true;
+//                Constant.isGear = true;
+                /*//对话框退出状态记录     //GC20211210
+                Constant.isShowHV = false;
+                dismiss();*/
                 break;
             default:
                 break;

@@ -16,17 +16,21 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="@dimen/dp_4"
-        android:layout_marginEnd="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_5"
-        android:src="@drawable/ic_battery_no" />
+        android:layout_marginEnd="@dimen/dp_10"
+        android:src="@drawable/ic_battery_no"
+        android:visibility="gone" />
 
     <!--wifi图标-->
     <ImageView
         android:id="@+id/iv_wifi_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_4"
-        android:layout_toStartOf="@id/iv_battery_status"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/dp_4"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_marginEnd="@dimen/dp_10"
         android:src="@drawable/ic_no_wifi_connect" />
 
     <!--信息提示框-->
@@ -561,6 +565,14 @@
                         android:textSize="@dimen/sp_12" />
                 </LinearLayout>
 
+                <ImageView
+                    android:id="@+id/iv_info_voltage_height"
+                    android:layout_width="@dimen/dp_15"
+                    android:layout_height="@dimen/dp_40"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:src="@drawable/ic_vltage_height_0" />
+
             </LinearLayout>
 
         </LinearLayout>
@@ -711,7 +723,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:src="@drawable/bg_wave_pre_selector" />
+                android:src="@drawable/bg_wave_pre_s_selector" />
 
             <!--波形下翻-->
             <ImageView

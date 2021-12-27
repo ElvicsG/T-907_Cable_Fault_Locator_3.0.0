@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -22,23 +21,36 @@
 
     <View
         android:id="@+id/line"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/T_F2"
         android:layout_marginTop="20dp"
+        android:background="@color/T_F2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wait_trigger" />
 
     <TextView
         android:id="@+id/tv_cancel"
         android:layout_width="80dp"
         android:layout_height="40dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="80dp"
         android:background="@drawable/shape_stroke_gray_99"
         android:gravity="center"
         android:text="@string/btn_cancel"
         android:textColor="@color/T_4D"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/line" />
+
+    <ImageView
+        android:id="@+id/iv_trigger_PULSE"
+        android:layout_width="@dimen/dp_50"
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="230dp"
+        android:src="@drawable/bg_pulse_selector"
+        android:text=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/line" />
 </androidx.constraintlayout.widget.ConstraintLayout>

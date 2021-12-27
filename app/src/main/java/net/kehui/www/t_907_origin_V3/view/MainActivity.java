@@ -172,11 +172,13 @@ public class MainActivity extends BaseActivity {
             assert action != null;
             switch (action) {
                 case ConnectService.BROADCAST_ACTION_DEVICE_CONNECTED:
+                    //服务中toast只可以跟随系统语言     //GC20211214
+                    Toast.makeText(MainActivity.this, R.string.connect_success, Toast.LENGTH_SHORT).show();
                     //网络连接，更换网络图标
                     ConnectService.isConnected = true;
                     ivWifiStatus.setImageResource(R.drawable.ic_wifi_connected);
-                    //发送获取电量命令  //EN20200324    //每次重新进模式界面还会调用这里，所以需要避免重复发送电量命令
-                    if (ConnectService.canAskPower) {
+                    //发送获取电量命令  //EN20200324    //每次重新进模式界面还会调用这里，所以需要避免重复发送电量命令    //GT屏蔽电量获取
+                    /*if (ConnectService.canAskPower) {
                         handler.postDelayed(() -> {
                             ConnectService.canAskPower = false;
                             //电量
@@ -185,7 +187,7 @@ public class MainActivity extends BaseActivity {
                             //通过服务发送获取电量指令
                             startService();
                         }, 100);
-                    }
+                    }*/
                     break;
                 case ConnectService.BROADCAST_ACTION_DEVICE_CONNECT_FAILURE:
                     //网络断开，更换网络图标、电量图标

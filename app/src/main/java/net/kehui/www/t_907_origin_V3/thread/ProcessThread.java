@@ -74,7 +74,7 @@ public class ProcessThread extends Thread {
      * 获取硬件设备返回的命令数据
      */
     private void getCmdMessage(int[] cmdData) {
-        Log.e("#【设备-->APP】", "指令：" + getCommandStr(cmdData[5]) + " 已应答");
+        Log.e("#【设备-->APP】", "指令：" + getCommandStr(cmdData[5]) + " 已应答" + cmdData[6]);
         Message message = Message.obtain();
         message.what = ConnectService.GET_COMMAND;
         Bundle bundle = new Bundle();
@@ -116,6 +116,15 @@ public class ProcessThread extends Thread {
                 break;
             case 10:
                 returnStr = "10 脉宽";
+                break;
+            case 96:
+                returnStr = "0x61 高压设定";
+                break;
+            case 112:
+                returnStr = "0x70 工作方式";
+                break;
+            case 113:
+                returnStr = "0x71 单次放电";
                 break;
             default:
                 break;

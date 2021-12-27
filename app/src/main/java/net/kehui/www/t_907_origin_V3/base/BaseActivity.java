@@ -255,8 +255,8 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 发送高压模块指令协议  //GC20211206
      * 0x60 高压设定（10个字节）
-     * eb90aa55 05 60 0c cc 01 sum   0x0ccc：32kV 0x01：30mA档位
-     * eb90aa55 05 60 06 66 02 sum   0x0666：16kV 0x02：60mA档位
+     * eb90aa55 05 60 0c cc 01 sum   0x0ccc：32kV 0x02：30mA档位 / 8kV.120mA
+     * eb90aa55 05 60 06 66 02 sum   0x0666：16kV 0x01：60mA档位 / 4kV.240mA
      * 0x61 开关指令（8个字节）
      * eb90aa55 03 61 01 sum    01:高压开 02：高压关
      * 0x62 查询指令
@@ -264,7 +264,7 @@ public class BaseActivity extends AppCompatActivity {
      * 0x70 工作方式指令
      * eb90aa55 03 70 00 sum    00：直流 01：单次 02：周期
      * 0x71 单次放电指令
-     * eb90aa55 03 71 01 sum    01：放电   //GC20211209
+     * eb90aa55 03 71 01 75    01：放电   //GC20211209
      */
     public final static int COMMAND_VOLTAGE_SET = 0x60;
     public final static int COMMAND_VOLTAGE_SWITCH = 0x61;
@@ -284,8 +284,7 @@ public class BaseActivity extends AppCompatActivity {
     public final static int GEAR1 = 0x01;
     public final static int GEAR2 = 0x02;
 
-    /**
-     * APP接收的命令（8个字节）
+    /*** APP接收的命令（8个字节）
      * 数据头     数据长度  指令  传输数据  校验和
      * eb90aa55     03      01      33       ..  （0x33正确 0x44错误）
      * eb90aa55 03 08 11 1c		//接收到触发信号
@@ -294,7 +293,7 @@ public class BaseActivity extends AppCompatActivity {
     public final static int COMMAND_TRIGGER = 0x08;
     public final static int TRIGGERED = 0x11;
     /**
-     * 接收高压模块反馈  //GC20211206
+     * 接收高压模块反馈
      * eb90aa55 04 62 06 66 sum （9个字节）
      * eb90aa55 03 80 xx sum （8个字节）
      */
@@ -503,12 +502,23 @@ public class BaseActivity extends AppCompatActivity {
 /**
  * 3.0.0版本整理
  */
-//GC20211201    添加主界面信息栏UI
-//GC20211202    添加自定义高压操作界面对话框UI
-//GC20211203    添加自定义旋钮控件、档位选择按钮
-//GC20211206    添加高压模块指令协议、增加服务下发高压模块指令**
-//GC20211207    添加信息栏与高压操作界面UI参数传递和初始化
-//GC20211208    wifi连接线程将收到的数据通过服务传递给主界面处理**
+//GC20211201    UI：主界面信息栏
+//GC20211202    UI：高压操作界面对话框
+//GC20211203    UI：自定义旋钮控件、档位选择
+//GC20211206    添加协议，增加高压设定指令//GN
+//GC20211207    高压操作界面和信息栏：初始化、参数传递
+//GC20211208    ConnectThread线程将收到的数据通过ConnectService服务传递给主界面处理//GN
 //GC20211209    下发高压模块指令
-//GC20211210    接收高压模块反馈并处理
-//GTT
+//GC20211210    接收高压模块反馈
+//GC20211213    高压操作、等待触发界面显示
+//GC20211214    UI：高压数值进度条更新/服务中toast只可以跟随系统语言
+//GC20211215    UI：重新自定义等待触发对话框
+
+//GT屏蔽电量获取 GT自动测距运算屏蔽
+//GTT   接收数据处理测试
+//GC20211216    "取消测试"：电压归0
+//GC20211220    UI：只有“单次”时单次放电按钮有效
+//GC20211221    故障反馈处理
+//GC20211222    切换工作方式：工作模式恢复为默认的单次
+//GC20211223    周期时间指令下发
+//GC20211227

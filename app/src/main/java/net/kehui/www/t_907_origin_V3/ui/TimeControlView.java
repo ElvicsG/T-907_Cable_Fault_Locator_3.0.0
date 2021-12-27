@@ -50,7 +50,7 @@ public class TimeControlView extends View {
     private int temperature = 0;
     // 最低增益
     private int minTemp = 0;
-    //最高数值              //private int maxTemp = 100;    //GC20211203 重新定义
+    //最高数值              //private int maxTemp = 100;    //GC20211203 重新定义：周期时间
     private int maxTemp = 12;
     //1格代表增益1度          //private float angleRate = 0.2f;
     private float angleRate = 01.66666667f;

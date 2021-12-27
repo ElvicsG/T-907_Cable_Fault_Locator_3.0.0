@@ -126,7 +126,8 @@ public class ConnectService extends Service {
         registerReceiver(receiver, intentFilter);
         this.bytesDataQueue = new ArrayBlockingQueue(100);
 
-        Runnable runnable = new Runnable() {
+        //GT屏蔽电量获取
+        /*Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 //如果连接正常并且允许收取电量，发送获取电池电量命令     //EN20200324
@@ -139,7 +140,7 @@ public class ConnectService extends Service {
                 handler.postDelayed(this, 30000);
             }
         };
-        handler.postDelayed(runnable, 30000);
+        handler.postDelayed(runnable, 30000);*/
         super.onCreate();
     }
 
@@ -152,7 +153,8 @@ public class ConnectService extends Service {
     public Handler handler = new Handler(msg -> {
         switch (msg.what) {
             case DEVICE_CONNECTED:
-                Toast.makeText(this, getResources().getString(R.string.connect_success), Toast.LENGTH_SHORT).show();
+                //服务中toast只可以跟随系统语言     //GC20211214
+//                Toast.makeText(this, getResources().getString(R.string.connect_success), Toast.LENGTH_SHORT).show();
                 sendBroadcast(BROADCAST_ACTION_DEVICE_CONNECTED, null, null);
                 break;
             case DEVICE_DISCONNECTED:
@@ -304,7 +306,7 @@ public class ConnectService extends Service {
             mode = bundle.getInt(BUNDLE_MODE_KEY);
             command = bundle.getInt(BUNDLE_COMMAND_KEY);
             dataTransfer = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY);
-            //比普通指令增加2个字节的数据   //GC20211206
+            //高压模块设定电压指令比普通指令增加2个字节的数据   //GC20211206
             dataTransfer2 = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY2);
             dataTransfer3 = bundle.getInt(BUNDLE_DATA_TRANSFER_KEY3);
             sendCommand();
@@ -322,7 +324,7 @@ public class ConnectService extends Service {
 
         if (isHV) {
             isHV = false;
-            //发送高压设定指令  //GC20211206
+            //发送高压设定电压指令  //GC20211206
             byte[] request = new byte[10];//数据头
             request[0] = (byte) 0xeb;
             request[1] = (byte) 0x90;
@@ -338,10 +340,12 @@ public class ConnectService extends Service {
             request[8] = (byte) dataTransfer3;
             //校验和
             int sum = request[4] + request[5] + request[6] + request[7] + request[8];
-            request[9] = (byte) sum;
+            request[9] = (byte) sum;    //GC20211209
             //TODO 20200407 发送数据是判断连接是否正常，否则不发送
             if (connectThread != null && ConnectService.isConnected) {
                 connectThread.sendCommand(request);
+                Log.e("#【APP-->设备】", "指令：" + command + " 传输数据3：" + dataTransfer3);
+
             }
         } else {
             byte[] request = new byte[8];

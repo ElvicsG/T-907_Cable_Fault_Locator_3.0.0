@@ -129,7 +129,7 @@ public class ConnectThread extends Thread {
 //                                    continue;     //GC?
                                 }
                             }
-                            //数据长度：0x04——电量命令，截9个
+                            //数据长度：0x04——电量命令或者电压数值，截9个
                             else if ((tempBuffer[2] & 0xff) == 170 && (tempBuffer[3] & 0xff) == COMMAND && (tempBuffer[4] & 0xff) == 4) {
                                 byte[] powerBytes = new byte[9];
                                 System.arraycopy(tempBuffer, 0, powerBytes, 0, 9);
@@ -363,7 +363,7 @@ public class ConnectThread extends Thread {
     public void sendCommand(byte[] request) {
         if (outputStream != null) {
             try {
-                outputStream.write(request);
+                outputStream.write(request);    //GC20211206 下发指令
             } catch (IOException e) {
                 e.printStackTrace();
             }

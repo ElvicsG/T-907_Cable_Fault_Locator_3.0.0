@@ -93,12 +93,6 @@ public class ScrubGestureDetector implements View.OnTouchListener {
 
                 return true;
             case MotionEvent.ACTION_UP:
-
-
-
-           /* case MotionEvent.ACTION_CANCEL:
-                handlerAuto.removeCallbacks(longPressRunnable);
-                scrubListener.onScrubEnded();*/
                 return true;
             default:
                 return false;

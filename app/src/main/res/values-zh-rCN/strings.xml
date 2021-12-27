@@ -195,9 +195,23 @@
     <string name="grounding_alarm">接地报警：</string>
     <string name="voltage">电压/kV</string>
     <string name="time">时间/s</string>
-    <string name="Gear1">16kV</string>
-    <string name="Gear2">32kV</string>
+    <!--<string name="Gear1">16kV</string>
+    <string name="Gear2">32kV</string>--><!--GC20211227-->
+    <string name="Gear1">4kV</string>
+    <string name="Gear2">8kV</string>
     <string name="hv_confirm">电压确认</string>
     <string name="quit">退出</string>
+    <string name="hv_toast">电压已确认，等待升压......</string>
+    <string name="hv_toast2">电压值不能为0，请重新设定！</string>
+    <string name="hv_warning_note">接地正常</string>
+    <string name="hv_warning_note2">接地报警</string>
+    <string name="hv_gear_note">电压档位正常</string>
+    <string name="hv_gear_note2">电压档位故障</string>
+    <string name="hv_working_mode_note">工作方式正常</string>
+    <string name="hv_working_mode_note2">工作方式故障</string>
+    <string name="hv_capacity_note">电容无残压</string>
+    <string name="hv_capacity_note2">电容有残压</string>
+    <string name="hv_ignition_coil_note">高压包正常</string>
+    <string name="hv_ignition_coil_note2">高压包故障</string>
 
 </resources>
