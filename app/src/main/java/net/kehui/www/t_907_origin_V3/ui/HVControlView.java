@@ -51,14 +51,14 @@ public class HVControlView extends View {
     // 最低增益
     private int minTemp = 0;
     //最高数值              //private int maxTemp = 100;    //GC20211203 重新定义32kV档  //GC20211227 高压包更换8kV
-//    private int maxTemp = 32;
-    private int maxTemp = 8;
+    private int maxTemp = 32;
+//    private int maxTemp = 8;
     //1格代表增益1度          //private float angleRate = 0.2f;
-//    private float angleRate = 0.625f;
-    private float angleRate = 2.5f;
+    private float angleRate = 0.625f;
+//    private float angleRate = 2.5f;
     //每格的角度             //private float angleOne = (float) 270 / (100) / angleRate;
-//    private float angleOne = (float) 270 / (32) / angleRate;
-    private float angleOne = (float) 270 / (8) / angleRate;
+    private float angleOne = (float) 270 / (32) / angleRate;
+//    private float angleOne = (float) 270 / (8) / angleRate;
     // 按钮图片
     private Bitmap buttonImage = BitmapFactory.decodeResource(getResources(), R.drawable.btn_rotate_3);
     // 按钮图片阴影
