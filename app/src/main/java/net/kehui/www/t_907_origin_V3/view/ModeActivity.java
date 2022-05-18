@@ -47,9 +47,11 @@ import net.kehui.www.t_907_origin_V3.fragment.SettingFragment;
 import net.kehui.www.t_907_origin_V3.fragment.WaveFragment;
 import net.kehui.www.t_907_origin_V3.ui.AppUpdateDialog;
 import net.kehui.www.t_907_origin_V3.ui.AutoDialog;
-import net.kehui.www.t_907_origin_V3.ui.HVControlView;
-import net.kehui.www.t_907_origin_V3.ui.HVControlView2;
+import net.kehui.www.t_907_origin_V3.ui.HVControlView32;
+import net.kehui.www.t_907_origin_V3.ui.HVControlView16;
 import net.kehui.www.t_907_origin_V3.ui.HelpModeDialog;
+import net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar32;
+import net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar16;
 import net.kehui.www.t_907_origin_V3.ui.MoveView;
 import net.kehui.www.t_907_origin_V3.ui.MoveWaveView;
 import net.kehui.www.t_907_origin_V3.ui.SaveRecordsDialog;
@@ -7792,7 +7794,6 @@ public class ModeActivity extends BaseActivity {
         tvSet1.setEnabled(false);
     }
 
-
     /**
      * 长按测试按键响应     //jk20200715
      */
@@ -8295,19 +8296,33 @@ public class ModeActivity extends BaseActivity {
                         currentGear = 1;
                         //改变档位设定电压初始化为0
                         Constant.setVoltage = 0;
+                        //档位变化实时记录档位和电压数值 //GC20220414
+                        Constant.gear = currentGear;
+                        tvInfoSetVoltage.setText(0 + "");   //GC20220414
                         autoDialog.controlVoltage32.setVisibility(View.GONE);
                         autoDialog.controlVoltage16.setVisibility(View.VISIBLE);
                         autoDialog.controlVoltage16.setTemp(0, 16, 0);
 //                        autoDialog.controlVoltage16.setTemp(0, 4, 0);
+                        autoDialog.hvValue.setText("设定电压：0kV"); //GC20220413
+                        autoDialog.seekBar32.setVisibility(View.GONE);
+                        autoDialog.seekBar16.setVisibility(View.VISIBLE);
+                        autoDialog.seekBar16.setProgress(0);
                     } else if (autoDialog.rbGear32.getId() == checkedId) {
                         autoDialog.rgGear.check(autoDialog.rbGear32.getId());
                         currentGear = 2;    //GC20211227
                         //改变档位设定电压初始化为0
                         Constant.setVoltage = 0;
+                        //档位变化实时记录档位和电压数值 //GC20220414
+                        Constant.gear = currentGear;
+                        tvInfoSetVoltage.setText(0 + "");
                         autoDialog.controlVoltage16.setVisibility(View.GONE);
                         autoDialog.controlVoltage32.setVisibility(View.VISIBLE);
                         autoDialog.controlVoltage32.setTemp(0, 32, 0);    //GC20211227
 //                        autoDialog.controlVoltage32.setTemp(0, 8, 0);
+                        autoDialog.hvValue.setText("设定电压：0kV"); //GC20220413
+                        autoDialog.seekBar16.setVisibility(View.GONE);
+                        autoDialog.seekBar32.setVisibility(View.VISIBLE);
+                        autoDialog.seekBar32.setProgress(0);
                     }
                 }
             });
@@ -8318,24 +8333,68 @@ public class ModeActivity extends BaseActivity {
                 autoDialog.controlVoltage32.setVisibility(View.VISIBLE);
                 autoDialog.controlVoltage32.setTemp(0, 32, currentSetVoltage);    //GC20211227
 //                autoDialog.controlVoltage32.setTemp(0, 8, currentSetVoltage);
+                autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV"); //seekBar32设定电压显示 //GC20220413
+                autoDialog.seekBar16.setVisibility(View.GONE);
+                autoDialog.seekBar32.setVisibility(View.VISIBLE);
+                autoDialog.seekBar32.setProgress(currentSetVoltage);
             } else if (currentGear == 1) {//16kV档位 / 4kV
                 autoDialog.controlVoltage32.setVisibility(View.GONE);
                 autoDialog.controlVoltage16.setVisibility(View.VISIBLE);
                 autoDialog.controlVoltage16.setTemp(0, 16, currentSetVoltage);
 //                autoDialog.controlVoltage16.setTemp(0, 4, currentSetVoltage);
+                autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV"); //seekBar32设定电压显示 //GC20220413
+                autoDialog.seekBar32.setVisibility(View.GONE);
+                autoDialog.seekBar16.setVisibility(View.VISIBLE);
+                autoDialog.seekBar16.setProgress(currentSetVoltage);
             }
             //监听32kV设定电压变化
-            autoDialog.controlVoltage32.setOnTempChangeListener(new HVControlView.OnTempChangeListener() {
+            autoDialog.controlVoltage32.setOnTempChangeListener(new HVControlView32.OnTempChangeListener() {
                 @Override
                 public void change(int temp) {
                     currentSetVoltage = temp;
                 }
             });
             //监听16kV设定电压变化
-            autoDialog.controlVoltage16.setOnTempChangeListener(new HVControlView2.OnTempChangeListener() {
+            autoDialog.controlVoltage16.setOnTempChangeListener(new HVControlView16.OnTempChangeListener() {
                 @Override
                 public void change(int temp) {
                     currentSetVoltage = temp;
+                }
+            });
+            //seekBar32电压变化监听    //GC20220413
+            autoDialog.seekBar32.setOnProgressChangedListener(new KBubbleSeekBar32.OnProgressChangedListener() {
+                @Override
+                public void onProgressChanged(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                    autoDialog.hvValue.setText("设定电压：" + progress + "kV");
+                    currentSetVoltage = progress;
+                }
+
+                @Override
+                public void getProgressOnActionUp(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat) {
+
+                }
+
+                @Override
+                public void getProgressOnFinally(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
+                }
+            });
+            //seekBar16电压变化监听    //GC20220413
+            autoDialog.seekBar16.setOnProgressChangedListener(new KBubbleSeekBar16.OnProgressChangedListener() {
+                @Override
+                public void onProgressChanged(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                    autoDialog.hvValue.setText("设定电压：" + progress + "kV");
+                    currentSetVoltage = progress;
+                }
+
+                @Override
+                public void getProgressOnActionUp(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat) {
+
+                }
+
+                @Override
+                public void getProgressOnFinally(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
                 }
             });
             //放电周期初始化

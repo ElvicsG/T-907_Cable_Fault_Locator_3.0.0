@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.percentlayout.widget.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:kosmos="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#00000000"
@@ -127,6 +128,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dp_12"
+                        android:layout_marginStart="@dimen/dp_20"
                         android:text="@string/grounding_alarm"
                         android:textColor="@color/T_F2"
                         android:textSize="@dimen/sp_11" />
@@ -144,7 +146,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/iv_warning"
-                        android:layout_marginTop="@dimen/dp_8"
+                        android:layout_marginTop="@dimen/dp_4"
+                        android:layout_marginStart="@dimen/dp_20"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -194,30 +197,109 @@
                         android:layout_marginTop="@dimen/dp_40"
                         android:text="@string/set_voltage"
                         android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
+                        android:textSize="@dimen/sp_11"
+                        android:visibility="gone" />
 
                     <LinearLayout
                         android:id="@+id/ll_control_voltage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/ll_gear"
+                        android:layout_marginStart="@dimen/dp_15"
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_toEndOf="@id/tv_set_voltage"
-                        android:layout_marginStart="@dimen/dp_15"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
-                        <net.kehui.www.t_907_origin_V3.ui.HVControlView
+                        <net.kehui.www.t_907_origin_V3.ui.HVControlView32
                             android:id="@+id/control_voltage32"
                             android:layout_width="@dimen/dp_80"
                             android:layout_height="@dimen/dp_80"
-                            android:layout_gravity="center"/>
+                            android:layout_gravity="center" />
 
-                        <net.kehui.www.t_907_origin_V3.ui.HVControlView2
+                        <net.kehui.www.t_907_origin_V3.ui.HVControlView16
                             android:id="@+id/control_voltage16"
                             android:layout_width="@dimen/dp_80"
                             android:layout_height="@dimen/dp_80"
                             android:layout_gravity="center"
                             android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_control_voltage1"
+                        android:layout_width="@dimen/dp_170"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ll_gear"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_25"
+                            android:layout_marginStart="@dimen/dp_35"
+                            android:layout_marginEnd="@dimen/dp_35"
+                            android:gravity="center"
+                            android:background="@drawable/bg_main_msg"
+                            android:text="@string/set_voltage"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="18sp"/>
+
+                        <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar32
+                            android:id="@+id/seekBar32"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_8"
+                            kosmos:bsb_bubble_color="#24d1b4"
+                            kosmos:bsb_bubble_text_color="#bc4306"
+                            kosmos:bsb_bubble_text_size="28sp"
+                            kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                            kosmos:bsb_marks="false"
+                            kosmos:bsb_max="32"
+                            kosmos:bsb_min="0"
+                            kosmos:bsb_progress="0"
+                            kosmos:bsb_second_track_color="#00F0FF"
+                            kosmos:bsb_section_count="2"
+                            kosmos:bsb_section_text_position="below_section_mark"
+                            kosmos:bsb_show_progress_in_float="true"
+                            kosmos:bsb_show_section_mark="false"
+                            kosmos:bsb_show_section_text="true"
+                            kosmos:bsb_show_thumb_text="true"
+                            kosmos:bsb_thumb_color="#24d1b4"
+                            kosmos:bsb_thumb_text_color="#bc4306"
+                            kosmos:bsb_touch_to_seek="true"
+                            kosmos:bsb_thumb_text_size="18sp"
+                            kosmos:bsb_track_color="#606968"
+                            kosmos:bsb_track_size="@dimen/dp_28"/>
+
+                        <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar16
+                            android:id="@+id/seekBar16"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_8"
+                            android:visibility="gone"
+                            kosmos:bsb_bubble_color="#24d1b4"
+                            kosmos:bsb_bubble_text_color="#bc4306"
+                            kosmos:bsb_bubble_text_size="28sp"
+                            kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                            kosmos:bsb_marks="false"
+                            kosmos:bsb_max="32"
+                            kosmos:bsb_min="0"
+                            kosmos:bsb_progress="0"
+                            kosmos:bsb_second_track_color="#00F0FF"
+                            kosmos:bsb_section_count="2"
+                            kosmos:bsb_section_text_position="below_section_mark"
+                            kosmos:bsb_show_progress_in_float="true"
+                            kosmos:bsb_show_section_mark="false"
+                            kosmos:bsb_show_section_text="true"
+                            kosmos:bsb_show_thumb_text="true"
+                            kosmos:bsb_thumb_color="#24d1b4"
+                            kosmos:bsb_thumb_text_color="#bc4306"
+                            kosmos:bsb_thumb_text_size="18sp"
+                            kosmos:bsb_touch_to_seek="true"
+                            kosmos:bsb_track_color="#606968"
+                            kosmos:bsb_track_size="@dimen/dp_28" />
                     </LinearLayout>
 
                 </RelativeLayout>
@@ -312,7 +394,7 @@
                     <LinearLayout
                         android:id="@+id/ll_TIME"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/dp_100"
                         android:layout_below="@id/et_working_mode"
                         android:layout_marginTop="@dimen/dp_12"
                         android:orientation="vertical">
@@ -321,7 +403,36 @@
                             android:id="@+id/control_time"
                             android:layout_width="@dimen/dp_80"
                             android:layout_height="@dimen/dp_80"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:visibility="visible" />
+
+                        <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar12
+                            android:id="@+id/seekBar12"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="@dimen/dp_8"
+                            android:visibility="gone"
+                            kosmos:bsb_bubble_color="#24d1b4"
+                            kosmos:bsb_bubble_text_color="#bc4306"
+                            kosmos:bsb_bubble_text_size="28sp"
+                            kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                            kosmos:bsb_marks="false"
+                            kosmos:bsb_max="32"
+                            kosmos:bsb_min="0"
+                            kosmos:bsb_progress="0"
+                            kosmos:bsb_second_track_color="#00F0FF"
+                            kosmos:bsb_section_count="2"
+                            kosmos:bsb_section_text_position="below_section_mark"
+                            kosmos:bsb_show_progress_in_float="true"
+                            kosmos:bsb_show_section_mark="false"
+                            kosmos:bsb_show_section_text="true"
+                            kosmos:bsb_show_thumb_text="true"
+                            kosmos:bsb_thumb_color="#24d1b4"
+                            kosmos:bsb_thumb_text_color="#bc4306"
+                            kosmos:bsb_thumb_text_size="18sp"
+                            kosmos:bsb_touch_to_seek="true"
+                            kosmos:bsb_track_color="#606968"
+                            kosmos:bsb_track_size="@dimen/dp_28" />
 
                         <TextView
                             android:id="@+id/tv_TIME"
@@ -406,7 +517,7 @@
                     android:id="@+id/tv_quit"
                     android:layout_width="@dimen/dp_75"
                     android:layout_height="@dimen/dp_25"
-                    android:layout_marginStart="@dimen/dp_190"
+                    android:layout_marginStart="@dimen/dp_187"
                     android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginBottom="@dimen/dp_10"
                     android:background="@drawable/shape_solide_0ff6ff"

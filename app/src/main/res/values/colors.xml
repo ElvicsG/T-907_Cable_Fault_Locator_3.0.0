@@ -15,7 +15,9 @@
 
     <color name="white">#ffffff</color>
     <color name="gray">#CCCCCC</color>
+    <color name="gray2">#606968</color>
     <color name="green2">#1d7d0c</color>
+    <color name="green3">#24d1b4</color>
     <color name="blue3">#00F0FF</color>
 
     <color name="blue_808080">#808080</color>

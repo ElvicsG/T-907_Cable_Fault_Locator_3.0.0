@@ -2,7 +2,6 @@ package net.kehui.www.t_907_origin_V3.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,7 +17,6 @@ import androidx.annotation.NonNull;
 
 import net.kehui.www.t_907_origin_V3.R;
 import net.kehui.www.t_907_origin_V3.application.Constant;
-import net.kehui.www.t_907_origin_V3.entity.ParamInfo;
 import net.kehui.www.t_907_origin_V3.util.ScreenUtils;
 
 import java.text.DecimalFormat;
@@ -29,7 +27,7 @@ import java.util.List;
  * @author gong
  * @date 2021/12/02
  */
-public class AutoDialog extends BaseDialog implements View.OnClickListener {
+public class AutoDialog extends BaseDialog implements View.OnClickListener  {
 
     ImageView ivClose;
     EditText etWorkingMode;
@@ -41,8 +39,15 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     public RadioButton rbGear16;
     public RadioButton rbGear32;
     public Spinner spWorkingMode;
-    public HVControlView controlVoltage32;
-    public HVControlView2 controlVoltage16;
+    public HVControlView32 controlVoltage32;
+    public HVControlView16 controlVoltage16;
+    /**
+     * seekBar32 控件添加//
+     */
+    public TextView hvValue;
+    public KBubbleSeekBar32 seekBar32;
+    public KBubbleSeekBar16 seekBar16;
+
     public TimeControlView controlTime;
     public ImageView ivWaring;
     public EditText etHVINDICATOR;
@@ -65,7 +70,6 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
         view = LayoutInflater.from(getContext()).inflate(R.layout.layout_auto_dialog, null, false);
         setContentView(view);
-
         //自定义高压操作界面对话框    //GC20211202
         initView();
         final WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -86,6 +90,12 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         controlTime = view.findViewById(R.id.control_time);
         controlVoltage32 = view.findViewById(R.id.control_voltage32);
         controlVoltage16 = view.findViewById(R.id.control_voltage16);
+
+        //电压滑动控件添加  //GC20220413
+        hvValue = view.findViewById(R.id.tv_value);
+        seekBar32 = view.findViewById(R.id.seekBar32);
+        seekBar16 = view.findViewById(R.id.seekBar16);
+
         ivHVPULSE = view.findViewById(R.id.iv_HV_PULSE);
         ivWaring = view.findViewById(R.id.iv_warning);
         rgGear = view.findViewById(R.id.rg_gear);
@@ -102,6 +112,8 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         ivClose.setOnClickListener(this);
         tvConfirm.setOnClickListener(this);
 
+        //seekBar电压显示初始化
+        hvValue.setText("设定电压：0kV");
         //放电周期效果
         controlTime.setArcColor("#026b02");
         controlTime.setDialColor1("#026b02");

@@ -31,7 +31,7 @@ public class TimeControlView extends View {
     // 圆弧半径
     private int arcRadius;
     // 刻度高
-    private int scaleHeight = dp2px(5);
+    private int scaleHeight = dp2px(8);    //GC20211203
     // 刻度盘画笔
     private Paint dialPaint;
     // 圆弧画笔
@@ -91,7 +91,7 @@ public class TimeControlView extends View {
     private void init() {
         dialPaint = new Paint();
         dialPaint.setAntiAlias(true);
-        dialPaint.setStrokeWidth(dp2px(1));
+        dialPaint.setStrokeWidth(dp2px(2)); //刻度粗细  //GC20211203
         dialPaint.setStyle(Paint.Style.STROKE);
 
         arcPaint = new Paint();
@@ -101,9 +101,10 @@ public class TimeControlView extends View {
         arcPaint.setStrokeWidth(dp2px(1));
         arcPaint.setStyle(Paint.Style.STROKE);
 
+        //标题字体大小    //GC20211203
         titlePaint = new Paint();
         titlePaint.setAntiAlias(true);
-        titlePaint.setTextSize(sp2px(10));
+        titlePaint.setTextSize(sp2px(13));
         titlePaint.setColor(Color.parseColor("#FFFFFF"));
         titlePaint.setStyle(Paint.Style.STROKE);
 
@@ -136,9 +137,8 @@ public class TimeControlView extends View {
         arcPaint.setAntiAlias(true);
         //#a03225
         arcPaint.setColor(Color.parseColor(arcColor));
-        arcPaint.setStrokeWidth(dp2px(1));
+        arcPaint.setStrokeWidth(dp2px(2));  //弧线粗细  //GC20211203
         arcPaint.setStyle(Paint.Style.STROKE);
-
         invalidate();
     }
 
@@ -229,7 +229,7 @@ public class TimeControlView extends View {
         tempFlagPaint.reset();
         tempFlagPaint = new Paint();
         tempFlagPaint.setAntiAlias(true);
-        tempFlagPaint.setTextSize(sp2px(10));
+        tempFlagPaint.setTextSize(sp2px(15));   //刻度字体大小    //GC20211203
         tempFlagPaint.setColor(Color.parseColor(valueColor));//d0210e
         tempFlagPaint.setStyle(Paint.Style.STROKE);
 
@@ -302,7 +302,7 @@ public class TimeControlView extends View {
         tempPaint.reset();
         tempPaint = new Paint();
         tempPaint.setAntiAlias(true);
-        tempPaint.setTextSize(sp2px(18));
+        tempPaint.setTextSize(sp2px(25));   //当前显示字大小   //GC20211203
         tempPaint.setColor(Color.parseColor(currentValueColor));//#a03225
         tempPaint.setStyle(Paint.Style.STROKE);
     }
