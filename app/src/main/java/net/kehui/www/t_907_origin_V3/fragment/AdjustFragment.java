@@ -18,7 +18,8 @@ import butterknife.Unbinder;
 
 /**
  * @author Gong
- * @date 2019/07/03
+ * @date 2022/05/19
+ * 这是调节栏
  */
 public class AdjustFragment extends Fragment {
     @BindView(R.id.btn_gain_plus)
@@ -39,15 +40,10 @@ public class AdjustFragment extends Fragment {
     public ImageView btnVelMinus;
     @BindView(R.id.btn_vel_adjust)
     public ImageView btnVelAdjust;
-   /* @BindView(R.id.btn_inductor_plus)
-    public Button btnInductorPlus;
-    @BindView(R.id.btn_inductor_minus)
-    public Button btnInductorMinus;*/
     Unbinder unbinder;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View adjustLayout = inflater.inflate(R.layout.adj_layout, container, false);
         unbinder = ButterKnife.bind(this, adjustLayout);
         return adjustLayout;
@@ -60,12 +56,8 @@ public class AdjustFragment extends Fragment {
         //GC20190705 调节栏fragment初始化——无延时、电感按钮
         btnDelayPlus.setVisibility(View.GONE);
         btnDelayMinus.setVisibility(View.GONE);
-        //btnInductorPlus.setVisibility(View.GONE);
-       // btnInductorMinus.setVisibility(View.GONE);
         //初始化按键无效显示效果
         btnDelayMinus.setEnabled(false);
-       // btnInductorMinus.setEnabled(false);
-
     }
 
     @Override
@@ -186,10 +178,8 @@ public class AdjustFragment extends Fragment {
           case R.id.btn_vel_adjust:
               ((ModeActivity) getActivity()).showCalView1();
               break;
-
-            default:
+          default:
                 break;
         }
     }
-
 }

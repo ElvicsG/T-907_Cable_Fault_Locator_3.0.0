@@ -83,8 +83,6 @@
             android:gravity="center"
             android:src="@drawable/bg_vop_adjust_selector" />
 
-
-
     </LinearLayout>
 
 </RelativeLayout>

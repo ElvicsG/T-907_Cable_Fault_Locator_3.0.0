@@ -152,7 +152,6 @@ public class MainActivity extends BaseActivity {
     private WaveFragment waveFragment;
     private FileFragment fileFragment;
     private SettingFragment settingFragment;
-    //public static MainActivity instance; //jk20210203 物理按键返回
 
     /**
      * 定义bundle的key-value（bundle就是个容器）
@@ -213,7 +212,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //instance = this; //jk20210203
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 

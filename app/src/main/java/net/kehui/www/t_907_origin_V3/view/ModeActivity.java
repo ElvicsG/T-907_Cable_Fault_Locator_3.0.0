@@ -245,15 +245,6 @@ public class ModeActivity extends BaseActivity {
     ImageView tvDelayMin;
     @BindView(R.id.ll_trigger_delay)
     LinearLayout llTriggerDelay;
-    /**
-     * 波宽度添加保存信息
-     */
-    @BindView(R.id.ll_pulse_width)
-    LinearLayout llPulseWidth;
-    @BindView(R.id.iv_pulse_width_close)
-    ImageView ivPulseWidthClose;
-    @BindView(R.id.et_pulse_width_id)
-    public EditText etPulseWidth;
     @BindView(R.id.iv_wifi_status)
     ImageView ivWifiStatus;
     @BindView(R.id.iv_battery_status)
@@ -292,7 +283,6 @@ public class ModeActivity extends BaseActivity {
     ImageView tvPulseWidthSave;
     @BindView(R.id.ll_horizontal_view)
     LinearLayout llHorizontalView;
-
     @BindView(R.id.tv_mode1)
     ImageView tvMode1;  //jk20210123
     @BindView(R.id.tv_range1)
@@ -305,17 +295,16 @@ public class ModeActivity extends BaseActivity {
     ImageView tvFile1;
     @BindView(R.id.tv_set1)
     ImageView tvSet1;
-
     @BindView(R.id.cb_test_lead1)
     CheckBox cbtestlead1;
     @BindView(R.id.et_pulse_length_id)
     EditText etLength1;
     @BindView(R.id.et_pulse_vop_id)
     EditText etVop1;
-    @BindView(R.id.tv_save1)
-    ImageView tvsave1;
-    @BindView(R.id.iv_close)
-    ImageView ivclose1;
+    @BindView(R.id.tv_lead_save)
+    ImageView tvLeadSave;
+    @BindView(R.id.iv_lead_close)
+    ImageView ivLeadClose;
     @BindView(R.id.tv_cable_lengtn_text)
     TextView tvlength1;
     @BindView(R.id.tv_cable_vop_unit2)
@@ -324,7 +313,6 @@ public class ModeActivity extends BaseActivity {
     TextView tvvoplength;
     @BindView(R.id.tv_cable_vop_unit1)
     TextView tvvopu;
-
     /**
      * 信息栏  //GC20211201
      */
@@ -346,6 +334,15 @@ public class ModeActivity extends BaseActivity {
     LinearLayout llInfoHv;
     @BindView(R.id.iv_info_voltage_height)
     ImageView ivInfoVoltageHeight;
+    /**
+     * 添加波宽度保存
+     */
+    @BindView(R.id.ll_pulse_width)
+    LinearLayout llPulseWidth;
+    @BindView(R.id.iv_pulse_width_close)
+    ImageView ivPulseWidthClose;
+    @BindView(R.id.et_pulse_width_id)
+    public EditText etPulseWidth;
 
     private int index;
     //计算滑动时的基数
@@ -372,7 +369,6 @@ public class ModeActivity extends BaseActivity {
     private FileFragment fileFragment;
     private SettingFragment settingFragment;
 
-    public static int flag_close; //jk20210203  物理按键返回控制
     /**
      * 定义bundle的key-value
      */
@@ -1474,6 +1470,7 @@ public class ModeActivity extends BaseActivity {
             //高压操作对话框更新接地报警   //GC20211210
             if (array[3] == 1) {
                 if (Constant.isWarning) {
+
                     Constant.isWarning = false;
                     if (Constant.isShowHV) {
                         autoDialog.ivWaring.setImageResource(R.drawable.light_red);
@@ -5742,7 +5739,7 @@ public class ModeActivity extends BaseActivity {
                 initTDRView();//jk20210125
                 switchDensity();
                 initCursor();
-                /*调节栏显示*/
+                //调节栏显示
                 adjustFragment.btnBalancePlus.setVisibility(View.VISIBLE);
                 adjustFragment.btnBalanceMinus.setVisibility(View.VISIBLE);
                 adjustFragment.btnDelayPlus.setVisibility(View.GONE);
@@ -6956,13 +6953,12 @@ public class ModeActivity extends BaseActivity {
 
     }
 
-
     @OnClick({R.id.tv_500m, R.id.tv_250m, R.id.tv_1km, R.id.tv_2km, R.id.tv_4km, R.id.tv_8km, R.id.tv_16km, R.id.tv_32km, R.id.tv_64km,
             R.id.tv_gain_add, R.id.tv_gain_min, R.id.layout_tv_both, R.id.layout_tv_memory, R.id.tv_cursor_plus, R.id.tv_balance_plus, R.id.tv_balance_min, R.id.tv_pulse_width, R.id.tv_cal, R.id.tv_range,
             R.id.tv_file, /*R.id.tv_home, */R.id.tv_zero, R.id.tv_cursor_min, R.id.tv_zoom_plus, R.id.tv_zoom_min, R.id.tv_test, R.id.tv_help,
             R.id.tv_compare, R.id.tv_mode1, R.id.tv_range1, R.id.tv_adjust1, R.id.tv_wave1, R.id.tv_file1, R.id.tv_set1,
             R.id.ll_adjust, R.id.content,
-            R.id.iv_pulse_width_close, R.id.tv_pulse_width_save, R.id.tv_save1, R.id.iv_close,
+            R.id.iv_pulse_width_close, R.id.tv_pulse_width_save, R.id.iv_lead_close, R.id.tv_lead_save,
             R.id.tv_vop_save, R.id.iv_compare_close, R.id.iv_cal_close, R.id.iv_range_close, R.id.iv_records_close, R.id.iv_cal_close1,
             R.id.tv_vop_min, R.id.tv_vop_plus, R.id.tv_vop_j, R.id.tv_vop_d, R.id.tv_vop_g,
             R.id.tv_records_save, R.id.tv_file_records,
@@ -7223,13 +7219,6 @@ public class ModeActivity extends BaseActivity {
             case R.id.iv_cal_close1:
                 closeCalView1();
                 break;
-            case R.id.iv_close:
-                closeA1();
-                waveFragment.btnFile1.setEnabled(true);  //jk20210427
-                break;
-            case R.id.iv_pulse_width_close:
-                closePulseWidthView();
-                break;
             case R.id.iv_range_close:
                 closeRangeView();
                 break;
@@ -7240,10 +7229,17 @@ public class ModeActivity extends BaseActivity {
                 saveVop();
                 llCal.setVisibility(View.INVISIBLE);
                 break;
+            case R.id.iv_pulse_width_close:
+                closePulseWidthView();
+                break;
             case R.id.tv_pulse_width_save:
                 savePulseWidth();
                 break;
-            case R.id.tv_save1:  //jk20210203
+            case R.id.iv_lead_close:
+                closeA1();
+                waveFragment.btnFile1.setEnabled(true);  //jk20210427
+                break;
+            case R.id.tv_lead_save:
                 saveCableInit();
                 llLead.setVisibility(View.GONE);
                 waveFragment.btnFile1.setEnabled(true);
@@ -7967,7 +7963,6 @@ public class ModeActivity extends BaseActivity {
         return false;
     }
 
-
     public void showFileView() {
         llAdjust.setVisibility(View.GONE);
         llRecords.setVisibility(View.VISIBLE);
@@ -8048,7 +8043,6 @@ public class ModeActivity extends BaseActivity {
         closePulseWidthView();
     }
 
-
     private void closeCalView() {
         // llAdjust.setVisibility(View.VISIBLE); jk20210201
         llCal.setVisibility(View.GONE);
@@ -8064,13 +8058,11 @@ public class ModeActivity extends BaseActivity {
         llLead.setVisibility(View.GONE);
     }
 
-
     private void closePulseWidthView() {
         //llAdjust.setVisibility(View.VISIBLE);
         llPulseWidth.setVisibility(View.GONE);
         llAdjust.setVisibility(View.GONE); //jk20210125
     }
-
 
     private void closeCompareView() {
         llAdjust.setVisibility(View.VISIBLE);

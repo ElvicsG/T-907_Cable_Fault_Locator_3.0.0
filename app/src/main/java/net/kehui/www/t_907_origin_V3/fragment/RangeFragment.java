@@ -20,32 +20,32 @@ import static net.kehui.www.t_907_origin_V3.application.Constant.hasSavedPulseWi
 
 /**
  * @author Gong
- * @date 2019/07/04
+ * @date 2022/05/19
+ * 这是范围栏
  */
 public class RangeFragment extends Fragment {
     @BindView(R.id.btn_250m)
     public ImageView btn250m;
     @BindView(R.id.btn_500m)
-    public ImageView       btn500m;
+    public ImageView btn500m;
     @BindView(R.id.btn_1km)
-    public ImageView       btn1km;
+    public ImageView btn1km;
     @BindView(R.id.btn_2km)
-    public ImageView       btn2km;
+    public ImageView btn2km;
     @BindView(R.id.btn_4km)
-    public ImageView       btn4km;
+    public ImageView btn4km;
     @BindView(R.id.btn_8km)
-    public ImageView       btn8km;
+    public ImageView btn8km;
     @BindView(R.id.btn_16km)
-    public ImageView       btn16km;
+    public ImageView btn16km;
     @BindView(R.id.btn_32km)
-    public ImageView       btn32km;
+    public ImageView btn32km;
     @BindView(R.id.btn_64km)
-    public ImageView      btn64km;
+    public ImageView btn64km;
     Unbinder unbinder;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rangeLayout = inflater.inflate(R.layout.range_layout, container, false);
         unbinder = ButterKnife.bind(this, rangeLayout);
         return rangeLayout;
@@ -408,5 +408,4 @@ public class RangeFragment extends Fragment {
                 break;
         }
     }
-
 }

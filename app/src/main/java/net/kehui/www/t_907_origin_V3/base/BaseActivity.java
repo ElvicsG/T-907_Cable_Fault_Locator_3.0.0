@@ -255,10 +255,10 @@ public class BaseActivity extends AppCompatActivity {
     public final static int RANGE_32_KM = 0x77;
     public final static int RANGE_64_KM = 0x88;
     /**
-     * 发送高压模块指令协议  //GC20211206
+     * 发送高压控制相关指令  //GC20211206
      * 0x60 高压设定（10个字节）
-     * eb90aa55 05 60 0c cc 01 sum   0x0ccc：32kV 0x02：30mA档位 / 8kV.120mA
-     * eb90aa55 05 60 06 66 02 sum   0x0666：16kV 0x01：60mA档位 / 4kV.240mA
+     * eb90aa55 05 60 0c cc 02 sum   0x0ccc：32kV 0x02：30mA档位 / 8kV.120mA
+     * eb90aa55 05 60 06 66 01 sum   0x0666：16kV 0x01：60mA档位 / 4kV.240mA
      * 0x61 开关指令（8个字节）
      * eb90aa55 03 61 01 sum    01:高压开 02：高压关
      * 0x62 查询指令
@@ -296,8 +296,8 @@ public class BaseActivity extends AppCompatActivity {
     public final static int TRIGGERED = 0x11;
     /**
      * 接收高压模块反馈
-     * eb90aa55 04 62 06 66 sum （9个字节）
-     * eb90aa55 03 80 xx sum （8个字节）
+     * eb90aa55 04 62 06 66 sum （9个字节）  电压值
+     * eb90aa55 03 80 xx sum （8个字节） 状态信息
      */
     public final static int COMMAND_VOLTAGE = 0x62;
     public final static int COMMAND_QUERY_FEEDBACK = 0x80;
@@ -310,7 +310,10 @@ public class BaseActivity extends AppCompatActivity {
      * APP接收到的波形数据头
      * 数据头      数据长度    传输数据    校验和
      * eb90aaXX    4个字节     X……X       xx
-     * 以XX区分—— 非二次脉冲 和 二次脉冲 （0x88 0x99 0xaa 0xbb 分别为二次脉冲第一到底四条波形）
+     * 以XX区分——
+     * 0x66：为低压脉冲或脉冲电流波形数据
+     * 0x77：二次脉冲故障点未施加高压时的波形数据
+     * 0x88-0xff：分别为二次脉冲故障点施加高压时的第1到第8条波形数据
      */
     public final static int WAVE_TDR_ICM_DECAY = 0x66;
     public final static int WAVE_SIM = 0x77;
@@ -516,17 +519,6 @@ public class BaseActivity extends AppCompatActivity {
 //GC20211223    周期时间指令下发
 //GC20211227    高压包由32kV变为8kV
 
-/*——————————3.0.1版本整理——————————*/
-//20200520  数据库相关
-//GC20210125    波形数据以文件形式保存
-//GC21220411    连接907WiFi名字可变
-
-//GT屏蔽算法
-
-//jk20220411    最新算法修改
-//GC20220413    seekBar控件添加
-//GC20220414    档位变化实时记录档位和电压数值
-
 /**
  * //                       _ooOoo_
  * //                      o8888888o
@@ -551,3 +543,13 @@ public class BaseActivity extends AppCompatActivity {
  * //             佛祖保佑             永无BUG
  * =====================================================
  */
+/*——————————3.0.1版本整理——————————*/
+//20200520  数据库相关
+//GC20210125    波形数据以文件形式保存
+//GC21220411    连接907WiFi名字
+
+//GT屏蔽算法
+
+//jk20220411    最新算法修改
+//GC20220413    seekBar控件添加
+//GC20220414    档位变化实时记录档位和电压数值

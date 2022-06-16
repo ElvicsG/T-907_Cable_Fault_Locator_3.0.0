@@ -21,7 +21,8 @@ import butterknife.Unbinder;
 
 /**
  * @author Gong
- * @date 2019/07/04
+ * @date 2022/05/19
+ * 这是操作栏
  */
 public class WaveFragment extends Fragment {
     @BindView(R.id.btn_zoom_in)
@@ -51,8 +52,7 @@ public class WaveFragment extends Fragment {
     Unbinder unbinder;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View optionLayout = inflater.inflate(R.layout.wave_layout, container, false);
         unbinder = ButterKnife.bind(this, optionLayout);
         return optionLayout;
@@ -66,7 +66,6 @@ public class WaveFragment extends Fragment {
         btnWavePrevious.setVisibility(View.GONE);
         btnWaveNext.setVisibility(View.GONE);
         btnZero.setVisibility(View.GONE);
-
         //初始化按键无效显示效果
         btnZoomOut.setEnabled(false);
         btnZoomIn.setEnabled(false);   //jk20210125
@@ -185,7 +184,6 @@ public class WaveFragment extends Fragment {
                 break;
             default:
                 break;
-
         }
     }
 }

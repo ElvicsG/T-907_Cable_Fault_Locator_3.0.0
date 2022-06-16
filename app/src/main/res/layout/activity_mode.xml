@@ -275,6 +275,7 @@
 
     </androidx.percentlayout.widget.PercentRelativeLayout>
 
+    <!--波形显示区-->
     <RelativeLayout
         android:id="@+id/rl_wave"
         android:layout_width="wrap_content"
@@ -615,7 +616,79 @@
             app:layout_heightPercent="69%">>
         </FrameLayout>
 
-        <!--全部功能-->
+        <!--调节fragment常用波速度弹窗-->
+        <LinearLayout
+            android:id="@+id/ll_cal_adjust"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_marginRight="@dimen/dp_5"
+            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_marginLeftPercent="2%"
+            app:layout_marginRightPercent="2%">
+            <include layout="@layout/layout_cal_adjust" />
+        </LinearLayout>
+
+        <!--操作fragment波宽度弹窗（低压脉冲方式下）-->
+        <LinearLayout
+            android:id="@+id/ll_pulse_width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_pulse_width"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_marginRight="@dimen/dp_5"
+            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_marginLeftPercent="2%"
+            app:layout_marginRightPercent="2%">
+
+            <include layout="@layout/layout_pulse_width" />
+        </LinearLayout>
+
+        <!--操作fragment延长线弹窗（脉冲电流方式下）-->
+        <LinearLayout
+            android:id="@+id/ll_lead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_marginRight="@dimen/dp_5"
+            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_marginLeftPercent="2%"
+            app:layout_marginRightPercent="2%">
+
+            <include layout="@layout/layout_lead" />
+        </LinearLayout>
+
+        <!--操作fragment文件弹窗-->
+        <LinearLayout
+            android:id="@+id/ll_records"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_range"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_marginRight="@dimen/dp_5"
+            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_marginLeftPercent="1%"
+            app:layout_marginRightPercent="1%">
+            <include layout="@layout/layout_records" />
+        </LinearLayout>
+
+        <!--全部功能，废弃不用？-->
         <LinearLayout
             android:id="@+id/ll_adjust"
             android:layout_width="match_parent"
@@ -744,7 +817,7 @@
                 android:src="@drawable/bg_file_selector" />
         </LinearLayout>
 
-        <!--点击弹窗 -->
+        <!--以下属性gone-->
         <LinearLayout
             android:id="@+id/ll_compare"
             android:layout_width="match_parent"
@@ -777,78 +850,7 @@
             android:visibility="gone"
             app:layout_marginLeftPercent="2%"
             app:layout_marginRightPercent="2%">
-
             <include layout="@layout/layout_cal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_cal_adjust"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_marginLeftPercent="2%"
-            app:layout_marginRightPercent="2%">
-
-            <include layout="@layout/layout_cal_adjust" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_lead"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_marginLeftPercent="2%"
-            app:layout_marginRightPercent="2%">
-
-            <include layout="@layout/layout_lead" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_pulse_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tv_pulse_width"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_marginLeftPercent="2%"
-            app:layout_marginRightPercent="2%">
-
-            <include layout="@layout/layout_pulse_width" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_records"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tv_range"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_marginLeftPercent="1%"
-            app:layout_marginRightPercent="1%">
-
-            <include layout="@layout/layout_records" />
         </LinearLayout>
 
         <LinearLayout

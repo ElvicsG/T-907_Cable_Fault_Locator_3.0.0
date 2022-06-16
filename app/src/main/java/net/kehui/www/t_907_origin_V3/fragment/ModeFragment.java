@@ -20,7 +20,8 @@ import butterknife.Unbinder;
 
 /**
  * @author Gong
- * @date 2019/07/04
+ * @date 2022/05/19
+ * 这是方式栏
  */
 public class ModeFragment extends Fragment {
     @BindView(R.id.btn_tdr)
@@ -36,8 +37,7 @@ public class ModeFragment extends Fragment {
     Unbinder unbinder;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View modeLayout = inflater.inflate(R.layout.mtd_layout, container, false);
         unbinder = ButterKnife.bind(this, modeLayout);
         return modeLayout;
@@ -59,7 +59,6 @@ public class ModeFragment extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
     }
-
 
     @OnClick({R.id.btn_tdr, R.id.btn_icm, R.id.btn_sim, R.id.btn_decay, R.id.btn_icmc})
     public void onViewClicked(View view) {
@@ -140,5 +139,4 @@ public class ModeFragment extends Fragment {
                 break;
         }
     }
-
 }

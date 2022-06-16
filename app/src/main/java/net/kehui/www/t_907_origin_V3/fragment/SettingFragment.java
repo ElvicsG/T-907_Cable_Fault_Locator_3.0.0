@@ -33,8 +33,7 @@ public class SettingFragment extends Fragment {
     Unbinder unbinder;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View settingLayout = inflater.inflate(R.layout.setting_layout, container, false);
         unbinder = ButterKnife.bind(this, settingLayout);
         return settingLayout;
@@ -44,7 +43,6 @@ public class SettingFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         btnLang.setVisibility(View.GONE);
-
     }
 
     @Override
