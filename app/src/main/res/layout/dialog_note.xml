@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.percentlayout.widget.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#00000000"
+    android:orientation="vertical">
+
+    <androidx.percentlayout.widget.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.percentlayout.widget.PercentRelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_solid_white_4">
+
+            <LinearLayout
+                android:id="@+id/rl_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tv_note"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hv_ignition_coil_note2"
+                    android:textSize="@dimen/sp_15"
+                    android:textColor="@color/T_red"/>
+
+                <View
+                    android:id="@+id/line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/T_F2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/wait_trigger" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/dp_50"
+                        android:layout_height="@dimen/dp_50"
+                        android:layout_marginEnd="@dimen/dp_30"
+                        android:src="@drawable/flash"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/tv_fault_quit"
+                        android:layout_width="@dimen/dp_60"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/dp_5"
+                        android:paddingBottom="@dimen/dp_5"
+                        android:layout_marginTop="@dimen/dp_12"
+                        android:background="@drawable/shape_stroke_gray_99"
+                        android:textColor="@color/T_4D"
+                        android:gravity="center"
+                        android:text="@string/quit"
+                        android:textSize="@dimen/sp_12"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.percentlayout.widget.PercentRelativeLayout>
+
+    </androidx.percentlayout.widget.PercentRelativeLayout>
+
+</androidx.percentlayout.widget.PercentRelativeLayout>

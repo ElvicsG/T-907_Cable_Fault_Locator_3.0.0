@@ -2,6 +2,7 @@ package net.kehui.www.t_907_origin_V3.ui;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,4 +36,16 @@ public class BaseDialog extends Dialog {
         BaseAppData db = Room.databaseBuilder(getContext(), BaseAppData.class, "database-wave").allowMainThreadQueries().build();
         dao = db.dataDao();
     }
+
+    /**
+     * 对话框返回按键退出  //GC20220730
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }

@@ -5,7 +5,7 @@ package net.kehui.www.t_907_origin_V3.application;
  * @date 2019/7/8
  */
 public class Constant {
-    public static final String SSID = "T-A310";  //GC21220411
+    public static final String SSID = "T-A310";  //GC21220411   //gc调试
     public static final String DEVICE_IP = "192.168.5.143";
     public static final String BASE_API = "http://cfl.kehui.cn/";
     public static final String PARAM_INFO_KEY = "param_info_key";
@@ -51,6 +51,7 @@ public class Constant {
     public static Boolean isCapacitor = true;
     public static Boolean isWorkingMode = true;
     public static Boolean isGear = true;
+    public static Boolean isClickLocate = false;    //GC20220809
 
 
     /**
@@ -86,13 +87,13 @@ public class Constant {
     public static boolean isTesting = false;
 
     /**
-     * 接收的非SIM波形数据长度、单条SIM波形数据长度    //GC20200428    //GC? 与恩诺不同
+     * 接收的非SIM波形数据长度、单条SIM波形数据长度    //GC20200428
      */
     public static int waveLen = 549;
     public static int waveSimLen = 549;
 
     /**
-     * 是否需要补齐波形数据    //GC20200428   //GC? 与恩诺不同
+     * 是否需要补齐波形数据    //GC20200428
      */
     public static boolean needAddData = false;
 

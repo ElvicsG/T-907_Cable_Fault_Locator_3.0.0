@@ -234,6 +234,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_250m));
                     Constant.Range = RANGE_250;
                 }
+                rangeSave = 0;  //本地存储范围记录  //GC20220701
                 break;
             case RANGE_500:
                 if (CurrentUnit == FT_UNIT) {
@@ -243,6 +244,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_500m));
                     Constant.Range = RANGE_500;
                 }
+                rangeSave = 0;
                 break;
             case RANGE_1_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -252,6 +254,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_1km));
                     Constant.Range = RANGE_1_KM;
                 }
+                rangeSave = 1;
                 break;
             case RANGE_2_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -261,6 +264,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_2km));
                     Constant.Range = RANGE_2_KM;
                 }
+                rangeSave = 2;
                 break;
             case RANGE_4_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -270,6 +274,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_4km));
                     Constant.Range = RANGE_4_KM;
                 }
+                rangeSave = 3;
                 break;
             case RANGE_8_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -278,6 +283,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_8km));
                 }
                 Constant.Range = RANGE_8_KM;
+                rangeSave = 4;
                 break;
             case RANGE_16_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -286,6 +292,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_16km));
                 }
                 Constant.Range = RANGE_16_KM;
+                rangeSave = 5;
                 break;
             case RANGE_32_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -294,6 +301,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_32km));
                 }
                 Constant.Range = RANGE_32_KM;
+                rangeSave = 6;
                 break;
             case RANGE_64_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -302,12 +310,12 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_64km));
                 }
                 Constant.Range = RANGE_64_KM;
+                rangeSave = 7;
                 break;
             default:
                 break;
         }
         tvRange.setEnabled(false);
-
     }
 
     private void setCableLength() {
@@ -473,7 +481,6 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
     String waveData = "";
     byte modeSave;
     byte rangeSave;
-    byte gainSave;
     private void saveClick() {
         initDataName();
         //直接将int数组转变为byte数组（int数据大小未超过byte显示）
@@ -511,7 +518,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
     private void createFileWithByte(byte[] bytes) {
         //在sd卡中设置新目录存放文件
         String path  = Environment.getExternalStorageDirectory().getPath();
-        File file = new File(path + "/907");
+        File file = new File(path + "/A310");
         //创建FileOutputStream对象
         FileOutputStream outputStream = null;
         //创建BufferedOutputStream对象

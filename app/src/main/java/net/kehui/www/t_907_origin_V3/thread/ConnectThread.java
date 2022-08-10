@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import net.kehui.www.t_907_origin_V3.ConnectService;
+import net.kehui.www.t_907_origin_V3.view.ModeActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -155,11 +156,11 @@ public class ConnectThread extends Thread {
                             }
                             //非SIM波形数据头，不需要补齐状态——截需要的长度，不够要补齐数据
                             else if ((tempBuffer[2] & 0xff) == 170 && (tempBuffer[3] & 0xff) == WAVE_TDR_ICM_DECAY && !needAddData) {
-                                if (remainByte == 0) {  //GC? 有必要有这个判断？
+                                if (remainByte == 0) {
                                     //非处理中数据，初始化为当前接收的数据长度，也就是直接是波形数据的。
                                     remainByte = bytes;
                                 }
-                                if (remainByte == waveLen) {
+                                if (remainByte >= waveLen) {    //GT20220801    ==
                                     //长度和需要的波形长度一致
                                     Log.e("【新数据处理】", "一次性长度一致，不用补齐数据");
                                     byte[] waveBytes = new byte[remainByte];

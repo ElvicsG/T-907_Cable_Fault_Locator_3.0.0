@@ -21,6 +21,8 @@ import net.kehui.www.t_907_origin_V3.application.Constant;
 import net.kehui.www.t_907_origin_V3.thread.ConnectThread;
 import net.kehui.www.t_907_origin_V3.thread.ProcessThread;
 import net.kehui.www.t_907_origin_V3.util.WifiUtil;
+import net.kehui.www.t_907_origin_V3.tookit.IWifiConnectListener;
+import net.kehui.www.t_907_origin_V3.tookit.WifiManagerProxy;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -58,10 +60,6 @@ public class ConnectService extends Service {
      * 是否已经与T-907建立连接
      */
     public static boolean isConnected;
-    /**
-     * 是否需要连接   //GC? 优化逻辑去掉了
-     */
-    public static boolean needConnect = true;
     /**
      * 是否正在连接中    //20200523
      */
@@ -132,7 +130,7 @@ public class ConnectService extends Service {
             public void run() {
                 //如果连接正常并且允许收取电量，发送获取电池电量命令     //EN20200324
                 if (isConnected && canAskPower) {
-                    canAskPower = false;    //G?? sendCommand();里面有重复？
+                    canAskPower = false;
                     command = 0x06;
                     dataTransfer = 0x13;
                     sendCommand();
@@ -198,15 +196,12 @@ public class ConnectService extends Service {
             assert action != null;
             if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
                 ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                       // (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
                 assert connectivityManager != null;
-               // NetworkInfo info = connectivityManager.getActiveNetworkInfo();
                 NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-                /*if (info != null && isWifiConnect == false) {*/
+//                if (info != null && isWifiConnect == false) { //jk20210714
                 if (info != null) {
-                    //if ((info.isConnected() && info.getExtraInfo().contains(Constant.SSID)) && !isWifiConnect) { //jk20210706
-                    if (info.isConnected() && !isWifiConnect) { //jk20210714
-                    //if ((info.isConnected() && info.getExtraInfo().contains(Constant.SSID)) && !isWifiConnect) {
+                    //if ((info.isConnected() && info.getExtraInfo().contains(Constant.SSID)) && !isWifiConnect) {  //jk20210714
+                    if (info.isConnected() && !isWifiConnect) {
                         //EN20200324
                         Log.e("【SOCKET连接】", "网络连接状态变化，重连");
                         handler.sendEmptyMessage(DEVICE_DO_CONNECT);
@@ -220,9 +215,6 @@ public class ConnectService extends Service {
                         connectThread.getOutputStream().flush();
                         connectThread.getOutputStream().close();
                         connectThread.getSocket().close();
-                        /*socket = null;
-                        connectThread = null;
-                        processThread = null;*/ //EN20200324    //G?? 可以去掉吧
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -240,7 +232,24 @@ public class ConnectService extends Service {
         }
         try {
             if (!wifiUtil.getSSID().contains(Constant.SSID)) {
-                wifiUtil.addNetwork(wifiUtil.createWifiInfo(Constant.SSID, "123456789", 3));
+//                wifiUtil.addNetwork(wifiUtil.createWifiInfo(Constant.SSID, "123456789", 3));  //GC20220621
+                WifiManagerProxy.get().init(getApplication());
+                WifiManagerProxy.get().connect(Constant.SSID, "123456789", new IWifiConnectListener() {
+                    @Override
+                    public void onConnectStart() {
+                        Log.i("TAG", "onConnectStart: ");
+                    }
+
+                    @Override
+                    public void onConnectSuccess() {
+                        Log.i("TAG", "onConnectSuccess: ");
+                    }
+
+                    @Override
+                    public void onConnectFail(String errorMsg) {
+                        Log.i("TAG", "onConnectFail: " + errorMsg);
+                    }
+                });
             }
         } catch (Exception l_Ex) {
         }
@@ -321,11 +330,11 @@ public class ConnectService extends Service {
     public void sendCommand() {
         //发命令时禁止请求电量    //EN20200324
         canAskPower = false;
-
         if (isHV) {
             isHV = false;
             //发送高压设定电压指令  //GC20211206
-            byte[] request = new byte[10];//数据头
+            byte[] request = new byte[10];
+            //数据头
             request[0] = (byte) 0xeb;
             request[1] = (byte) 0x90;
             request[2] = (byte) 0xaa;
@@ -345,7 +354,6 @@ public class ConnectService extends Service {
             if (connectThread != null && ConnectService.isConnected) {
                 connectThread.sendCommand(request);
                 Log.e("#【APP-->设备】", "指令：" + command + " 传输数据3：" + dataTransfer3);
-
             }
         } else {
             byte[] request = new byte[8];

@@ -44,6 +44,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.math.BigDecimal;
 
+import static androidx.recyclerview.widget.RecyclerView.EdgeEffectFactory.DIRECTION_LEFT;
 import static net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar12.TextPosition.BELOW_SECTION_MARK;
 import static net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar12.TextPosition.BOTTOM_SIDES;
 import static net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar12.TextPosition.SIDES;
@@ -139,6 +140,8 @@ public class KBubbleSeekBar12 extends View {
     private static final String COLOR_SPLIT = "_";
     private int lySpace;//渐变宽度
     private boolean drawMark;//是否绘制刻度
+    //GC20220619
+    private int orientation = DIRECTION_LEFT;
 
     public KBubbleSeekBar12(Context context) {
         this(context, null);
@@ -208,7 +211,7 @@ public class KBubbleSeekBar12 extends View {
         isAlwaysShowBubble = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_always_show_bubble, false);
         duration = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_always_show_bubble_delay, 0);
         mAlwaysShowBubbleDelay = duration < 0 ? 0 : duration;
-        //气泡显示隐藏
+        //气泡显示隐藏    //GC20220619
         isHideBubble = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_hide_bubble,true);
         isRtl = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_rtl, false);
         drawMark = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_marks, true);
@@ -584,9 +587,17 @@ public class KBubbleSeekBar12 extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //控件垂直  //GC20220428
-        canvas.rotate(-90);
-        canvas.translate(-getHeight(), 0);
+//        //控件垂直  //GC20220428
+//        canvas.rotate(-90);
+//        canvas.translate(-getHeight(), 0);
+        //GC20220619
+//        if (orientation == DIRECTION_LEFT) {
+//            canvas.rotate(-90);
+//            canvas.translate(-getHeight(), 0);
+//        } else {
+//            canvas.rotate(90);
+//            canvas.translate(0, -getWidth());
+//        }
         super.onDraw(canvas);
         setLayerType(LAYER_TYPE_SOFTWARE, null);//对单独的View在运行时阶段禁用硬件加速
         float xLeft = getPaddingLeft();

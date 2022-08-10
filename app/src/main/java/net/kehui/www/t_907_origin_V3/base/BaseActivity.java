@@ -22,6 +22,9 @@ import androidx.room.Room;
 
 public class BaseActivity extends AppCompatActivity {
 
+    public boolean isFirstStart;    //GC20220802
+    public boolean rangeChanged;    //GC20220801
+    public boolean isClickSim;      //GC20220806
     /**
      * sparkView图形绘制部分
      */
@@ -36,8 +39,12 @@ public class BaseActivity extends AppCompatActivity {
      */
     public int mode;
     public int modeBefore;
+    public int modeMemory; //GC20220710
+    public int modeClick;   //GC20220726
+    public boolean isSwitchOn;
     public int range;
     public int rangeBefore;
+    public int rangeMemory; //GC20220709
     public int rangeState;
     public int gain;
     public double velocity;
@@ -342,7 +349,6 @@ public class BaseActivity extends AppCompatActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        //G??   让程序变卡？
         initParameter();
     }
 
@@ -351,7 +357,10 @@ public class BaseActivity extends AppCompatActivity {
      */
     private void initParameter() {
         mode = TDR;
+        modeMemory = TDR;   //GC20220710
+        modeClick = TDR;    //GC20220726
         range = RANGE_500;
+        rangeMemory = RANGE_500;    //GC20220709
         rangeState = 1;
         gain = 13;
         velocity = 172;
@@ -423,7 +432,6 @@ public class BaseActivity extends AppCompatActivity {
 //20200523  其它优化
 
 /*——————————其它——————————*/
-//GC?  //G??
 //GN界面优化可能用到
 //GT 调试
 //GT20200619    每个点高度显示
@@ -478,7 +486,6 @@ public class BaseActivity extends AppCompatActivity {
 
 //jk20200714    低压脉冲光标、距离修改测试、自动增益
 //jk20200715    低压脉冲测试按键长按响应添加
-//jk20200716    平衡自动调整
 //jk20200804    二次脉冲光标定位
 //jk20200904    更改起始判断
 //jk20201022    低压脉冲自动定位以133为中心点
@@ -486,14 +493,15 @@ public class BaseActivity extends AppCompatActivity {
 //jk20201130    多次脉冲增益判断数值更改
 //jk20201130    多次脉冲延时间隔增加
 //jk20201130    脉冲电流延长线不选就不计算
+//jk20210202    保存延长线参数
 //jk20210420    脉冲电流容错处理  添加标志false_flag
-//jk20210427    延长线界面，文件按钮不生效
 //jk20210527    求出曲线拟合后求解纵坐标值为0时横坐标的结果  一元三次方程求解
 
 //jk20210714    网络连接去除一个判断
 
 /*——————————2.0.1版本整理——————————*/
 //jk20210123    直接进入测试方式界面
+//jk20210130    切换方式重新绘制波形
 
 /*——————————3.0.0版本整理——————————*/
 //GC20211201    UI：主界面信息栏
@@ -509,7 +517,6 @@ public class BaseActivity extends AppCompatActivity {
 //GC20211215    UI：重新自定义等待触发对话框
 
 //GT屏蔽电量获取
-//GTT   接收数据处理测试
 //GC命令发送环节
 
 //GC20211216    "取消测试"：电压归0
@@ -546,10 +553,42 @@ public class BaseActivity extends AppCompatActivity {
 /*——————————3.0.1版本整理——————————*/
 //20200520  数据库相关
 //GC20210125    波形数据以文件形式保存
-//GC21220411    连接907WiFi名字
-
+//GC21220411    连接WiFi名字
 //GT屏蔽算法
-
 //jk20220411    最新算法修改
 //GC20220413    seekBar控件添加
 //GC20220414    档位变化实时记录档位和电压数值
+
+/*——————————3.0.2版本整理——————————*/
+//GC20220617    高压操作界面只有单次时电压档位切换有效/二次脉冲无放电周期、工作模式选择
+//GC20220618    适配新平板资源 px / (DPI / 160) = dp  800/(240/160)≈533.33  values-sw533dp
+//GC20220619    时间seekBar水平 //GC20220428    时间seekBar垂直
+//GC20220620    主界面二次脉冲无放电周期、工作模式
+//GC20220621    如果是安卓10.0，需要后台获取连接的wifi名称则添加进程获取位置信息权限
+//GC20220622    低压脉冲方式下调整增益发送测试命令功能代码优化
+
+/*——————————3.0.3版本整理——————————*/       //gc调试 改WiFi名字
+//去掉activity_mode无用布局文件
+//APP高压操作界面将“退出”按钮改为“进入测试界面”/ 高压操作界面中的“放电”按钮，改为“放电测试”。
+//GC20220701    本地存储范围记录
+//GC20220706    切换范围后直接发送测试命令（ICM和SIM测试时，切换范围不需要进入高压界面） 代码简化DEBUG
+//GC20220709    SIM范围要跟随TDR变化   //GC20220731 TDR自动测试范围记录
+//GC20220710    测试方式转换对话框添加
+//GC20220711    电压确认闪烁提示
+//GC20220712    电压档位转换对话框添加
+//GC20220713    高压对话框“叉号”退出事件添加
+//GC20220714    接地报警指示
+//GC20220715    切换方式时电压清零
+//GT20220801
+//GC20220726    添加合闸提示对话框
+//GC20220729    对话框和测试按键冲突
+//GC20220730    对话框物理返回按键事件添加
+//GC20220801    操作fragment波宽度、延长线离线状态初始化 / 切换范围后“取消测试”波形重绘 / TDR增益调整后不发测试命令
+//GC20220802    APP首次启动档位初始化命令发送（907主板调试需要屏蔽） / 工作方式初始化
+//GC20220803    当前电压大于2kV
+//GC20220806    点击SIM范围自动寻找
+//GC20220808    打开数据库BUG修复/fragment对话框BUG修复
+//GC20220809    定点模式添加
+//GC20220810    弹窗按钮控制
+
+//GT007 907主板调试需要屏蔽

@@ -111,7 +111,7 @@
     <string name="not_break_down">未击穿！</string>
     <string name="gain_too_low">增益过小</string>
     <string name="cursor_zero_set_success">光标零点设置成功！</string>
-    <string name="connect_success">T-907连接成功！</string>
+    <string name="connect_success">T-A310连接成功！</string>
     <string name="communication_failed">通信失败，请检查网络后重试</string>
     <!-- 新的资源 -->
     <string name="cable_vop">波速度：</string>
@@ -168,7 +168,7 @@
     <string name="no_load_url">没有可用于下载的地址</string>
     <string name="has_new_version">当前已是最新版本</string>
     <string name="downloading">正在下载…</string>
-    <string name="disconnect">T-907连接异常!</string>
+    <string name="disconnect">T-A310连接异常!</string>
     <string name="check_update">正在检测新版本信息…</string>
     <string name="btn_next">下一页</string>
     <string name="btn_previous">上一页</string>
@@ -188,7 +188,7 @@
     <string name="PULSE">单次</string>
     <string name="CYCLIC">周期</string>
     <string name="TIME">放电周期</string>
-    <string name="PULSE2">单次放电</string>
+    <string name="PULSE2">放电测试</string>
     <string name="HVINDICATOR">当前电压：</string>
     <string name="set_voltage">设定电压：</string>
     <string name="test_method">测试方法：</string>
@@ -213,5 +213,13 @@
     <string name="hv_capacity_note2">电容有残压</string>
     <string name="hv_ignition_coil_note">高压包正常</string>
     <string name="hv_ignition_coil_note2">高压包故障</string>
+    <string name="enter_test">进入测试界面</string>
+    <string name="switching">正在转换测试方式</string>
+    <string name="switching_success">测试方式转换成功！</string>
+    <string name="switching2">正在转换电压档位</string>
+    <string name="switching_gear_success">电压档位转换成功！</string>
+    <string name="switch_on_note">请确认设备硬件是否已经合闸！</string>
+    <string name="btn_yes">是，下一步</string>
+    <string name="btn_no">否，上一步</string>
 
 </resources>

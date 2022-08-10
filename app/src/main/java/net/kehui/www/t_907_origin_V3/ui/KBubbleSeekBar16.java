@@ -197,7 +197,7 @@ public class KBubbleSeekBar16 extends View {
         //气泡相关  sp2px(14)
         mBubbleColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_bubble_color, mSecondTrackColor);
         mBubbleTextSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_bubble_text_size, sp2px(28));
-        mBubbleTextColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_bubble_text_color, Color.WHITE);
+        mBubbleTextColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_bubble_text_color, Color.BLUE);
         isShowSectionMark = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_show_section_mark, false);
         isAutoAdjustSectionMark = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_auto_adjust_section_mark, false);
         isShowProgressInFloat = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_show_progress_in_float, false);

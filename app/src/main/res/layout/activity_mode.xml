@@ -447,6 +447,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tv_mode_working_mode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -467,6 +468,7 @@
                     android:textSize="@dimen/sp_10" />
 
                 <TextView
+                    android:id="@+id/tv_mode_TIME"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -477,6 +479,7 @@
                     android:textSize="@dimen/sp_10" />
 
                 <LinearLayout
+                    android:id="@+id/ll_info_TIME"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -578,21 +581,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/ll_information"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/iv_info_PULSE"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bg_pulse_selector"
-                android:text="" />
-        </LinearLayout>
-
     </RelativeLayout>
 
     <!--右侧按钮-->
@@ -638,7 +626,6 @@
             android:id="@+id/ll_pulse_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tv_pulse_width"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/dp_5"
             android:layout_marginRight="@dimen/dp_5"
@@ -675,7 +662,6 @@
             android:id="@+id/ll_records"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tv_range"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/dp_5"
             android:layout_marginRight="@dimen/dp_5"
@@ -687,205 +673,6 @@
             app:layout_marginRightPercent="1%">
             <include layout="@layout/layout_records" />
         </LinearLayout>
-
-        <!--全部功能，废弃不用？-->
-        <LinearLayout
-            android:id="@+id/ll_adjust"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            app:layout_heightPercent="69%">
-
-            <!--增益+ -->
-            <ImageView
-                android:id="@+id/tv_gain_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_gain_plus_selector" />
-
-            <!--增益- -->
-            <ImageView
-                android:id="@+id/tv_gain_min"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_gain_min_selector" />
-
-            <!--平衡+ -->
-            <ImageView
-                android:id="@+id/tv_balance_plus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_balance_plus_selector" />
-
-            <!--平衡- -->
-            <ImageView
-                android:id="@+id/tv_balance_min"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_balance_min_selector" />
-
-            <!--光标零点-->
-            <ImageView
-                android:id="@+id/tv_origin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_origin_selector" />
-
-            <!--波宽度-->
-            <ImageView
-                android:id="@+id/tv_pulse_width"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_pulse_width_selector" />
-
-            <!--延时-->
-            <ImageView
-                android:id="@+id/tv_trigger_delay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_trigger_delay_selector" />
-
-            <!--比较-->
-            <ImageView
-                android:id="@+id/tv_compare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_compare_selector" />
-
-            <!--波速度-->
-            <ImageView
-                android:id="@+id/tv_cal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_cal_selector" />
-
-            <!--范围-->
-            <ImageView
-                android:id="@+id/tv_range"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_range_selector" />
-
-            <!--波形上翻-->
-            <ImageView
-                android:id="@+id/tv_wave_pre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_wave_pre_s_selector" />
-
-            <!--波形下翻-->
-            <ImageView
-                android:id="@+id/tv_wave_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_wave_next_selector" />
-
-            <!--文件-->
-            <ImageView
-                android:id="@+id/tv_file"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:src="@drawable/bg_file_selector" />
-        </LinearLayout>
-
-        <!--以下属性gone-->
-        <LinearLayout
-            android:id="@+id/ll_compare"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tv_compare"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_marginLeftPercent="2%"
-            app:layout_marginRightPercent="2%">
-
-            <include layout="@layout/layout_compare" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_cal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tv_cal"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_marginLeftPercent="2%"
-            app:layout_marginRightPercent="2%">
-            <include layout="@layout/layout_cal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_trigger_delay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tv_trigger_delay"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_marginLeftPercent="2%"
-            app:layout_marginRightPercent="2%">
-
-            <include layout="@layout/layout_trigger_delay" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_range"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:layout_marginRight="@dimen/dp_5"
-            android:background="@drawable/shape_solide_tr_stroke_0ff6ff"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <include layout="@layout/layout_range" />
-        </LinearLayout>
-
     </RelativeLayout>
 
     <!--下方按钮区-->
@@ -950,32 +737,10 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/tv_wave1"
+                android:id="@+id/tv_operation1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/bg_wave1_selector" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/tv_file1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bg_file1_selector" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/tv_set1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bg_set1_selector" />
         </LinearLayout>
 
         <LinearLayout
@@ -1016,39 +781,6 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/tv_zoom_plus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/bg_zoom_plus_selector" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/tv_zoom_min"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/bg_zoom_min_selector" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -1064,7 +796,8 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/tv_help"
@@ -1099,7 +832,5 @@
                 android:src="@drawable/bg_test_selector"
                 android:text="" />
         </LinearLayout>
-
     </LinearLayout>
-
 </androidx.percentlayout.widget.PercentRelativeLayout>

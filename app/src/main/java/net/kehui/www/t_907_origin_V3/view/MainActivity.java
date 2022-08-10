@@ -71,14 +71,6 @@ import static net.kehui.www.t_907_origin_V3.application.Constant.CurrentUnit;
 import static net.kehui.www.t_907_origin_V3.application.Constant.FT_UNIT;
 import static net.kehui.www.t_907_origin_V3.application.Constant.MI_UNIT;
 
-import androidx.fragment.app.FragmentManager;
-import net.kehui.www.t_907_origin_V3.fragment.AdjustFragment;
-import net.kehui.www.t_907_origin_V3.fragment.FileFragment;
-import net.kehui.www.t_907_origin_V3.fragment.ModeFragment;
-import net.kehui.www.t_907_origin_V3.fragment.RangeFragment;
-import net.kehui.www.t_907_origin_V3.fragment.SettingFragment;
-import net.kehui.www.t_907_origin_V3.fragment.WaveFragment;
-
 /**
  * @author JWJ
  * @date 2019/12/1
@@ -144,14 +136,6 @@ public class MainActivity extends BaseActivity {
     private boolean needStopServce = true;
 
     public static double leadCat ;    //jk20201130  脉冲电流延长线不选就不计算
-
-    private FragmentManager fragmentManager;    //Q2
-    private ModeFragment modeFragment;   //jk20210201
-    private RangeFragment rangeFragment;
-    private AdjustFragment adjustFragment;
-    private WaveFragment waveFragment;
-    private FileFragment fileFragment;
-    private SettingFragment settingFragment;
 
     /**
      * 定义bundle的key-value（bundle就是个容器）

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.percentlayout.widget.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#00000000"
+    android:orientation="vertical">
+
+    <androidx.percentlayout.widget.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.percentlayout.widget.PercentRelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_solid_white_4">
+
+            <LinearLayout
+                android:id="@+id/rl_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tv_note_sw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/switching"
+                    android:textSize="@dimen/sp_16"
+                    android:textColor="@color/black"/>
+
+                <ImageView
+                    android:id="@+id/iv_scan_u"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:src="@drawable/ic_wait_empty" />
+
+            </LinearLayout>
+
+        </androidx.percentlayout.widget.PercentRelativeLayout>
+
+    </androidx.percentlayout.widget.PercentRelativeLayout>
+
+</androidx.percentlayout.widget.PercentRelativeLayout>

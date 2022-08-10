@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 
@@ -44,7 +45,7 @@ public class AdjustFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View adjustLayout = inflater.inflate(R.layout.adj_layout, container, false);
+        View adjustLayout = inflater.inflate(R.layout.fragment_adjust, container, false);
         unbinder = ButterKnife.bind(this, adjustLayout);
         return adjustLayout;
     }
@@ -75,15 +76,10 @@ public class AdjustFragment extends Fragment {
                 int gain = ((ModeActivity) getActivity()).getGain();
                 if (gain < 31) {
                     //GC20190704 增益发送命令修改   (命令范围0-31阶)
-                    if(((ModeActivity)getActivity()).mode == 0x11){
-                        gain++;
-                    ((ModeActivity) getActivity()).setGain1(gain);
+                    gain++;
+                    ((ModeActivity) getActivity()).setGain(gain);
+//                    ((ModeActivity) getActivity()).gainTest();  //GC20220622    //GC20220801 TDR增益调整后不发测试命令
                     btnGainMinus.setEnabled(true);
-                    }else{
-                        gain++;
-                        ((ModeActivity) getActivity()).setGain(gain);
-                        btnGainMinus.setEnabled(true);
-                    }
                 }
                 //增益命令到最大，按钮点击无效
                 if (gain == 31) {
@@ -93,15 +89,10 @@ public class AdjustFragment extends Fragment {
             case R.id.btn_gain_minus:
                 gain = ((ModeActivity) getActivity()).getGain();
                 if (gain > 0) {
-                    if(((ModeActivity)getActivity()).mode == 0x11){
-                        gain--;
-                    ((ModeActivity) getActivity()).setGain1(gain);  //jk20210129
+                    gain--;
+                    ((ModeActivity) getActivity()).setGain(gain);
+//                    ((ModeActivity) getActivity()).gainTest();  //GC20220622      //GC20220801 TDR增益调整后不发测试命令
                     btnGainPlus.setEnabled(true);
-                    }else {
-                        gain--;
-                        ((ModeActivity) getActivity()).setGain(gain);
-                        btnGainPlus.setEnabled(true);
-                    }
                 }
                 if (gain == 0) {
                     btnGainMinus.setEnabled(false);
@@ -176,7 +167,7 @@ public class AdjustFragment extends Fragment {
                 }
                 break;
           case R.id.btn_vel_adjust:
-              ((ModeActivity) getActivity()).showCalView1();
+              ((ModeActivity) getActivity()).showCalView();
               break;
           default:
                 break;

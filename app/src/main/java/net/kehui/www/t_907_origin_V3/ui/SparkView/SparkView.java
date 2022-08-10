@@ -326,8 +326,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
                 invalidate();
             }
         } catch (Exception l_ex) {
-            //20200521  //GC?不知道为啥加
-            String str = l_ex.getMessage().toString();
+            //20200521
             scrubLinePath.reset();
             setScrubLineRealDisappear();
         }

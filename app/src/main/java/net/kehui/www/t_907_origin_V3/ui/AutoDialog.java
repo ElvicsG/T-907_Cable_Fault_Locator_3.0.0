@@ -1,17 +1,22 @@
 package net.kehui.www.t_907_origin_V3.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -27,9 +32,9 @@ import java.util.List;
  * @author gong
  * @date 2021/12/02
  */
-public class AutoDialog extends BaseDialog implements View.OnClickListener  {
+public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
-    ImageView ivClose;
+    ImageView ivCloseAuto;
     EditText etWorkingMode;
 
     TextView tvConfirm;
@@ -39,16 +44,14 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener  {
     public RadioButton rbGear16;
     public RadioButton rbGear32;
     public Spinner spWorkingMode;
-    public HVControlView32 controlVoltage32;
-    public HVControlView16 controlVoltage16;
     /**
      * seekBar32 控件添加//
      */
     public TextView hvValue;
     public KBubbleSeekBar32 seekBar32;
     public KBubbleSeekBar16 seekBar16;
+    public KBubbleSeekBar12 seekBar12;
 
-    public TimeControlView controlTime;
     public ImageView ivWaring;
     public EditText etHVINDICATOR;
     public TextView tvHvGear;
@@ -56,6 +59,17 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener  {
     public TextView tvHvCapacitor;
     public TextView tvHvIgnitionCoil;
     public ImageView ivVoltageHeight;
+    //GC20220617
+    public LinearLayout llTIME;
+    public TextView tvWorkingMode;
+    public View vWorkingMode;
+    public LinearLayout llPULSE;
+    public TextView tvPULSE;
+    public LinearLayout llPULSE2;
+    public TextView tvPULSE2;
+    public ImageView ivHVPULSE2;
+    //GC20220711
+    public ImageView ivLightning;
 
     private View view;
     private List<String> workingModeList = new ArrayList<>();
@@ -68,7 +82,7 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        view = LayoutInflater.from(getContext()).inflate(R.layout.layout_auto_dialog, null, false);
+        view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_auto, null, false);
         setContentView(view);
         //自定义高压操作界面对话框    //GC20211202
         initView();
@@ -83,58 +97,51 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener  {
 
     private void initView() {
         //对话框初始化    //GC20211203
-        ivClose = view.findViewById(R.id.iv_close);
+        ivCloseAuto = view.findViewById(R.id.iv_close_auto);
         etHVINDICATOR = view.findViewById(R.id.et_HVINDICATOR);
         etWorkingMode = view.findViewById(R.id.et_working_mode);
         spWorkingMode = view.findViewById(R.id.sp_working_mode);
-        controlTime = view.findViewById(R.id.control_time);
-        controlVoltage32 = view.findViewById(R.id.control_voltage32);
-        controlVoltage16 = view.findViewById(R.id.control_voltage16);
 
         //电压滑动控件添加  //GC20220413
         hvValue = view.findViewById(R.id.tv_value);
         seekBar32 = view.findViewById(R.id.seekBar32);
         seekBar16 = view.findViewById(R.id.seekBar16);
+        seekBar12 = view.findViewById(R.id.seekBar12);
 
         ivHVPULSE = view.findViewById(R.id.iv_HV_PULSE);
         ivWaring = view.findViewById(R.id.iv_warning);
         rgGear = view.findViewById(R.id.rg_gear);
         rbGear16 = view.findViewById(R.id.rb_gear16);
-        rbGear32 = view.findViewById(R.id.rb_gear32);;
+        rbGear32 = view.findViewById(R.id.rb_gear32);
+
         tvConfirm = view.findViewById(R.id.tv_confirm);
         tvQuit = view.findViewById(R.id.tv_quit);
+        //叉号退出  //GC20220713
+        ivCloseAuto = view.findViewById(R.id.iv_close_auto);
         tvHvGear = view.findViewById(R.id.tv_hv_gear);
         tvHvWorkingMode = view.findViewById(R.id.tv_hv_working_mode);
         tvHvCapacitor = view.findViewById(R.id.tv_hv_capacitor);
         tvHvIgnitionCoil = view.findViewById(R.id.tv_hv_ignition_coil);
         ivVoltageHeight = view.findViewById(R.id.iv_voltage_height);
+        //GC20220617
+        llTIME = view.findViewById(R.id.ll_TIME);
+        tvWorkingMode = view.findViewById(R.id.tv_working_mode);
+        vWorkingMode = view.findViewById(R.id.v_working_mode);
+        llPULSE = view.findViewById(R.id.ll_PULSE);
+        tvPULSE = view.findViewById(R.id.tv_PULSE);
+        llPULSE2 = view.findViewById(R.id.ll_PULSE2);
+        tvPULSE2 = view.findViewById(R.id.tv_PULSE2);
+        ivHVPULSE2 = view.findViewById(R.id.iv_HV_PULSE2);
+        //GC20220711
+        ivLightning = view.findViewById(R.id.iv_lightning);
+
         tvQuit.setOnClickListener(this);
-        ivClose.setOnClickListener(this);
+        //叉号退出  //GC20220713
+        ivCloseAuto.setOnClickListener(this);
         tvConfirm.setOnClickListener(this);
 
         //seekBar电压显示初始化
         hvValue.setText("设定电压：0kV");
-        //放电周期效果
-        controlTime.setArcColor("#026b02");
-        controlTime.setDialColor1("#026b02");
-        controlTime.setDialColor2("#01eeff");
-        controlTime.setValueColor("#00ec03");
-        controlTime.setCurrentValueColor("#026b02");
-        controlTime.setTitle(getContext().getResources().getString(R.string.time));
-        //32kV档位设定电压效果
-        controlVoltage32.setArcColor("#a03225");
-        controlVoltage32.setDialColor1("#a03225");
-        controlVoltage32.setDialColor2("#01eeff");
-        controlVoltage32.setValueColor("#d0210e");
-        controlVoltage32.setCurrentValueColor("#a03225");
-        controlVoltage32.setTitle(getContext().getResources().getString(R.string.voltage));
-        //16kV档位设定电压效果
-        controlVoltage16.setArcColor("#ff0000");
-        controlVoltage16.setDialColor1("#ff0000");
-        controlVoltage16.setDialColor2("#01eeff");
-        controlVoltage16.setValueColor("#d0210e");
-        controlVoltage16.setCurrentValueColor("#ff0000");
-        controlVoltage16.setTitle(getContext().getResources().getString(R.string.voltage));
         //接地报警初始化
         if (!Constant.isWarning) {
             ivWaring.setImageResource(R.drawable.light_red);
@@ -189,7 +196,7 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener  {
         etHVINDICATOR.setEnabled(false);
         int heightPosition = 0;
         //根据最大值计算进度条高度
-        double a = Constant.currentVoltage / Constant.setVoltage ;
+        double a = Constant.currentVoltage / Constant.setVoltage;
         int b = (int) (a * 100);
         if (b >= 0 && b < 10) {
         } else if (b >= 10 && b < 20) {
@@ -258,13 +265,16 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener  {
     private void setSpWorkingMode() {
         workingModeList.add(getContext().getResources().getString(R.string.PULSE));
         workingModeList.add(getContext().getResources().getString(R.string.CYCLIC));
-        workingModeList.add(getContext().getResources().getString(R.string.DC));
-
+        //定点模式没有直流  //GC20220809
+        if (!Constant.isClickLocate) {
+            workingModeList.add(getContext().getResources().getString(R.string.DC));
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, workingModeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spWorkingMode.setAdapter(adapter);
 
     }
+
     /**
      * 监听电压档位选项变化
      */
@@ -284,32 +294,30 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener  {
      */
     public void setIvHVPULSE(View.OnClickListener clickListener) {
         ivHVPULSE.setOnClickListener(clickListener);
+        ivHVPULSE2.setOnClickListener(clickListener);
     }
 
     /**
-     * 点击退出按钮事件
+     * 点击进入测试界面（退出）按钮事件
      */
     public void setQuit(View.OnClickListener clickListener) {
         tvQuit.setOnClickListener(clickListener);
     }
 
+    /**
+     * 叉号退出  //GC20220713
+     */
+    public void setClose(View.OnClickListener clickListener) {
+        ivCloseAuto.setOnClickListener(clickListener);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_close:
+            case R.id.iv_close_auto:
                 dismiss();
                 break;
             case R.id.tv_quit:
-                //GTT   高压操作退出清状态
-//                Constant.currentVoltage = 0;
-//                Constant.isWarning = true;
-//                Constant.isIgnitionCoil = true;
-//                Constant.isCapacitor = true;
-//                Constant.isWorkingMode = true;
-//                Constant.isGear = true;
-                /*//对话框退出状态记录     //GC20211210
-                Constant.isShowHV = false;
-                dismiss();*/
                 break;
             default:
                 break;

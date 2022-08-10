@@ -7,7 +7,7 @@
         <attr name="bsb_marks" format="boolean"/>
         <!--min < max, 默认值: 0.0f-->
         <attr name="bsb_min" format="float|reference"/>
-        <!--min <max，默认值：100.0f-->
+        <!--min <max，默认值：32.0f-->
         <attr name="bsb_max" format="float|reference"/>
         <!--实时进度值，默认值：min-->
         <attr name="bsb_progress" format="float|reference"/>
