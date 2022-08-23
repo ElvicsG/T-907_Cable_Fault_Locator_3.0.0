@@ -196,10 +196,10 @@
     <string name="grounding_alarm">接地报警：</string>
     <string name="voltage">电压/kV</string>
     <string name="time">时间/s</string>
-    <!--<string name="Gear1">16kV</string>
-    <string name="Gear2">32kV</string>-->
-    <string name="Gear1">4kV</string>
-    <string name="Gear2">8kV</string>
+    <string name="Gear1">16kV</string>
+    <string name="Gear2">32kV</string>
+    <!--<string name="Gear1">4kV</string>-->
+    <!--<string name="Gear2">8kV</string>--><!--GC20211227-->
     <string name="hv_confirm">电压确认</string>
     <string name="quit">退出</string>
     <string name="hv_toast">电压已确认，等待升压......</string>

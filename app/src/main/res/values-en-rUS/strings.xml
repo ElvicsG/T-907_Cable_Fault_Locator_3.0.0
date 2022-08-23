@@ -195,10 +195,10 @@
     <string name="grounding_alarm">GROUNDING ALARM</string>
     <string name="voltage">V./kV</string>
     <string name="time">TM/s</string>
-    <!--<string name="Gear1">16kV</string>
-    <string name="Gear2">32kV</string>-->
-    <string name="Gear1">4kV</string>
-    <string name="Gear2">8kV</string>
+    <string name="Gear1">16kV</string>
+    <string name="Gear2">32kV</string>
+    <!--<string name="Gear1">4kV</string>-->
+    <!--<string name="Gear2">8kV</string>--><!--GC20211227-->
     <string name="hv_confirm">Confirm</string>
     <string name="quit">Quit</string>
     <string name="hv_toast">Voltage confirmed, wait for boosting …</string>

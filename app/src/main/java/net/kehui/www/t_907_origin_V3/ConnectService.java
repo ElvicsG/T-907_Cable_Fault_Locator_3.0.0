@@ -144,7 +144,7 @@ public class ConnectService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        //GN 服务启动相关
+        //服务启动相关
         return null;
     }
 

@@ -244,7 +244,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_500m));
                     Constant.Range = RANGE_500;
                 }
-                rangeSave = 0;
+                rangeSave = 0;  //GC20220701
                 break;
             case RANGE_1_KM:
                 if (CurrentUnit == FT_UNIT) {
@@ -254,7 +254,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
                     tvRange.setText(getContext().getResources().getString(R.string.btn_1km));
                     Constant.Range = RANGE_1_KM;
                 }
-                rangeSave = 1;
+                rangeSave = 1;  //GC20220701
                 break;
             case RANGE_2_KM:
                 if (CurrentUnit == FT_UNIT) {

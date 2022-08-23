@@ -49,14 +49,9 @@ public class ModeFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //fragment按钮状态初始化
+        //按照TDR方式初始化    //GC20220819
         btnTdr.setEnabled(false);
-        btnIcm.setEnabled(true);
-        btnSim.setEnabled(true);
-        btnDecay.setEnabled(true);
-        btnIcmc.setEnabled(true);
-        btnIcml.setEnabled(true);   //GC20220809
-        btnTdr.setImageResource(R.drawable.bg_tdr_mode_pressed);  //jk20210129
+        btnTdr.setImageResource(R.drawable.bg_tdr_mode_pressed);
     }
 
     @Override
@@ -87,9 +82,9 @@ public class ModeFragment extends Fragment {
                 }
                 //点击方式选项记录  //GC20220726
                 ((ModeActivity) Objects.requireNonNull(getActivity())).modeClick = 0x22;
-                //弹出合闸提示对话框     //GC20220726
+                //判断是否弹出合闸提示  //GC20220726
                 if (((ModeActivity)getActivity()).isSwitchOn) {
-                    //在ICM方式下，上一次时TDR才提示合闸
+                    //从TDR方式转过来必须弹出合闸提示
                     if (((ModeActivity) Objects.requireNonNull(getActivity())).modeMemory == 0x11){
                         ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
                     } else {
@@ -97,7 +92,7 @@ public class ModeFragment extends Fragment {
                         ((ModeActivity)getActivity()).modeTest();
                     }
                 } else {
-                    //WIFI重连后提示合闸
+                    //WIFI重连后弹出合闸提示
                     ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
                 }
                 break;
@@ -107,23 +102,22 @@ public class ModeFragment extends Fragment {
                     ((ModeActivity) Objects.requireNonNull(getActivity())).dangerousNote();
                     return;
                 }
-                //点击SIM范围自动寻找     //GC20220806
-                ((ModeActivity) Objects.requireNonNull(getActivity())).simAutoTest();
-                /*//点击方式选项记录  //GC20220726
+                Constant.isClickSim = true;    //点击SIM方式记录  //GC20220806
+                //点击方式选项记录  //GC20220726
                 ((ModeActivity) Objects.requireNonNull(getActivity())).modeClick = 0x33;
-                //弹出合闸提示对话框     //GC20220726
+                //判断是否弹出合闸提示  //GC20220726
                 if (((ModeActivity)getActivity()).isSwitchOn) {
-                    //在ICM方式下，上一次时TDR才提示合闸
+                    //从TDR方式转过来必须弹出合闸提示
                     if (((ModeActivity) Objects.requireNonNull(getActivity())).modeMemory == 0x11){
                         ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
                     } else {
-                        ((ModeActivity) Objects.requireNonNull(getActivity())).setMode(0x33);
-                        ((ModeActivity)getActivity()).modeTest();
+                        //点击SIM先自动寻找范围     //GC20220806
+                        ((ModeActivity) Objects.requireNonNull(getActivity())).simAutoTest();
                     }
                 } else {
                     //WIFI重连后提示合闸
                     ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
-                }*/
+                }
                 break;
             case R.id.btn_icmc:
                 ((ModeActivity) Objects.requireNonNull(getActivity())).setMode(0x55);
@@ -139,12 +133,12 @@ public class ModeFragment extends Fragment {
                     ((ModeActivity) Objects.requireNonNull(getActivity())).dangerousNote();
                     return;
                 }
-                Constant.isClickLocate = true;    //GC20220809
-                //点击方式选项记录
+                Constant.isClickLocate = true;    //点击定点方式记录（以下和ICM方式完全一样）    //GC20220809
+                //点击方式选项记录  //GC20220726
                 ((ModeActivity) Objects.requireNonNull(getActivity())).modeClick = 0x22;
-                //弹出合闸提示对话框
+                //判断是否弹出合闸提示  //GC20220726
                 if (((ModeActivity)getActivity()).isSwitchOn) {
-                    //在ICM方式下，上一次时TDR才提示合闸
+                    //从TDR方式转过来必须弹出合闸提示
                     if (((ModeActivity) Objects.requireNonNull(getActivity())).modeMemory == 0x11){
                         ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
                     } else {

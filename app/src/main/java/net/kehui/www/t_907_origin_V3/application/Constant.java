@@ -51,6 +51,7 @@ public class Constant {
     public static Boolean isCapacitor = true;
     public static Boolean isWorkingMode = true;
     public static Boolean isGear = true;
+    public static Boolean isClickSim = false;       //GC20220806
     public static Boolean isClickLocate = false;    //GC20220809
 
 
@@ -87,13 +88,13 @@ public class Constant {
     public static boolean isTesting = false;
 
     /**
-     * 接收的非SIM波形数据长度、单条SIM波形数据长度    //GC20200428
+     * 接收的非SIM波形数据长度、单条SIM波形数据长度
      */
     public static int waveLen = 549;
     public static int waveSimLen = 549;
 
     /**
-     * 是否需要补齐波形数据    //GC20200428
+     * 是否需要补齐波形数据
      */
     public static boolean needAddData = false;
 

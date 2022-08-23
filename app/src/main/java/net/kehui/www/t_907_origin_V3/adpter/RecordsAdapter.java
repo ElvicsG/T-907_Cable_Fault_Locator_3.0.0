@@ -83,7 +83,7 @@ public class RecordsAdapter extends RecyclerView.Adapter {
     /**
      * 刷新点击位置
      *
-     * @param position 手指位置
+     * @param position 手指位置     //GC20220821
      */
     public void changeSelected(int position) {
         if (position != selected) {
