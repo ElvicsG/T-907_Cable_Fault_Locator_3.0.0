@@ -58,7 +58,7 @@
                         android:background="@drawable/shape_stroke_gray_99"
                         android:textColor="@color/T_4D"
                         android:gravity="center"
-                        android:text="高压操作"
+                        android:text="高压设置"
                         android:textSize="@dimen/sp_12"/>
 
                     <ImageView

@@ -1,5 +1,6 @@
 package net.kehui.www.t_907_origin_V3.ui;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -18,10 +19,14 @@ import net.kehui.www.t_907_origin_V3.util.ScreenUtils;
  */
 public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListener {
 
+    public TextView tvNoteSwitchOn;
+    public ImageView ivScanSwitchOn;
     public TextView tvYes;
     public TextView tvNo;
 
     private View view;
+    private ValueAnimator valueAnimator;
+    private int[] scoreText = {R.drawable.ic_wait_empty, R.drawable.ic_wait_1, R.drawable.ic_wait_2, R.drawable.ic_wait_3}; //GC20220919
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +45,26 @@ public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListen
     }
 
     private void initView() {
+        //添加对话框,动画图片初始化 //GC20220919
+        tvNoteSwitchOn = view.findViewById(R.id.tv_note_switch_on);
+        ivScanSwitchOn = view.findViewById(R.id.iv_scan_switch_on);
         //对话框初始化
         tvYes = view.findViewById(R.id.tv_yes);
         tvNo = view.findViewById(R.id.tv_no);
 
+        //画动画 ...   //GC20220919
+        if (valueAnimator == null) {
+            valueAnimator = ValueAnimator.ofInt(0, 4).setDuration(1000);
+            valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    int i = (int) animation.getAnimatedValue();
+                    ivScanSwitchOn.setImageResource(scoreText[i % scoreText.length]);
+                }
+            });
+        }
+        valueAnimator.start();
         tvNo.setOnClickListener(this);
     }
 
@@ -55,7 +76,7 @@ public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListen
     }
 
     /**
-     * 点击高压操作按钮事件
+     * 点击高压设置按钮事件
      */
     public void setTvNo(View.OnClickListener clickListener) {
         tvNo.setOnClickListener(clickListener);

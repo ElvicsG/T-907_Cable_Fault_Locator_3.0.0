@@ -245,7 +245,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         }
 
         //画第二条线
-        Log.e("画第二条线", "adapter.getCompare() = " + adapter.getCompare());
+//        Log.e("画第二条线", "adapter.getCompare() = " + adapter.getCompare());
         if (adapter.getCompare()) {
             sparkPath2.reset();
             for (int i = 0; i < adapterCount; i++) {
@@ -619,7 +619,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             }
         }
         Log.i("position", String.valueOf(x));
-        Log.e("【SparkView内部】", "X:" + x + "/Y:" + y);
+//        Log.e("【SparkView内部】", "X:" + x + "/Y:" + y);
     }
 
 

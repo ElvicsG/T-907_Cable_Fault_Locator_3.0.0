@@ -82,6 +82,10 @@ public class ModeFragment extends Fragment {
                 }
                 //点击方式选项记录  //GC20220726
                 ((ModeActivity) Objects.requireNonNull(getActivity())).modeClick = 0x22;
+                //GC20220921
+                ((ModeActivity) Objects.requireNonNull(getActivity())).resetHvWorkingMode();
+                //检测硬件是否合闸    //GC20220919X
+//                ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
                 //判断是否弹出合闸提示  //GC20220726
                 if (((ModeActivity)getActivity()).isSwitchOn) {
                     //从TDR方式转过来必须弹出合闸提示
@@ -105,6 +109,10 @@ public class ModeFragment extends Fragment {
                 Constant.isClickSim = true;    //点击SIM方式记录  //GC20220806
                 //点击方式选项记录  //GC20220726
                 ((ModeActivity) Objects.requireNonNull(getActivity())).modeClick = 0x33;
+                //GC20220921
+                ((ModeActivity) Objects.requireNonNull(getActivity())).resetHvWorkingMode();
+                //检测硬件是否合闸    //GC20220919X
+//                ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
                 //判断是否弹出合闸提示  //GC20220726
                 if (((ModeActivity)getActivity()).isSwitchOn) {
                     //从TDR方式转过来必须弹出合闸提示
@@ -136,6 +144,10 @@ public class ModeFragment extends Fragment {
                 Constant.isClickLocate = true;    //点击定点方式记录（以下和ICM方式完全一样）    //GC20220809
                 //点击方式选项记录  //GC20220726
                 ((ModeActivity) Objects.requireNonNull(getActivity())).modeClick = 0x22;
+                //GC20220921
+                ((ModeActivity) Objects.requireNonNull(getActivity())).resetHvWorkingMode();
+                //检测硬件是否合闸    //GC20220919X
+//                ((ModeActivity)getActivity()).showSwitchOnNoteDialog();
                 //判断是否弹出合闸提示  //GC20220726
                 if (((ModeActivity)getActivity()).isSwitchOn) {
                     //从TDR方式转过来必须弹出合闸提示

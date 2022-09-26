@@ -23,13 +23,28 @@
                 android:orientation="vertical"
                 android:gravity="center">
 
-                <TextView
-                    android:id="@+id/tv_note"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/switch_on_note"
-                    android:textSize="@dimen/sp_15"
-                    android:textColor="@color/T_red"/>
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tv_note_switch_on"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/switch_on_note"
+                        android:textSize="@dimen/sp_16"
+                        android:textColor="@color/blue_0a9bbe"/>
+
+                    <ImageView
+                        android:id="@+id/iv_scan_switch_on"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_10"
+                        android:src="@drawable/ic_wait_empty" />
+                </LinearLayout>
 
                 <View
                     android:id="@+id/line"
@@ -47,32 +62,45 @@
                     android:layout_marginTop="@dimen/dp_10"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tv_no"
-                        android:layout_width="@dimen/dp_70"
-                        android:layout_height="wrap_content"
+                    <LinearLayout
+                        android:layout_width="@dimen/dp_90"
+                        android:layout_height="@dimen/dp_25"
                         android:paddingTop="@dimen/dp_5"
                         android:paddingBottom="@dimen/dp_5"
                         android:layout_marginTop="@dimen/dp_12"
                         android:layout_marginEnd="@dimen/dp_50"
                         android:background="@drawable/shape_solide_0ff6ff"
-                        android:textColor="@color/white"
                         android:gravity="center"
-                        android:text="@string/btn_no"
-                        android:textSize="@dimen/sp_12"/>
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_back" />  <!--添加返回图标//GC20220919-->
+
+                        <TextView
+                            android:id="@+id/tv_no"
+                            android:layout_width="@dimen/dp_70"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/shape_solide_0ff6ff"
+                            android:textColor="@color/white"
+                            android:gravity="center"
+                            android:text="@string/btn_no"
+                            android:textSize="@dimen/sp_12"/>
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tv_yes"
                         android:layout_width="@dimen/dp_70"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/dp_5"
-                        android:paddingBottom="@dimen/dp_5"
+                        android:layout_height="@dimen/dp_25"
                         android:layout_marginTop="@dimen/dp_12"
                         android:background="@drawable/shape_solide_0ff6ff"
-                        android:textColor="@color/white"
                         android:gravity="center"
+                        android:paddingTop="@dimen/dp_5"
+                        android:paddingBottom="@dimen/dp_5"
                         android:text="@string/btn_yes"
-                        android:textSize="@dimen/sp_12"/>
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_12"/>   <!--下一步初始状态为不可见//GC20220919X android:visibility="invisible" />-->
                 </LinearLayout>
 
             </LinearLayout>

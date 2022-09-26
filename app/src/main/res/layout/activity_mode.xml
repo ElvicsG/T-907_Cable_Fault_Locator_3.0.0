@@ -21,17 +21,237 @@
         android:src="@drawable/ic_battery_no"
         android:visibility="gone" />
 
-    <!--wifi图标-->
-    <ImageView
-        android:id="@+id/iv_wifi_status"
+    <TextView
+        android:id="@+id/tv_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="@dimen/dp_4"
-        android:layout_marginTop="@dimen/dp_5"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:src="@drawable/ic_no_wifi_connect" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/dp_6"
+        android:text="V3.0.4"
+        android:textColor="@color/blue_0095b3"
+        android:textSize="@dimen/sp_6" /><!--版本号添加//GC20220914-->
+
+    <!--高压设置栏宽度占12.5%//GC20220914-->
+    <RelativeLayout
+        android:id="@+id/rl_information"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/dp_5"
+        android:paddingRight="@dimen/dp_5"
+        android:paddingTop="@dimen/dp_8"
+        android:paddingBottom="@dimen/dp_8"
+        app:layout_widthPercent="12.5%">
+
+        <LinearLayout
+            android:id="@+id/ll_information"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/shape_solide_0ff6ff"
+            android:orientation="vertical">
+
+            <!--wifi图标-->
+            <LinearLayout
+                android:id="@+id/ll_wifi_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_5"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv_wifi_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:src="@drawable/ic_no_wifi_connect" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_info_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@string/tv_mode"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:id="@+id/tv_info_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:text="@string/btn_tdr"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_11" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_info_hv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@string/set_voltage"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_info_set_voltage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_12" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="kV"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_12" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@string/HVINDICATOR"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_info_HV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:text="0"
+                        android:textColor="@color/T_red"
+                        android:textSize="@dimen/sp_12" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="kV"
+                        android:textColor="@color/T_red"
+                        android:textSize="@dimen/sp_12" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_mode_working_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@string/working_mode"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <TextView
+                    android:id="@+id/tv_info_working_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:text="@string/PULSE"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_11" />
+
+                <TextView
+                    android:id="@+id/tv_mode_TIME"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@string/TIME"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />
+
+                <LinearLayout
+                    android:id="@+id/ll_info_TIME"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_info_TIME"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:text="5"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_12" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="s"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_12" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iv_info_voltage_height"
+                    android:layout_width="@dimen/dp_15"
+                    android:layout_height="@dimen/dp_40"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:src="@drawable/ic_vltage_height_0"
+                    android:visibility="invisible" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_AUTO"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom" >
+
+                <ImageView
+                    android:id="@+id/iv_AUTO"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/bg_hv_selector" />   <!--高压设置按钮资源修改//GC20220914-->
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <!--信息提示框-->
     <androidx.percentlayout.widget.PercentRelativeLayout
@@ -275,16 +495,16 @@
 
     </androidx.percentlayout.widget.PercentRelativeLayout>
 
-    <!--波形显示区-->
+    <!--波形显示区占宽度占72%-->
     <RelativeLayout
         android:id="@+id/rl_wave"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_toEndOf="@id/rl_information"
         android:background="@drawable/bg_mode_wave"
         app:layout_heightPercent="65%"
-        app:layout_marginLeftPercent="1%"
         app:layout_marginTopPercent="11%"
-        app:layout_widthPercent="72%">
+        app:layout_widthPercent="72%"> <!--位置调整//GC20220914-->
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -362,7 +582,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <!--右侧滑条-->
+    <!--右侧滑条宽度占1.5%-->
     <net.kehui.www.t_907_origin_V3.ui.MoveWaveView
         android:id="@+id/view_move_vertical_wave"
         android:layout_width="@dimen/dp_15"
@@ -395,213 +615,26 @@
             android:background="@drawable/shape_solide_bottom_bar" />
     </LinearLayout>
 
-    <!--右侧信息栏-->
+    <!--右侧按钮宽度占14%//GC20220914-->
     <RelativeLayout
-        android:id="@+id/rl_information"
+        android:id="@+id/rl_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/ll_horizontal_view"
         android:layout_toEndOf="@id/view_move_vertical_wave"
-        app:layout_marginTopPercent="1.5%"
-        app:layout_widthPercent="10%">
-
-        <LinearLayout
-            android:id="@+id/ll_information"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/shape_solide_0ff6ff"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/ll_info_mode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_5"
-                    android:layout_marginTop="@dimen/dp_15"
-                    android:text="@string/tv_mode"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
-
-                <TextView
-                    android:id="@+id/tv_info_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_5"
-                    android:text="@string/btn_tdr"
-                    android:textColor="@color/yellow4"
-                    android:textSize="@dimen/sp_10" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_info_hv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_mode_working_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_5"
-                    android:layout_marginTop="@dimen/dp_5"
-                    android:text="@string/working_mode"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
-
-                <TextView
-                    android:id="@+id/tv_info_working_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_5"
-                    android:text="@string/PULSE"
-                    android:textColor="@color/yellow4"
-                    android:textSize="@dimen/sp_10" />
-
-                <TextView
-                    android:id="@+id/tv_mode_TIME"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_5"
-                    android:layout_marginTop="@dimen/dp_5"
-                    android:text="@string/TIME"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
-
-                <LinearLayout
-                    android:id="@+id/ll_info_TIME"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_info_TIME"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="@dimen/dp_5"
-                        android:text="5"
-                        android:textColor="@color/yellow4"
-                        android:textSize="@dimen/sp_12" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="s"
-                        android:textColor="@color/yellow4"
-                        android:textSize="@dimen/sp_12" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_5"
-                    android:layout_marginTop="@dimen/dp_5"
-                    android:text="@string/set_voltage"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_info_set_voltage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="@dimen/dp_5"
-                        android:text="0"
-                        android:textColor="@color/yellow4"
-                        android:textSize="@dimen/sp_12" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="kV"
-                        android:textColor="@color/yellow4"
-                        android:textSize="@dimen/sp_12" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_5"
-                    android:layout_marginTop="@dimen/dp_5"
-                    android:text="@string/HVINDICATOR"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_info_HV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="@dimen/dp_5"
-                        android:text="0"
-                        android:textColor="@color/T_red"
-                        android:textSize="@dimen/sp_12" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="kV"
-                        android:textColor="@color/T_red"
-                        android:textSize="@dimen/sp_12" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/iv_info_voltage_height"
-                    android:layout_width="@dimen/dp_15"
-                    android:layout_height="@dimen/dp_40"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:src="@drawable/ic_vltage_height_0" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <!--右侧按钮-->
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/rl_information"
-        android:layout_toEndOf="@id/rl_information"
-        app:layout_marginTopPercent="5%"
-        app:layout_widthPercent="18%">
+        android:layout_alignBottom="@id/ll_horizontal_view"
+        app:layout_widthPercent="14%"> <!--位置调整//GC20220914-->
 
         <FrameLayout
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:layout_marginLeft="@dimen/dp_1"
-            android:layout_marginRight="@dimen/dp_1"
+            android:layout_marginStart="@dimen/dp_1"
+            android:layout_marginEnd="@dimen/dp_2"
+            android:layout_marginTop="@dimen/dp_8"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            app:layout_heightPercent="69%">>
+            app:layout_heightPercent="69%">
         </FrameLayout>
 
         <!--调节fragment常用波速度弹窗-->
@@ -681,10 +714,10 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_220"
         android:layout_below="@id/ll_horizontal_view"
+        android:layout_toEndOf="@id/rl_information"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_marginLeftPercent="2%"
-        app:layout_marginRightPercent="2%">
+        app:layout_marginRightPercent="2%"> <!--位置微调//GC20220914-->
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -804,18 +837,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/bg_help_selector" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_AUTO"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iv_AUTO"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/bg_hv_selector" />
         </LinearLayout>
 
         <LinearLayout

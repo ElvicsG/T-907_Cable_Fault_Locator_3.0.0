@@ -126,6 +126,12 @@ public class ProcessThread extends Thread {
             case 113:
                 returnStr = "0x71 单次放电";
                 break;
+            case 128:
+                returnStr = "0x80 高压状态";
+                break;
+            case 144:
+                returnStr = "0x90 合闸查询";    //GC20220919
+                break;
             default:
                 break;
         }

@@ -200,7 +200,7 @@ public class ConnectService extends Service {
                 NetworkInfo info = connectivityManager.getActiveNetworkInfo();
 //                if (info != null && isWifiConnect == false) { //jk20210714
                 if (info != null) {
-                    //if ((info.isConnected() && info.getExtraInfo().contains(Constant.SSID)) && !isWifiConnect) {  //jk20210714
+//                    if ((info.isConnected() && info.getExtraInfo().contains(Constant.SSID)) && !isWifiConnect) {  //jk20210714
                     if (info.isConnected() && !isWifiConnect) {
                         //EN20200324
                         Log.e("【SOCKET连接】", "网络连接状态变化，重连");
@@ -273,12 +273,12 @@ public class ConnectService extends Service {
                         socket.setKeepAlive(true);
                     }
                     if (connectThread == null) {
-                        Log.e("【SOCKET连接】", "启动接收数据线程");
+                        Log.e("【SOCKET连接】", "启动接收数据线程connectThread");
                         connectThread = new ConnectThread(socket, handler, Constant.DEVICE_IP);
                         connectThread.start();
                     }
                     if (processThread == null) {
-                        Log.e("【SOCKET连接】", "启动接收数据线程");
+                        Log.e("【SOCKET连接】", "启动接收数据线程processThread");
                         processThread = new ProcessThread(handler);
                         processThread.start();
                     }
@@ -302,7 +302,6 @@ public class ConnectService extends Service {
                 handler.sendEmptyMessageDelayed(DEVICE_DO_CONNECT, 2000);
             }
         });
-        Log.e("DIA", "WIFI连接：" + "隐藏");
         singleThreadPool.shutdown();
     }
 
@@ -477,6 +476,9 @@ public class ConnectService extends Service {
         }
         if (cmdStr == 10) {
             returnStr = dataStr + " / 脉宽";
+        }
+        if (cmdStr == 144) {
+            returnStr = dataStr + " / 合闸查询";    //GC20220919
         }
         return returnStr;
     }

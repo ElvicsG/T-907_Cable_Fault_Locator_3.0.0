@@ -164,7 +164,7 @@ public class KBubbleSeekBar32 extends View {
         mThumbRadiusOnDragging = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_thumb_radius_on_dragging,
             mThumbRadius + dp2px(2));
         //切分的份数 10
-        mSectionCount = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_section_count, 2);
+        mSectionCount = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_section_count, 1);   //GC20220916    切割的份数改为1
         //滑轨底色  colorPrimary
         mTrackColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_track_color,ContextCompat.getColor(context, R.color.gray2));
         //圆点、气泡颜色   colorAccent

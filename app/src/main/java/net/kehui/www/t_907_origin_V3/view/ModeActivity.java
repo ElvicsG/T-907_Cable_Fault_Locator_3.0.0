@@ -252,7 +252,6 @@ public class ModeActivity extends BaseActivity {
     ImageView ivPulseWidthClose;
     @BindView(R.id.et_pulse_width_id)
     public EditText etPulseWidth;
-    //GC20220620
     @BindView(R.id.tv_mode_working_mode)
     TextView tvModeWorkingMode;
     @BindView(R.id.tv_mode_TIME)
@@ -382,17 +381,21 @@ public class ModeActivity extends BaseActivity {
                     //网络连接，更换网络图标
                     ConnectService.isConnected = true;
                     ivWifiStatus.setImageResource(R.drawable.ic_wifi_connected);
-                    //重连有对话框消对话框    //GC20200319
+                    //重连有对话框消对话框    //GC20220920
                     if (tDialog != null) {
-                        tDialog.dismiss();
-                        Log.e("DIA", "重连先取消对话框");
+                        tDialog.dismiss();              //消正在接收数据对话框
                     }
-                    //重连时取消对话框   //GC20211215
                     if (hvWaitTriggerDialog != null) {
-                        hvWaitTriggerDialog.dismiss();
+                        hvWaitTriggerDialog.dismiss();  //消测试等待对话框  //GC20211215
                     }
                     if (autoDialog != null) {
-                        autoDialog.dismiss();
+                        autoDialog.dismiss();           //消高压设置对话框
+                    }
+                    if (switchOnNoteDialog != null) {
+                        switchOnNoteDialog.dismiss();   //消合闸提示对话框  //GC20220919
+                    }
+                    if (noteDialog != null) {
+                        noteDialog.dismiss();       //消T-A310已断开对话框  //GC20220920
                     }
                     Constant.isTesting = false;
                     allowSetRange = true;
@@ -445,10 +448,17 @@ public class ModeActivity extends BaseActivity {
                     ConnectService.isConnected = false;
                     ivWifiStatus.setImageResource(R.drawable.ic_no_wifi_connect);
                     ivBatteryStatus.setImageResource(R.drawable.ic_battery_no);
+                    if (noteDialog != null) {   //改对话框提示为T-A310已断开  //GC20220920
+                        noteDialog.tvNote.setText(getResources().getString(R.string.connect_failed));
+                    }
                     //界面电量状态记录   //GC20200314
                     batteryValue = -1;
                     //WIFI断线后认为分闸   //GC20220726
                     isSwitchOn = false;
+                    //WIFI断线后档位状态恢复为默认档位    //GC20220917
+                    Constant.gear = 2;
+                    //WIFI断线后报警状态重置 //GC20220920
+                    Constant.isWarning = true;
                     break;
                 case BROADCAST_ACTION_DOWIFI_COMMAND:
                     //通过广播得到命令数据wifiStream并直接处理  //GC20211208
@@ -491,7 +501,8 @@ public class ModeActivity extends BaseActivity {
         if (MainActivity.baseset == 1) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_mode);
-            Log.e("【启动页面】", "进入mode页面。" + "baseset" + MainActivity.baseset);
+            Log.e("【启动页面】", "进入mode页面。");
+//            Log.e("【启动页面】", "进入mode页面。" + "baseset" + MainActivity.baseset);
             ButterKnife.bind(this);
 
             mode = getIntent().getIntExtra(BUNDLE_MODE_KEY, 0);
@@ -516,7 +527,7 @@ public class ModeActivity extends BaseActivity {
             }
         }
         MainActivity.baseset = 0;   //jk20210206  解决电源按键问题
-        Log.e("【启动页面】", "baseset1" + MainActivity.baseset);
+//        Log.e("【启动页面】", "baseset1" + MainActivity.baseset);
     }
 
     /**
@@ -1052,14 +1063,13 @@ public class ModeActivity extends BaseActivity {
             @Override
             public void onScrubbed(Object value, float y) {
                 //y值越小，波形滑动区域越大  //GC20200528
-                //if (y < 600) {
                 if (y < 600) {
                     if ((Integer) value <= 510) {
                         //画虚光标
                         mainWave.setScrubLineVirtual((Integer) value);
                         //虚光标变化的数值
                         positionVirtualChange = (int) value - positionVirtual;
-                        Log.e("【波形区域虚光标】", "当前位置" + value + " /变化前positionVirtual:" + positionVirtual + " /虚光标变化值:" + positionVirtualChange);
+//                        Log.e("【波形区域虚光标】", "当前位置" + value + " /变化前positionVirtual:" + positionVirtual + " /虚光标变化值:" + positionVirtualChange);
                         //变化后虚光标在原始数据中的位置
                         pointDistance = pointDistance + positionVirtualChange * density;
                         //GT20200619
@@ -1412,160 +1422,172 @@ public class ModeActivity extends BaseActivity {
 //            Constant.currentVoltage = hvValue / 3276.0 * 8;
             //主界面信息栏更新当前电压
             tvInfoHV.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
-            //高压操作对话框更新当前电压   //GC20211210
+            //高压设置对话框更新当前电压   //GC20211210
             if (Constant.isShowHV) {
                 autoDialog.etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
                 if (workingModeData == 0x01) {
                     //当前电压大于2kV     //GC20220803
                     if (Constant.currentVoltage > 2) {
+                        //当前电压数值变化的档位无效  //GC20220913
                         autoDialog.rbGear16.setClickable(false);
-                        autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
                         autoDialog.rbGear32.setClickable(false);
-                        autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
+                        switch (currentGear) {
+                            case 1:
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                                break;
+                            case 2:
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                                break;
+                            default:
+                                break;
+                        }
                     } else {
                         autoDialog.rbGear16.setClickable(true);
-                        autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.white));
                         autoDialog.rbGear32.setClickable(true);
-                        autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                        //当前电压数值变化的档位恢复  //GC20220913
+                        switch (currentGear) {
+                            case 1:
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                                break;
+                            case 2:
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
             //高压数值进度条UI更新   //GC20211214
             handleVoltageHeightView(Constant.currentVoltage);
         }
-        //处理高压模块反馈    //GC20211208
+        //处理高压模块反馈  //GC20211208
         else if (wifiArray[5] == COMMAND_QUERY_FEEDBACK) {
             byte temp = (byte) wifiArray[6];
             byte[] array;
             array = getBooleanArray(temp);
-            //高压操作对话框更新接地报警   //GC20211210
+            //更新接地报警   //GC20211210
             if (array[3] == 1) {
-                Log.e("报警测试", "报警" );
-                if (Constant.isWarning) {
+                Log.e("接地报警反馈", "报警" + ConnectService.isConnected);
+                if (Constant.isWarning) {   //添加条件限制，只报警一次  //GC20220920
                     Constant.isWarning = false;
                     if (Constant.isShowHV) {
                         autoDialog.ivWaring.setImageResource(R.drawable.light_red);
-                        Toast.makeText(ModeActivity.this, R.string.hv_warning_note2, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(ModeActivity.this, R.string.hv_warning_note2, Toast.LENGTH_LONG).show();
                     }
+//                    Toast.makeText(ModeActivity.this, R.string.hv_warning_note2, Toast.LENGTH_LONG).show();
+                    showNoteDialog();
                 }
-                //接地报警  //GC20220714
-                showNoteDialog();
             } else {
-                Log.e("报警测试", "正常" );
-                if (!Constant.isWarning) {
-                    Constant.isWarning = true;
-                    if (Constant.isShowHV) {
-                        autoDialog.ivWaring.setImageResource(R.drawable.light_gray);
-                    } else {
-                        //toast
-                    }
-                }
+                Log.e("接地报警反馈", "正常" );
+                /*Constant.isWarning = true;
+                if (Constant.isShowHV) {
+                    autoDialog.ivWaring.setImageResource(R.drawable.light_gray);
+                }*/
             }
-            //高压包故障
+            //更新高压包故障
             if (array[4] == 1) {
+                Log.e("高压包故障反馈", "报警" + ConnectService.isConnected);
                 if (Constant.isIgnitionCoil) {
                     Constant.isIgnitionCoil = false;
                     if (Constant.isShowHV) {
                         autoDialog.tvHvIgnitionCoil.setText(getResources().getString(R.string.hv_ignition_coil_note2));
                         autoDialog.tvHvIgnitionCoil.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                        Toast.makeText(ModeActivity.this, R.string.hv_ignition_coil_note2, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(ModeActivity.this, R.string.hv_ignition_coil_note2, Toast.LENGTH_LONG).show();
                     }
+//                    Toast.makeText(ModeActivity.this, R.string.hv_ignition_coil_note2, Toast.LENGTH_LONG).show();
+                    showNoteDialog();
                 }
-                //高压包故障     //GC20211221
-                showNoteDialog();
             } else {
-                if (!Constant.isIgnitionCoil) {
-                    Constant.isIgnitionCoil = true;
-                    if (Constant.isShowHV) {
-                        autoDialog.tvHvIgnitionCoil.setText(getResources().getString(R.string.hv_ignition_coil_note));
-                        autoDialog.tvHvIgnitionCoil.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
-                    } else {
-                        //toast
-                    }
-                }
+                Log.e("高压包故障反馈", "正常" );
+                /*Constant.isIgnitionCoil = true;
+                if (Constant.isShowHV) {
+                    autoDialog.tvHvIgnitionCoil.setText(getResources().getString(R.string.hv_ignition_coil_note));
+                    autoDialog.tvHvIgnitionCoil.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
+                }*/
             }
-            //电容有残压
+            //更新电容有残压
             if (array[5] == 1) {
+                Log.e("电容有残压反馈", "报警" + ConnectService.isConnected);
                 if (Constant.isCapacitor) {
                     Constant.isCapacitor = false;
                     if (Constant.isShowHV) {
                         autoDialog.tvHvCapacitor.setText(getResources().getString(R.string.hv_capacity_note2));
                         autoDialog.tvHvCapacitor.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                        Toast.makeText(ModeActivity.this, R.string.hv_capacity_note2, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(ModeActivity.this, R.string.hv_capacity_note2, Toast.LENGTH_LONG).show();
                     }
+                    Toast.makeText(ModeActivity.this, R.string.hv_capacity_note2, Toast.LENGTH_LONG).show();
                 }
             } else {
-                if (!Constant.isCapacitor) {
-                    Constant.isCapacitor = true;
-                    if (Constant.isShowHV) {
-                        autoDialog.tvHvCapacitor.setText(getResources().getString(R.string.hv_capacity_note));
-                        autoDialog.tvHvCapacitor.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
-                    } else {
-                        //toast
-                    }
-                }
+                Log.e("电容有残压反馈", "正常" );
+                /*Constant.isCapacitor = true;
+                if (Constant.isShowHV) {
+                    autoDialog.tvHvCapacitor.setText(getResources().getString(R.string.hv_capacity_note));
+                    autoDialog.tvHvCapacitor.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
+                }*/
             }
-            //工作方式故障
+            //更新工作方式故障
             if (array[6] == 1) {
+                Log.e("工作方式故障反馈", "报警" + ConnectService.isConnected);
                 if (Constant.isWorkingMode) {
                     Constant.isWorkingMode = false;
                     if (Constant.isShowHV) {
                         autoDialog.tvHvWorkingMode.setText(getResources().getString(R.string.hv_working_mode_note2));
                         autoDialog.tvHvWorkingMode.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                        Toast.makeText(ModeActivity.this, R.string.hv_working_mode_note2, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(ModeActivity.this, R.string.hv_working_mode_note2, Toast.LENGTH_LONG).show();
                     }
+                    Toast.makeText(ModeActivity.this, R.string.hv_working_mode_note2, Toast.LENGTH_LONG).show();
+                    //报警时取消方式转换倒计时 //GC20220710
+                    timerWorkingMode.cancel();
+                    showNoteDialog();
                 }
-                //报警时取消方式转换倒计时 //GC20220710
-                timer.cancel();
-                //工作方式故障    //GC20211221
-                showNoteDialog();
             } else {
-                if (!Constant.isWorkingMode) {
-                    Constant.isWorkingMode = true;
-                    if (Constant.isShowHV) {
-                        autoDialog.tvHvWorkingMode.setText(getResources().getString(R.string.hv_working_mode_note));
-                        autoDialog.tvHvWorkingMode.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
-                    } else {
-                        //toast
-                    }
-                }
+                Log.e("工作方式故障反馈", "正常" );
+                /*Constant.isWorkingMode = true;
+                if (Constant.isShowHV) {
+                    autoDialog.tvHvWorkingMode.setText(getResources().getString(R.string.hv_working_mode_note));
+                    autoDialog.tvHvWorkingMode.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
+                }*/
             }
-            //电压档位故障
+            //更新电压档位故障
             if (array[7] == 1) {
+                Log.e("电压档位故障反馈", "报警" + ConnectService.isConnected);
                 if (Constant.isGear) {
                     Constant.isGear = false;
                     if (Constant.isShowHV) {
                         autoDialog.tvHvGear.setText(getResources().getString(R.string.hv_gear_note2));
                         autoDialog.tvHvGear.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                        Toast.makeText(ModeActivity.this, R.string.hv_gear_note2, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(ModeActivity.this, R.string.hv_gear_note2, Toast.LENGTH_LONG).show();
                     }
+                    Toast.makeText(ModeActivity.this, R.string.hv_gear_note2, Toast.LENGTH_LONG).show();
+                    //报警时取消档位转换倒计时 //GC20220712
+                    timerGear.cancel();
+                    //电压档位故障
+                    showNoteDialog();
                 }
-                //报警时取消档位转换倒计时 //GC20220712
-                timer2.cancel();
-                //电压档位故障    //GC20211221
-                showNoteDialog();
             } else {
-                if (!Constant.isGear) {
-                    Constant.isGear = true;
-                    if (Constant.isShowHV) {
-                        autoDialog.tvHvGear.setText(getResources().getString(R.string.hv_gear_note));
-                        autoDialog.tvHvGear.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
-                    } else {
-                        //toast
-                    }
-                }
+                Log.e("电压档位故障反馈", "正常" );
+               /* Constant.isGear = true;
+                if (Constant.isShowHV) {
+                    autoDialog.tvHvGear.setText(getResources().getString(R.string.hv_gear_note));
+                    autoDialog.tvHvGear.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimary));
+                }*/
             }
-
+        }
+        //处理是否合闸反馈  //GC20220919
+        else if (wifiArray[5] == COMMAND_SWITCH_ON_QUERY) {
+            if (wifiArray[6] == 0x00) {
+                Log.e("合闸状态反馈", "未合闸" );
+                switchOnNoteDialog.tvNoteSwitchOn.setText(getResources().getString(R.string.switch_on_note3));
+                switchOnNoteDialog.tvNoteSwitchOn.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
+                switchOnNoteDialog.ivScanSwitchOn.setVisibility(View.VISIBLE);
+                switchOnNoteDialog.tvYes.setVisibility(View.INVISIBLE);
+            } else if (wifiArray[6] == 0x01) {
+                Log.e("合闸状态反馈", "合闸" );
+                switchOnNoteDialog.tvNoteSwitchOn.setText(getResources().getString(R.string.switch_on_note2));
+                switchOnNoteDialog.tvNoteSwitchOn.setTextColor(getBaseContext().getResources().getColor(R.color.blue_0a9bbe));
+                switchOnNoteDialog.ivScanSwitchOn.setVisibility(View.GONE);
+                switchOnNoteDialog.tvYes.setVisibility(View.VISIBLE);
+            }
         }
         //TODO 20200407 普通命令解析完毕，允许请求电量
         if (!Constant.isTesting) {
@@ -1788,7 +1810,7 @@ public class ModeActivity extends BaseActivity {
         //非TDR高压操作按钮和竖向信息栏显示
         llAUTO.setVisibility(View.VISIBLE);
         llInfoHv.setVisibility(View.VISIBLE);
-        //竖向信息栏放电周期、工作模式显示  //GC20220620
+        //竖向信息栏放电周期、工作方式显示  //GC20220914
         tvModeWorkingMode.setVisibility(View.VISIBLE);
         tvInfoWorkingMode.setVisibility(View.VISIBLE);
         tvModeTIME.setVisibility(View.VISIBLE);
@@ -1830,7 +1852,7 @@ public class ModeActivity extends BaseActivity {
         operationFragment.btnWavePrevious.setVisibility(View.GONE);
         operationFragment.btnWaveNext.setVisibility(View.GONE);
         operationFragment.btnZero.setVisibility(View.GONE);
-        operationFragment.btnLead1.setVisibility(View.VISIBLE);
+//        operationFragment.btnLead1.setVisibility(View.VISIBLE);   //GC20220914    “延长线”按钮不显示
     }
 
     private void initICMDECAYView() {
@@ -1853,7 +1875,7 @@ public class ModeActivity extends BaseActivity {
         //非TDR高压操作按钮和竖向信息栏显示    //GC20211207
         llAUTO.setVisibility(View.VISIBLE);
         llInfoHv.setVisibility(View.VISIBLE);
-        //竖向信息栏放电周期、工作模式显示  //GC20220620
+        //竖向信息栏放电周期、工作方式显示  //GC20220914
         tvModeWorkingMode.setVisibility(View.VISIBLE);
         tvInfoWorkingMode.setVisibility(View.VISIBLE);
         tvModeTIME.setVisibility(View.VISIBLE);
@@ -1883,7 +1905,7 @@ public class ModeActivity extends BaseActivity {
         operationFragment.btnWavePrevious.setVisibility(View.GONE);
         operationFragment.btnWaveNext.setVisibility(View.GONE);
         operationFragment.btnZero.setVisibility(View.GONE);
-        operationFragment.btnLead1.setVisibility(View.VISIBLE);
+//        operationFragment.btnLead1.setVisibility(View.VISIBLE);   //GC20220914    “延长线”按钮不显示
     }
 
     private void initSIMView() {
@@ -1902,11 +1924,11 @@ public class ModeActivity extends BaseActivity {
         //非TDR高压操作按钮和竖向信息栏显示    //GC20211207
         llAUTO.setVisibility(View.VISIBLE);
         llInfoHv.setVisibility(View.VISIBLE);
-        //竖向信息栏放电周期、工作模式不显示  //GC20220620
-        tvModeWorkingMode.setVisibility(View.GONE);
-        tvInfoWorkingMode.setVisibility(View.GONE);
-        tvModeTIME.setVisibility(View.GONE);
-        llInfoTIME.setVisibility(View.GONE);
+        //竖向信息栏放电周期、工作方式不显示     //GC20220914 mode界面UI修改
+        tvModeWorkingMode.setVisibility(View.INVISIBLE);
+        tvInfoWorkingMode.setVisibility(View.INVISIBLE);
+        tvModeTIME.setVisibility(View.INVISIBLE);
+        llInfoTIME.setVisibility(View.INVISIBLE);
     }
 
     private void initSIMFragment() {
@@ -1960,11 +1982,11 @@ public class ModeActivity extends BaseActivity {
         //非TDR高压操作按钮和竖向信息栏显示    //GC20211207
         llAUTO.setVisibility(View.VISIBLE);
         llInfoHv.setVisibility(View.VISIBLE);
-        //竖向信息栏放电周期、工作模式不显示  //GC20220620
-        tvModeWorkingMode.setVisibility(View.GONE);
-        tvInfoWorkingMode.setVisibility(View.GONE);
-        tvModeTIME.setVisibility(View.GONE);
-        llInfoTIME.setVisibility(View.GONE);
+        //竖向信息栏放电周期、工作方式显示  //GC20220914
+        tvModeWorkingMode.setVisibility(View.VISIBLE);
+        tvInfoWorkingMode.setVisibility(View.VISIBLE);
+        tvModeTIME.setVisibility(View.VISIBLE);
+        llInfoTIME.setVisibility(View.VISIBLE);
     }
 
     private void initDecayFragment() {
@@ -2403,14 +2425,7 @@ public class ModeActivity extends BaseActivity {
         int i;
         int max1 = 0;
         int sub1;
-        //计算波形有效数据的极值   //jk20200904 更改起始判断位置，
-        for (i = pulseRemoveTdrWave[rangeState] ; i < dataMax - removeTdrSim[rangeState]-30; i++) {  //jk20220711tdrRange pulselongtdrRemove数组变动
-            sub1 = waveArray[i] - medianValue;
-            if (Math.abs(sub1) > max1) {
-                max1 = Math.abs(sub1);
-            }
-        }
-        Log.e(" max1", " max1" +  max1);
+
         gainJudgmentTdr1();
         switch (gainState) {
             case 0:
@@ -2435,11 +2450,20 @@ public class ModeActivity extends BaseActivity {
                 break;
         }
 
+        //计算波形有效数据的极值   //jk20200904 更改起始判断位置   //jk20220922 调整位置
+        for (i = pulseRemoveTdrWave[rangeState] ; i < dataMax - removeTdrSim[rangeState]-30; i++) {  //jk20220711tdrRange pulselongtdrRemove数组变动
+            sub1 = waveArray[i] - medianValue;
+            if (Math.abs(sub1) > max1) {
+                max1 = Math.abs(sub1);
+            }
+        }
+        Log.e(" max1", " max1" +  max1);
+
         //更改范围切换条件，采用找极值点的方式进行查找    //jk20220711tdrRange
         findExtremePointRange();
 
         Log.e(" rangeAdjust", " rangeAdjust" +  rangeAdjust);
-        if ((rangeAdjust == 0)&&(max1 <= 30)) { //jk20220711tdrRange
+        if ((rangeAdjust == 0)&&(max1 <= 20)) { //jk20220711tdrRange    //GT20220822 旧30 改为20
             rangeCount++;
             Log.e("tdr", "rangeCount" + rangeCount);
             switch (rangeCount) {
@@ -2591,7 +2615,7 @@ public class ModeActivity extends BaseActivity {
 
         //找所有极大值点   //jk20220711tdrRange
         for (int p = 0; p < maxNum; p++) {
-            if ((maxDataPos[p] >= pulseRemoveTdrWave[rangeState])&&(Math.abs(maxData[p] - medianValue) >= 30)) {
+            if ((maxDataPos[p] >= pulseRemoveTdrWave[rangeState])&&(Math.abs(maxData[p] - medianValue) >= 40)) {    //GT20220822 旧30 改为40
                 maxRange = 1;
                 break;
             }
@@ -2602,7 +2626,7 @@ public class ModeActivity extends BaseActivity {
         int[] minData1 = new int[65560];
         int[] minDataPos1 = new int[65560];
         int minPos=minDataPos1[0];
-        int min1 = waveArray[0];
+        int min = waveArray[0];
 
         while ( (i1 >= pulseRemovePoint[rangeState]+5 ) && (i1 < dataMax - removeTdrSim[rangeState]) ) {   //jk20200714
             if ((waveArray[i1] <= waveArray[i1 - 1]) && (waveArray[i1] <= waveArray[i1 + 1])) {
@@ -2623,8 +2647,8 @@ public class ModeActivity extends BaseActivity {
         }
         if (minNum1 > 0) {
             for (int k1 = 0; k1 < minNum1; k1++) {
-                if (minData1[k1] <= min1) {
-                    min1 = minData1[k1];
+                if (minData1[k1] <= min) {
+                    min = minData1[k1];
                     minPos = minDataPos1[k1];
                 }
             }
@@ -2647,7 +2671,7 @@ public class ModeActivity extends BaseActivity {
         int secondminPos = minDataPos1[1];
         if (minNum1 > 0) {
             for (int k1 = 0; k1 < minNum1; k1++) {
-                if ((minData1[k1] > min1) && (minData1[k1] <= secondMin)&&minDataPos1[k1] >= minPos) {
+                if ((minData1[k1] > min) && (minData1[k1] <= secondMin)&&minDataPos1[k1] >= minPos) {
                     secondMin = minData1[k1];
                     secondminPos = minDataPos1[k1];
                 }
@@ -2655,7 +2679,7 @@ public class ModeActivity extends BaseActivity {
         }
         //jk20220711tdrRange
         for (int r = 0; r < minNum1; r++) {
-            if ((minDataPos1[r] >= pulseRemoveTdrWave[rangeState])&&(Math.abs(minData1[r] - medianValue) >= 30)) {
+            if ((minDataPos1[r] >= pulseRemoveTdrWave[rangeState])&&(Math.abs(minData1[r] - medianValue) >= 40)) {  //GT20220822 旧30 改为40
                 minRange = 1;
                 break;
             }
@@ -2760,7 +2784,7 @@ public class ModeActivity extends BaseActivity {
         int[] minData1 = new int[65560];
         int[] minDataPos1 = new int[65560];
         int minPos1 = minDataPos1[0];
-        int min1 = waveArray[0];
+        int min = waveArray[0];
         //掐头去尾找极小值
         while ((i1 >= 5) && (i1 < dataMax - removeTdrSim[rangeState])) {   //jk20210304
             if ((waveArray[i1] < waveArray[i1 - 1]) && (waveArray[i1] <= waveArray[i1 + 1])) {
@@ -2781,19 +2805,15 @@ public class ModeActivity extends BaseActivity {
         }
         if (minNum1 > 0) {
             for (int k1 = 0; k1 < minNum1; k1++) {
-                if (minData1[k1] <= min1) {
-                    min1 = minData1[k1];
+                if (minData1[k1] <= min) {
+                    min = minData1[k1];
                     minPos1 = minDataPos1[k1];
                 }
             }
         }
-        b = Math.abs(128 - min1);
+        b = Math.abs(128 - min);
         b2_pos = minPos1;
-        // Log.e("a", " /波形 " +a);
-        //Log.e("b", " /波形 " +b);
-        // Log.e("maxPos1", " /zhi " +maxPos1);
-        // Log.e("minpos", " /zhi " + minPos1);
-        if (a < b && min1 <= 126) {       //jk20200714
+        if (a < b && min <= 126) {       //jk20200714
             b_pos = b2_pos;
             //  Log.e("1", " /波形向下 " );
         } else {
@@ -2887,7 +2907,7 @@ public class ModeActivity extends BaseActivity {
                 max = Math.abs(sub);
             }
         }
-        if (max <= 55) {    //jk20220711tdrRange    //GT20220822    增益参数修改
+        if (max <= 55) {    //jk20220711tdrRange    //GT20220822    增益参数修改 旧35 改为55
             gainState = 2;
             return;
         }
@@ -2948,9 +2968,9 @@ public class ModeActivity extends BaseActivity {
         int[] minData1 = new int[65560];
         int[] minDataPos1 = new int[65560];
         int minPos = minDataPos1[0];
-        int min1 = waveArray[0];
-        int secondJudgemin; //jk20220711tdr
-        int secondJudgemax;
+        int min = waveArray[0];
+        int secondJudgeMin; //jk20220711tdr
+        int secondJudgeMax;
 
         while ((i1 >= pulseRemovePoint[rangeState] + 2) && (i1 < dataMax - removeTdrSim[rangeState])) {   //jk20200714
             if ((waveArray[i1] < waveArray[i1 - 1]) && (waveArray[i1] <= waveArray[i1 + 1])) {
@@ -2972,85 +2992,86 @@ public class ModeActivity extends BaseActivity {
 
         if (minNum1 > 0) {
             for (int k1 = 0; k1 < minNum1; k1++) {
-                if (minData1[k1] <= min1) {
-                    min1 = minData1[k1];
+                if (minData1[k1] <= min) {
+                    min = minData1[k1];
                     minPos = minDataPos1[k1];
                 }
             }
         }
 
-        b = Math.abs(medianValue - min1);
-        Log.e("a", " /波形 " + a);
-        Log.e("b", " /波形 " + b);
-        Log.e("min1", " /zhi " + min1);
-        Log.e("max", " /zhi " + max);
-        Log.e("minPos", " /zhi " + minPos);
-        Log.e("maxPos", " /zhi " + maxPos);
+        b = Math.abs(medianValue - min);
 
         //jk20220711tdr
         int secondMax = 128;
-        int secondmaxPos = maxDataPos[0];
+        int secondMaxPos = maxDataPos[0];
         if (maxNum == 0) {
             Log.e("tdr", "曲线拟合没有极大值");
-            secondmaxPos = 0;
+            secondMaxPos = 0;
         } else {
             for (int k = 0; k < maxNum; k++) {
                 if ((maxData[k] < max) && (maxData[k] >= secondMax) && maxDataPos[k] >= maxPos ) {
                     secondMax = maxData[k];
-                    secondmaxPos = maxDataPos[k];
+                    secondMaxPos = maxDataPos[k];
                 }
             }
         }
 
         //jk20220711tdr
-        if( secondmaxPos == 0){
-            secondJudgemax = 0;
+        if( secondMaxPos == 0){
+            secondJudgeMax = 0;
         }else{
-            secondJudgemax = Math.abs(secondMax - medianValue);
+            secondJudgeMax = Math.abs(secondMax - medianValue);
         }
 
         //jk20220711tdr
         int secondMin = 128;
-        int secondminPos = minDataPos1[0];
+        int secondMinPos = minDataPos1[0];
         if (minNum1 > 0) {
             for (int k1 = 0; k1 < minNum1; k1++) {
-                if ((minData1[k1] > min1) && (minData1[k1] <= secondMin)&&minDataPos1[k1] >= minPos) {
+                if ((minData1[k1] > min) && (minData1[k1] <= secondMin)&&minDataPos1[k1] >= minPos) {
                     secondMin = minData1[k1];
-                    secondminPos = minDataPos1[k1];
+                    secondMinPos = minDataPos1[k1];
                 }
             }
         }else{
-            secondminPos = 0;
+            secondMinPos = 0;
         }
 
-        if( secondminPos == 0){//jk20220711tdr
-            secondJudgemin = 0;
+        if( secondMinPos == 0){//jk20220711tdr
+            secondJudgeMin = 0;
         }else{
-            secondJudgemin = Math.abs(secondMin - medianValue);
+            secondJudgeMin = Math.abs(secondMin - medianValue);
         }
 
+        Log.e("a", " /波形 " + a);
+        Log.e("b", " /波形 " + b);
+        Log.e("min", " /zhi " + min);
+        Log.e("max", " /zhi " + max);
+        Log.e("minPos", " /zhi " + minPos);
+        Log.e("maxPos", " /zhi " + maxPos);
         Log.e("secondMin", " /zhi " + secondMin);
-        Log.e("secondminPos", " /zhi " + secondminPos);
-        Log.e("secondmaxPos", " /zhi " + secondmaxPos);
-        Log.e("secondJudgemin", " /zhi " + secondJudgemin);
-        Log.e("secondJudgemax", " /zhi " + secondJudgemax);
+        Log.e("secondMinPos", " /zhi " + secondMinPos);
+        Log.e("secondMaxPos", " /zhi " + secondMaxPos);
+        Log.e("secondJudgeMin", " /zhi " + secondJudgeMin);
+        Log.e("secondJudgeMax", " /zhi " + secondJudgeMax);
         //jk20220711tdr
         if(a > b){
-            if (minPos < maxPos && secondminPos > maxPos && secondminPos < pulseRemoveTdrWave[rangeState] &&secondmaxPos< pulseRemoveTdrWave[rangeState] && min1 < medianValue -15&& secondMin < medianValue -10) {
+            if (minPos < maxPos && secondMinPos > maxPos && secondMinPos < pulseRemoveTdrWave[rangeState] &&secondMaxPos< pulseRemoveTdrWave[rangeState] && min < medianValue -15&& secondMin < medianValue -10) {
                 tdrExtreme = minPos;
                 point_x() ;
                 Log.e("tdr", "tdrr1");
-            }else if (maxPos < pulseRemoveTdrWave[rangeState] && minPos <= pulseRemoveTdrWave[rangeState] * 2 && secondminPos > pulseRemoveTdrWave[rangeState]+ 10 && secondJudgemin > secondJudgemax  && secondMin< medianValue -15){
-                tdrExtreme = secondminPos ;
+            }else if (maxPos < pulseRemoveTdrWave[rangeState] && minPos <= pulseRemoveTdrWave[rangeState] * 2 && secondMinPos > pulseRemoveTdrWave[rangeState]+ 10 && secondJudgeMin > secondJudgeMax  && secondMin< medianValue -15){
+                tdrExtreme = secondMinPos ;
                 point_x() ;
                 Log.e("tdr", "tdrr2");
-//            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos > pulseRemoveTdrWave[rangeState] * 2 && min1 < medianValue -15 && min1- medianValue > secondJudgemax)||(maxPos > pulseRemoveTdrWave[rangeState] &&  secondJudgemin > secondJudgemax && maxPos > minPos &&secondminPos>maxPos&&secondmaxPos>secondminPos&&min1 < medianValue -15)) {
-            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos > pulseRemoveTdrWave[rangeState] * 2 && min1 < medianValue -15 && min1- medianValue > secondJudgemax)){
+//            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos > pulseRemoveTdrWave[rangeState] * 2 && min < medianValue -15 && min- medianValue > secondJudgeMax)||(maxPos > pulseRemoveTdrWave[rangeState] &&  secondJudgeMin > secondJudgeMax && maxPos > minPos &&secondMinPos>maxPos&&secondMaxPos>secondMinPos&&min < medianValue -15)) {
+            //极值点条件判断修改  //GT20220822
+            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos > pulseRemoveTdrWave[rangeState] * 2 && min < medianValue -15 && Math.abs(min- medianValue) > secondJudgeMax)){ //jk20220922
                 tdrExtreme = minPos;
                 point_x();
                 Log.e("tdr", "tdrr3");
-            }else if ((minPos <= pulseRemoveTdrWave[rangeState] * 2 && maxPos < pulseRemoveTdrWave[rangeState] && secondmaxPos > pulseRemoveTdrWave[rangeState] * 2 && secondMax > medianValue +15 && secondJudgemin < secondJudgemax && secondmaxPos - maxPos > pulseRemoveTdrWave[rangeState] ) ||  (maxPos < pulseRemoveTdrWave[rangeState] &&minPos > pulseRemoveTdrWave[rangeState]*2 &&  secondJudgemax > min1 - medianValue && secondmaxPos - maxPos > pulseRemoveTdrWave[rangeState])) {
-                tdrExtreme = secondmaxPos;
+            }else if ((minPos <= pulseRemoveTdrWave[rangeState] * 2 && maxPos < pulseRemoveTdrWave[rangeState] && secondMaxPos > pulseRemoveTdrWave[rangeState] * 2 && secondMax > medianValue +15 && secondJudgeMin < secondJudgeMax && secondMaxPos - maxPos > pulseRemoveTdrWave[rangeState] ) ||  (maxPos < pulseRemoveTdrWave[rangeState] &&minPos > pulseRemoveTdrWave[rangeState]*2 &&  secondJudgeMax > min - medianValue && secondMaxPos - maxPos > pulseRemoveTdrWave[rangeState])) {
+                tdrExtreme = secondMaxPos;
                 point_s();
                 Log.e("tdr", "tdrr4");
             } else {
@@ -3059,14 +3080,14 @@ public class ModeActivity extends BaseActivity {
                 Log.e("tdr", "tdrr5");
             }
         } else {
-            if (minPos <= pulseRemoveTdrWave[rangeState] * 2 && maxPos > pulseRemoveTdrWave[rangeState] * 2 && max > medianValue + 15 && max - medianValue > secondJudgemin && maxPos > 3 * minPos) {
+            if (minPos <= pulseRemoveTdrWave[rangeState] * 2 && maxPos > pulseRemoveTdrWave[rangeState] * 2 && max > medianValue + 15 && max - medianValue > secondJudgeMin && maxPos > 3 * minPos) {
                 tdrExtreme = maxPos;
                 point_s();
-            } else if (maxPos < pulseRemoveTdrWave[rangeState] && minPos <= pulseRemoveTdrWave[rangeState] *2 && secondmaxPos > pulseRemoveTdrWave[rangeState] * 2 && secondMax > medianValue + 15 && secondJudgemin < secondJudgemax){
-                tdrExtreme = secondmaxPos;
+            } else if (maxPos < pulseRemoveTdrWave[rangeState] && minPos <= pulseRemoveTdrWave[rangeState] *2 && secondMaxPos > pulseRemoveTdrWave[rangeState] * 2 && secondMax > medianValue + 15 && secondJudgeMin < secondJudgeMax){
+                tdrExtreme = secondMaxPos;
                 point_s();
-            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos <= pulseRemoveTdrWave[rangeState] * 2 && secondminPos > pulseRemoveTdrWave[rangeState] * 2 && secondMin < medianValue -15 &&  secondJudgemin > secondJudgemax)||  (minPos <= pulseRemoveTdrWave[rangeState]*2 && secondminPos > pulseRemoveTdrWave[rangeState]  &&secondJudgemin > max - medianValue && secondMin < medianValue - 15)) {
-                tdrExtreme = secondminPos;
+            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos <= pulseRemoveTdrWave[rangeState] * 2 && secondMinPos > pulseRemoveTdrWave[rangeState] * 2 && secondMin < medianValue -15 &&  secondJudgeMin > secondJudgeMax)||  (minPos <= pulseRemoveTdrWave[rangeState]*2 && secondMinPos > pulseRemoveTdrWave[rangeState]  &&secondJudgeMin > max - medianValue && secondMin < medianValue - 15)) {
+                tdrExtreme = secondMinPos;
                 point_x();
             } else {
                 tdrExtreme = minPos;
@@ -4234,7 +4255,7 @@ public class ModeActivity extends BaseActivity {
 
         }
         if (density == densityMax) {
-            //SIM方式零点不变    (mode != SIM)    //TDR方式下不要重置零点，否则放大、缩小、移动波形会有bug     //GC20220811
+            //SIM方式零点不变     //GC20220811    (mode != SIM)   TDR也不重置零点
             if (mode == ICM) {
                 zero = positionReal * densityMax;
             }
@@ -4377,10 +4398,10 @@ public class ModeActivity extends BaseActivity {
                             i1++;
                         }
                         if (minNum1 > 0) {
-                            int min1 = minData1[0];
+                            int min = minData1[0];
                             for (int k1 = 0; k1 < minNum1; k1++) {
-                                if (minData1[k1] <= min1) {
-                                    min1 = minData1[k1];
+                                if (minData1[k1] <= min) {
+                                    min = minData1[k1];
                                     min1Pos = minDataPos1[k1];
                                 }
                             }
@@ -5606,7 +5627,7 @@ public class ModeActivity extends BaseActivity {
     private boolean isSetMode;
     public void setMode(int mode) {
         this.mode = mode;
-        isSetMode = true;   //切换方式状态记录  //GC20211222
+        isSetMode = true;   //切换测试方式状态记录  //GC20220921
         switch (mode) {
             case TDR:
                 initTDRView();
@@ -6832,17 +6853,6 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
-     * 单次模式指令下发 //GC20211222
-     */
-    public void setWorkingModeSingle() {
-        //发送单次工作模式指令
-        command = COMMAND_WORKING_MODE;
-        //数据
-        dataTransfer = 0x01;
-        startService();
-    }
-
-    /**
      * @param index 侧边栏设置   //jk20210123
      */
 
@@ -7312,109 +7322,29 @@ public class ModeActivity extends BaseActivity {
         autoDialog = new AutoDialog(this);
         if (!autoDialog.isShowing()) {
             autoDialog.show();
-
-            //对话框显示状态记录     //GC20211210
-            Constant.isShowHV = true;
-            //信息栏与高压操作界面参数传递和初始化    //GC20211207    //打开对话框工作模式初始化
-            autoDialog.spWorkingMode.setSelection(Constant.WorkingMode);
-            //高压操作界面初始化——只有“单次”时单次放电按钮有效      //GC20211220
-            if (Constant.WorkingMode != 0) {
-                autoDialog.ivHVPULSE.setEnabled(false);
-                autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
-            }
-            //监听工作方式变化
-            autoDialog.spWorkingMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (Constant.WorkingMode != position) {
-                        sendWorkingMode = true;     //如果和记录的位置不一样，发送工作模式指令
-                    }
-                    //记录工作模式变化
-                    Constant.WorkingMode = position;    //position=0,1,2
-                    //mode界面信息栏工作模式同步
-                    switch (position) {
-                        case 0:
-                            tvInfoWorkingMode.setText(R.string.PULSE);
-                            workingModeData = 0x01;
-                            //只有单次时电压档位切换有效   //GC20220617
-                            autoDialog.rbGear16.setClickable(true);
-                            autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.white));
-                            autoDialog.rbGear32.setClickable(true);
-                            autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.white));
-                            autoDialog.ivHVPULSE.setEnabled(true);
-                            autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_selector);
-                            break;
-                        case 1:
-                            tvInfoWorkingMode.setText(R.string.CYCLIC);
-                            workingModeData = 0x02;
-                            autoDialog.rbGear16.setClickable(false);
-                            autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                            autoDialog.rbGear32.setClickable(false);
-                            autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                            //工作模式档位切换时     //GC20211220
-                            autoDialog.ivHVPULSE.setEnabled(false);
-                            autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
-                            break;
-                        case 2:
-                            tvInfoWorkingMode.setText(R.string.DC);
-                            workingModeData = 0x00;
-                            autoDialog.rbGear16.setClickable(false);
-                            autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                            autoDialog.rbGear32.setClickable(false);
-                            autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
-                            autoDialog.ivHVPULSE.setEnabled(false);
-                            autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
-                            break;
-                        default:
-                            break;
-                    }
-                    if (sendWorkingMode) {
-                        sendWorkingMode = false;
-                        //发送工作模式指令  //GC20211209
-                        command = COMMAND_WORKING_MODE;
-                        //数据
-                        if (workingModeData == 0x02) {
-                            //GC20211223
-                            dataTransfer = (currentSetTime << 4) + 2;
-                        } else {
-                            dataTransfer = workingModeData;
-                        }
-                        startService();
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-            //档位初始化
+            Constant.isShowHV = true;   //高压设置对话框显示状态记录     //GC20211210
+            //档位初始化 //GC20211227
             currentGear = Constant.gear;
             switch (currentGear) {
                 case 1:
-                    //GC20211227
                     autoDialog.rgGear.check(autoDialog.rbGear16.getId());
+                    autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));    //档位选中效果修改  //GC20220913
                     break;
                 case 2:
                     autoDialog.rgGear.check(autoDialog.rbGear32.getId());
+                    autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
                     break;
                 default:
                     break;
             }
-
             //监听电压档位选项变化
             autoDialog.setRadioGroup(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     if (autoDialog.rbGear16.getId() == checkedId) {
-                        autoDialog.rgGear.check(autoDialog.rbGear16.getId());
+                        autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));    //档位选中效果修改  //GC20220913
+                        autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.white));
                         currentGear = 1;
-                        //电压档位变换状态记忆    //GC20220712
-                        if (gearMemory != currentGear) {
-                            clickGear = true;
-                        } else {
-                            clickGear = false;
-                        }
                         //改变档位设定电压初始化为0
                         Constant.setVoltage = 0;
                         //档位变化实时记录档位和电压数值 //GC20220414
@@ -7425,14 +7355,9 @@ public class ModeActivity extends BaseActivity {
                         autoDialog.seekBar16.setVisibility(View.VISIBLE);
                         autoDialog.seekBar16.setProgress(0);
                     } else if (autoDialog.rbGear32.getId() == checkedId) {
-                        autoDialog.rgGear.check(autoDialog.rbGear32.getId());
+                        autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));    //档位选中效果修改  //GC20220913
+                        autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.white));
                         currentGear = 2;    //GC20211227
-                        //电压档位变换状态记忆    //GC20220712
-                        if (gearMemory != currentGear) {
-                            clickGear = true;
-                        }else {
-                            clickGear = false;
-                        }
                         //改变档位设定电压初始化为0
                         Constant.setVoltage = 0;
                         //档位变化实时记录档位和电压数值 //GC20220414
@@ -7443,8 +7368,26 @@ public class ModeActivity extends BaseActivity {
                         autoDialog.seekBar32.setVisibility(View.VISIBLE);
                         autoDialog.seekBar32.setProgress(0);
                     }
-                    //判断是否有动画 //GC20220711
+                    //判断是否有动画 //GC20220917
                     judgeHV();
+                    //如果未连接不执行  //GC20220917
+                    if (!ConnectService.isConnected) {
+                        Toast.makeText(ModeActivity.this, R.string.test_on_no_connect, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    //开始倒计时弹出电压档位转换对话框   //GC20220917
+                    clickGear = true;
+                    showSwitchingDialog();
+                    timerGear.start();
+                    //发送高压设定档位指令    //GC20220917    档位切换实时响应
+                    ConnectService.isHV = true;
+                    command = COMMAND_VOLTAGE_SET;
+                    //电压数值0
+                    dataTransfer = (byte) (0);
+                    dataTransfer2 = (byte) (0);
+                    //档位
+                    dataTransfer3 = currentGear;    //同 GEAR1 = 0x01 GEAR2 = 0x02
+                    startService();
                 }
             });
             //设定电压初始化
@@ -7462,7 +7405,7 @@ public class ModeActivity extends BaseActivity {
             }
             //判断是否有动画 //GC20220711
             judgeHV();
-            //seekBar32电压变化监听    //GC20220413
+            //设定电压变化监听seekBar32    //GC20220413
             autoDialog.seekBar32.setOnProgressChangedListener(new KBubbleSeekBar32.OnProgressChangedListener() {
                 @Override
                 public void onProgressChanged(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
@@ -7480,7 +7423,7 @@ public class ModeActivity extends BaseActivity {
 
                 }
             });
-            //seekBar16电压变化监听    //GC20220413
+            //设定电压变化监听seekBar16    //GC20220413
             autoDialog.seekBar16.setOnProgressChangedListener(new KBubbleSeekBar16.OnProgressChangedListener() {
                 @Override
                 public void onProgressChanged(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
@@ -7498,81 +7441,6 @@ public class ModeActivity extends BaseActivity {
 
                 }
             });
-            //二次脉冲无放电周期 //GC20220617
-            if (mode == SIM) {
-                //周期
-                autoDialog.llTIME.setVisibility(View.INVISIBLE);
-                //工作模式
-                autoDialog.tvWorkingMode.setVisibility(View.GONE);
-                autoDialog.spWorkingMode.setVisibility(View.GONE);
-                autoDialog.vWorkingMode.setVisibility(View.GONE);
-                //单次放电位置调整
-                autoDialog.llPULSE.setVisibility(View.INVISIBLE);
-                autoDialog.tvPULSE.setVisibility(View.INVISIBLE);
-                autoDialog.llPULSE2.setVisibility(View.VISIBLE);
-                autoDialog.tvPULSE2.setVisibility(View.VISIBLE);
-            } else {
-                //周期
-                autoDialog.llTIME.setVisibility(View.VISIBLE);
-                //工作模式
-                autoDialog.tvWorkingMode.setVisibility(View.VISIBLE);
-                autoDialog.spWorkingMode.setVisibility(View.VISIBLE);
-                autoDialog.vWorkingMode.setVisibility(View.VISIBLE);
-                //“放电”按钮位置调整
-                autoDialog.llPULSE.setVisibility(View.VISIBLE);
-                autoDialog.tvPULSE.setVisibility(View.VISIBLE);
-                autoDialog.llPULSE2.setVisibility(View.INVISIBLE);
-                autoDialog.tvPULSE2.setVisibility(View.INVISIBLE);
-                //放电周期初始化
-                currentSetTime = Constant.time;
-                autoDialog.seekBar12.setProgress(currentSetTime);
-                //seekBar12时间周期变化监听    //GC20220619
-                autoDialog.seekBar12.setOnProgressChangedListener(new KBubbleSeekBar12.OnProgressChangedListener() {
-                    @Override
-                    public void onProgressChanged(KBubbleSeekBar12 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
-                        currentSetTime = progress;
-                        //改变放电周期
-                        Constant.time = currentSetTime;
-                        tvInfoTIME.setText(currentSetTime + "");
-                        if (workingModeData == 0x02) {
-                            //发送工作模式指令
-                            command = COMMAND_WORKING_MODE;
-                            //数据
-                            dataTransfer = (currentSetTime << 4) + 2;
-                            startService();
-                        }
-                    }
-
-                    @Override
-                    public void getProgressOnActionUp(KBubbleSeekBar12 bubbleSeekBar, int progress, float progressFloat) {
-
-                    }
-
-                    @Override
-                    public void getProgressOnFinally(KBubbleSeekBar12 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
-
-                    }
-                });
-            }
-
-            //点击单次放电按钮事件
-            autoDialog.setIvHVPULSE(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //发送单次放电指令  //GC20211209
-                    command = COMMAND_SINGLE_PULSE;
-                    //数据
-                    dataTransfer = 0x01;
-                    startService();
-                    handler.postDelayed(() -> {
-                        //发送查询指令  //GC20211209
-                        command = COMMAND_VOLTAGE_QUERY;
-                        //数据
-                        dataTransfer = 0x00;
-                        startService();
-                    }, 20);
-                }
-            });
             //点击“电压确认”按钮事件
             autoDialog.setTvConfirmButton(new View.OnClickListener() {
                 @Override
@@ -7580,11 +7448,11 @@ public class ModeActivity extends BaseActivity {
                     //记录改变的电压档位
                     Constant.gear = currentGear;
                     gearMemory = currentGear;
-                    if (clickGear) {
+                    /*if (clickGear) {
                         //开始倒计时弹出电压档位转换对话框   //GC20220712
                         showSwitchingDialog();
-                        timer2.start();
-                    }
+                        timerGear.start();
+                    }*/ //GC20220917
                     //记录改变的设定电压
                     Constant.setVoltage = currentSetVoltage;
                     tvInfoSetVoltage.setText(currentSetVoltage + "");
@@ -7604,11 +7472,290 @@ public class ModeActivity extends BaseActivity {
                     startService();
                 }
             });
+            //工作方式初始化   //GC20220913
+            switch (Constant.WorkingMode) {
+                case 0:
+                    autoDialog.rgGearMode.check(autoDialog.rbGearPULSE.getId());
+                    autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                    break;
+                case 1:
+                    autoDialog.rgGearMode.check(autoDialog.rbGearCYCLIC.getId());
+                    autoDialog.rbGearCYCLIC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                    break;
+                case 2:
+                    autoDialog.rgGearMode.check(autoDialog.rbGearDC.getId());
+                    autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                    break;
+                default:
+                    break;
+            }
+            //监听工作方式选项变化    //GC20220913
+            autoDialog.setRadioGroupMode(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (autoDialog.rbGearPULSE.getId() == checkedId) {
+                        tvInfoWorkingMode.setText(R.string.PULSE);
+                        Constant.WorkingMode = 0;
+                        workingModeData = 0x01;
+                        autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                        if (Constant.isClickLocate) {   //定点方式下“直流”无    //GC20220913
+                            autoDialog.rbGearDC.setVisibility(View.INVISIBLE);
+                        } else {
+                            autoDialog.rbGearDC.setVisibility(View.VISIBLE);
+                            autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                        }
+                        autoDialog.rbGearCYCLIC.setVisibility(View.VISIBLE);
+                        autoDialog.rbGearCYCLIC.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                        //工作方式“单次”，电压档位切换有效  //GC20220913
+                        autoDialog.rbGear16.setClickable(true);
+                        autoDialog.rbGear32.setClickable(true);
+                        switch (currentGear) {
+                            case 1:
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                                break;
+                            case 2:
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                                break;
+                            default:
+                                break;
+                        }
+                        //工作方式“单次”，“放电”按钮可点击  //GC20211220
+                        autoDialog.ivHVPULSE.setEnabled(true);
+                        autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_selector);
+
+                    } else if (autoDialog.rbGearCYCLIC.getId() == checkedId) {
+                        tvInfoWorkingMode.setText(R.string.CYCLIC);
+                        Constant.WorkingMode = 1;
+                        workingModeData = 0x02;
+                        autoDialog.rbGearCYCLIC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                        autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                        autoDialog.rbGearDC.setVisibility(View.INVISIBLE);
+                        //工作方式非“单次”，电压档位切换无效   //GC20220913
+                        autoDialog.rbGear16.setClickable(false);
+                        autoDialog.rbGear32.setClickable(false);
+                        switch (currentGear) {
+                            case 1:
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                                break;
+                            case 2:
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                                break;
+                            default:
+                                break;
+                        }
+                        //工作方式非“单次”，“放电”按钮无法点击  //GC20211220
+                        autoDialog.ivHVPULSE.setEnabled(false);
+                        autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
+
+                    } else if (autoDialog.rbGearDC.getId() == checkedId) {
+                        tvInfoWorkingMode.setText(R.string.DC);
+                        Constant.WorkingMode = 2;
+                        workingModeData = 0x00;
+                        autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                        autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                        autoDialog.rbGearCYCLIC.setVisibility(View.INVISIBLE);
+                        //工作方式非“单次”，电压档位切换无效   //GC20220913
+                        autoDialog.rbGear16.setClickable(false);
+                        autoDialog.rbGear32.setClickable(false);
+                        switch (currentGear) {
+                            case 1:
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                                break;
+                            case 2:
+                                autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                                autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                                break;
+                            default:
+                                break;
+                        }
+                        //工作方式非“单次”，“放电”按钮无法点击  //GC20211220
+                        autoDialog.ivHVPULSE.setEnabled(false);
+                        autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
+                    }
+                    //发送工作方式指令  //GC20211209
+                    command = COMMAND_WORKING_MODE;
+                    //数据
+                    if (workingModeData == 0x02) {
+                        //周期时间指令下发  //GC20211223
+                        dataTransfer = (currentSetTime << 4) + 2;
+                    } else {
+                        dataTransfer = workingModeData;
+                    }
+                    startService();
+
+                }
+            });
+            //工作方式初始化旧UI
+            autoDialog.spWorkingMode.setSelection(Constant.WorkingMode);
+            //监听工作方式变化旧UI
+            autoDialog.spWorkingMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (Constant.WorkingMode != position) {
+                        sendWorkingMode = true;     //如果和记录的位置不一样，发送工作方式指令
+                    }
+                    //记录工作方式变化
+                    Constant.WorkingMode = position;    //position=0,1,2
+                    //mode界面信息栏工作方式同步
+                    switch (position) {
+                        case 0:
+                            tvInfoWorkingMode.setText(R.string.PULSE);
+                            workingModeData = 0x01;
+                            //只有单次时电压档位切换有效   //GC20220617
+                            autoDialog.rbGear16.setClickable(true);
+                            autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                            autoDialog.rbGear32.setClickable(true);
+                            autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                            //工作方式“单次”，“放电”按钮可点击  //GC20211220
+                            autoDialog.ivHVPULSE.setEnabled(true);
+                            autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_selector);
+                            break;
+                        case 1:
+                            tvInfoWorkingMode.setText(R.string.CYCLIC);
+                            workingModeData = 0x02;
+                            autoDialog.rbGear16.setClickable(false);
+                            autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
+                            autoDialog.rbGear32.setClickable(false);
+                            autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
+                            //工作方式非“单次”，“放电”按钮无法点击  //GC20211220
+                            autoDialog.ivHVPULSE.setEnabled(false);
+                            autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
+                            break;
+                        case 2:
+                            tvInfoWorkingMode.setText(R.string.DC);
+                            workingModeData = 0x00;
+                            autoDialog.rbGear16.setClickable(false);
+                            autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
+                            autoDialog.rbGear32.setClickable(false);
+                            autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.T_red));
+                            //工作方式非“单次”，“放电”按钮无法点击  //GC20211220
+                            autoDialog.ivHVPULSE.setEnabled(false);
+                            autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (sendWorkingMode) {
+                        sendWorkingMode = false;
+                        //发送工作方式指令  //GC20211209
+                        command = COMMAND_WORKING_MODE;
+                        //数据
+                        if (workingModeData == 0x02) {
+                            //GC20211223
+                            dataTransfer = (currentSetTime << 4) + 2;
+                        } else {
+                            dataTransfer = workingModeData;
+                        }
+                        startService();
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+            //根据方式调整界面右侧UI显示
+            if (mode == SIM) {
+                //工作方式旧UI
+                /*autoDialog.tvWorkingMode.setVisibility(View.GONE);
+                autoDialog.spWorkingMode.setVisibility(View.GONE);
+                autoDialog.vWorkingMode.setVisibility(View.GONE);*/
+                //SIM方式下工作方式不可选   //GC20220913
+                autoDialog.rbGearDC.setVisibility(View.GONE);
+                autoDialog.rbGearPULSE.setVisibility(View.GONE);
+                autoDialog.rbGearCYCLIC.setVisibility(View.GONE);
+                //SIM方式下无放电周期  //GC20220617
+                autoDialog.llTIME.setVisibility(View.INVISIBLE);
+                //“放电”按钮位置调整
+                autoDialog.llPULSE.setVisibility(View.INVISIBLE);
+                autoDialog.tvPULSE.setVisibility(View.INVISIBLE);
+                autoDialog.llPULSE2.setVisibility(View.VISIBLE);
+                autoDialog.tvPULSE2.setVisibility(View.VISIBLE);
+            } else {
+                //工作方式旧UI
+                /*autoDialog.tvWorkingMode.setVisibility(View.VISIBLE);
+                autoDialog.spWorkingMode.setVisibility(View.VISIBLE);
+                autoDialog.vWorkingMode.setVisibility(View.VISIBLE);*/
+                //非SIM方式下工作方式可选     //GC20220913
+                if (Constant.isClickLocate) {   //定点方式下“直流”无    //GC20220913
+                    autoDialog.rbGearDC.setVisibility(View.INVISIBLE);
+                } else {
+                    autoDialog.rbGearDC.setVisibility(View.VISIBLE);
+                }
+                autoDialog.rbGearPULSE.setVisibility(View.VISIBLE);
+                autoDialog.rbGearCYCLIC.setVisibility(View.VISIBLE);
+                //非SIM方式下有放电周期  //GC20220617
+                autoDialog.llTIME.setVisibility(View.VISIBLE);
+                //“放电”按钮位置调整
+                autoDialog.llPULSE.setVisibility(View.VISIBLE);
+                autoDialog.tvPULSE.setVisibility(View.VISIBLE);
+                autoDialog.llPULSE2.setVisibility(View.INVISIBLE);
+                autoDialog.tvPULSE2.setVisibility(View.INVISIBLE);
+                //“放电周期”的时间初始化
+                currentSetTime = Constant.time;
+                autoDialog.seekBar12.setProgress(currentSetTime);
+                //放电周期时间变化监听seekBar12    //GC20220619
+                autoDialog.seekBar12.setOnProgressChangedListener(new KBubbleSeekBar12.OnProgressChangedListener() {
+                    @Override
+                    public void onProgressChanged(KBubbleSeekBar12 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                        currentSetTime = progress;
+                        //改变放电周期
+                        Constant.time = currentSetTime;
+                        tvInfoTIME.setText(currentSetTime + "");
+                        if (workingModeData == 0x02) {
+                            //发送工作方式指令
+                            command = COMMAND_WORKING_MODE;
+                            //数据
+                            dataTransfer = (currentSetTime << 4) + 2;
+                            startService();
+                        }
+                    }
+
+                    @Override
+                    public void getProgressOnActionUp(KBubbleSeekBar12 bubbleSeekBar, int progress, float progressFloat) {
+
+                    }
+
+                    @Override
+                    public void getProgressOnFinally(KBubbleSeekBar12 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
+                    }
+                });
+            }
+            //“放电”按钮状态初始化——工作方式非“单次”时无法点击   //GC20211220
+            if (Constant.WorkingMode != 0) {
+                autoDialog.ivHVPULSE.setEnabled(false);
+                autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
+            }
+            //点击“放电”按钮事件
+            autoDialog.setIvHVPULSE(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //发送单次放电指令  //GC20211209
+                    command = COMMAND_SINGLE_PULSE;
+                    //数据
+                    dataTransfer = 0x01;
+                    startService();
+                    handler.postDelayed(() -> {
+                        //发送查询指令  //GC20211209
+                        command = COMMAND_VOLTAGE_QUERY;
+                        //数据
+                        dataTransfer = 0x00;
+                        startService();
+                    }, 20);
+                }
+            });
             //点击进入测试界面（退出）按钮事件
             autoDialog.setQuit(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //对话框退出状态记录     //GC20211210
+                    //高压设置对话框退出状态记录     //GC20211210
                     Constant.isShowHV = false;
                     tvTest.setEnabled(true);   //GC20220729
                     ivAUTO.setEnabled(true);
@@ -7618,14 +7765,10 @@ public class ModeActivity extends BaseActivity {
                         allowSetRange = true;   //定点模式进入ICM什么都不做
                         Constant.isClickLocate = false;
                         setMode(0x22);
-                        //点击进入测试按钮时工作模式初始化为单次   //GC20211222
+                        //“定点模式”点击进入测试按钮时工作方式初始化为单次   //GC20220921
                         if (Constant.WorkingMode != 0) {
-                            //工作模式记录为单次
-                            Constant.WorkingMode = 0;
-                            //信息栏
-                            tvInfoWorkingMode.setText(R.string.PULSE);
+                            handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 150);
                         }
-                        handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 150);
                     } else {
                         //退出高压操作对话框时弹出等待触发对话框   //GC20211213
                         if (ConnectService.isConnected) {
@@ -7649,12 +7792,8 @@ public class ModeActivity extends BaseActivity {
                     if (Constant.isClickLocate) {
                         Constant.isClickLocate = false;
                         setMode(0x22);
-                        //定点叉号退出时工作模式初始化为单次   //GC20211222
+                        //“定点模式”点击叉号退出时工作方式初始化为单次   //GC20220921
                         if (Constant.WorkingMode != 0) {
-                            //工作模式记录为单次
-                            Constant.WorkingMode = 0;
-                            //信息栏
-                            tvInfoWorkingMode.setText(R.string.PULSE);
                             handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 150);
                         }
                     }
@@ -7669,7 +7808,6 @@ public class ModeActivity extends BaseActivity {
     public void dangerousNote() {
         Toast.makeText(ModeActivity.this, "当前显示电压大于2kV，请先放掉电压再进行转换操作！", Toast.LENGTH_LONG).show();
     }
-
 
     /**
      * 判断电压数值 //GC20220711
@@ -7797,10 +7935,17 @@ public class ModeActivity extends BaseActivity {
             switchOnNoteDialog.show();
             //外部点击禁止
             switchOnNoteDialog.setCanceledOnTouchOutside(false);
+            /*//进入合闸提示对话框，开始发送合闸查询命令  //GC20220919X    907主板调试需要屏蔽
+            command = COMMAND_SWITCH_ON_QUERY;
+            //数据
+            dataTransfer = 0x01;
+            startService();
+            timerSwitch.start();*/
             //点击“是，下一步”按钮事件
             switchOnNoteDialog.setTvYes(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+//                    timerSwitch.cancel();   //GC20220919X
                     switchOnNoteDialog.dismiss();
                     isSwitchOn = true;
                     switch (modeClick) {
@@ -7822,11 +7967,33 @@ public class ModeActivity extends BaseActivity {
                 public void onClick(View v) {
                     tvTest.setEnabled(true);   //GC20220729
                     ivAUTO.setEnabled(true);
+//                    timerSwitch.cancel();   //GC20220919X
                     switchOnNoteDialog.dismiss();
                 }
             });
         }
     }
+
+    /**
+     * 倒计时0.6s处理    //GC20220919
+     */
+    /*private CountDownTimer timerSwitch = new CountDownTimer(500, 100) {
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+        }
+
+        @Override
+        public void onFinish() {
+            //进入合闸提示对话框，开始发送合闸查询命令  //GC20220919X    907主板调试需要屏蔽
+            command = COMMAND_SWITCH_ON_QUERY;
+            //数据
+            dataTransfer = 0x01;
+            startService();
+            timerSwitch.start();
+        }
+
+    };*/
 
     /**
      * 方式测试方法    //GC20220706
@@ -7885,21 +8052,16 @@ public class ModeActivity extends BaseActivity {
             }, 400);
         }
 
-        //切换方式时电压归0     //GC20220715
-        if (Constant.setVoltage != 0) {
-            handler.postDelayed(ModeActivity.this::setHv0, 350);    //GT
-        }
-        //改变方式时工作模式初始化为单次   //GC20211222
         if (isSetMode) {
             isSetMode = false;
-            //改变方式时工作模式初始化为单次
-            if (Constant.WorkingMode != 0) {
-                //工作模式记录为单次
-                Constant.WorkingMode = 0;
-                //信息栏
-                tvInfoWorkingMode.setText(R.string.PULSE);
-                handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 150);
+            /*//改变测试方式时设定电压归0     //GC20220921
+            if (Constant.setVoltage != 0) {
+                handler.postDelayed(ModeActivity.this::setHv0, 350);
             }
+            //改变测试方式时工作方式初始化为单次   //GC20220921
+            if (Constant.WorkingMode != 0) {
+                handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 450);
+            }*/ //GC20220921    在这里时间太长不合适，转移到fragment事件
         }
 
         //测试方式转换对话框提示逻辑
@@ -7908,14 +8070,14 @@ public class ModeActivity extends BaseActivity {
                 handler.postDelayed(ModeActivity.this::clickTest, 100);  //情形1：上次方式是SIM,直接测试
             } else if (modeMemory == ICM) {
                 showSwitchingDialog();                                              //情形2：上次方式是ICM（定点），弹方式转换对话框
-                timer.start();
+                timerWorkingMode.start();
             }
         } else if (mode == ICM) {
             if (modeMemory == ICM) {    //情形1：上次是ICM（定点），直接弹出高压操作对话框
                 showAutoDialog();
             } else {
                 showSwitchingDialog();  //情形2：上次是TDR或SIM,弹方式转换对话框
-                timer.start();
+                timerWorkingMode.start();
             }
         } else if (mode == SIM) {
             showAutoDialog();   //这是SIM的第二步，直接弹出高压操作对话框  //GC20220806
@@ -7957,7 +8119,7 @@ public class ModeActivity extends BaseActivity {
     /**
      * 测试方式对话框取消倒计时处理
      */
-    private CountDownTimer timer = new CountDownTimer(3500, 1000) {
+    private CountDownTimer timerWorkingMode = new CountDownTimer(3500, 1000) {
 
         @Override
         public void onTick(long millisUntilFinished) {
@@ -7984,7 +8146,7 @@ public class ModeActivity extends BaseActivity {
     /**
      * 电压档位对话框取消倒计时处理
      */
-    private CountDownTimer timer2 = new CountDownTimer(6000, 1000) {
+    private CountDownTimer timerGear = new CountDownTimer(6000, 1000) {
 
         @Override
         public void onTick(long millisUntilFinished) {
@@ -8077,7 +8239,7 @@ public class ModeActivity extends BaseActivity {
             hvWaitTriggerDialog.show();
             //外部点击禁止
             hvWaitTriggerDialog.setCanceledOnTouchOutside(false);
-            //触发界面初始化——只有“单次”时单次放电按钮有效    //GC20211220
+            //“放电”按钮状态初始化——工作方式非“单次”时无法点击     //GC20211220
             if (Constant.WorkingMode != 0) {
                 hvWaitTriggerDialog.ivTriggerPULSE.setEnabled(false);
                 hvWaitTriggerDialog.ivTriggerPULSE.setImageResource(R.drawable.bg_pulse_false);
@@ -8100,7 +8262,7 @@ public class ModeActivity extends BaseActivity {
                     }, 20);
                 }
             });
-            //点击“高压操作”按钮事件
+            //点击“高压设置”按钮事件
             hvWaitTriggerDialog.setHv(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -8115,9 +8277,13 @@ public class ModeActivity extends BaseActivity {
                 public void onClick(View v) {
                     hvWaitTriggerDialog.dismiss();
                     cancelTest();
-                    //取消测试时电压归0     //GC20211216
+                    //取消测试时设定电压归0     //GC20220921
                     if (Constant.setVoltage != 0) {
                         handler.postDelayed(ModeActivity.this::setHv0, 20);
+                    }
+                    //取消测试时工作方式初始化为单次   //GC20220921
+                    if (Constant.WorkingMode != 0) {
+                        handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 120);
                     }
                 }
             });
@@ -8142,7 +8308,7 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
-     * 取消测试时设定电压为0
+     * 设定电压重置为“0”   //GC20220921
      */
     public void setHv0() {
         //改变设定电压值
@@ -8161,56 +8327,96 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
-     * 故障反馈对话框创建 //GC20211221
+     * 工作方式“单次”指令下发 //GC20220921
+     */
+    public void setWorkingModeSingle() {
+        //工作方式记录为单次
+        Constant.WorkingMode = 0;
+        //信息栏
+        tvInfoWorkingMode.setText(R.string.PULSE);
+        //发送单次工作方式指令
+        command = COMMAND_WORKING_MODE;
+        //数据
+        dataTransfer = 0x01;
+        startService();
+    }
+
+    /**
+     * 重置设定电压和工作方式  //GC20220921
+     */
+    public void resetHvWorkingMode() {
+        //改变测试方式时设定电压归0
+        if (Constant.setVoltage != 0) {
+            setHv0();
+            //改变测试方式时工作方式初始化为单次
+            if (Constant.WorkingMode != 0) {
+                handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 100);
+            }
+        } else {
+            //改变测试方式时工作方式初始化为单次
+            if (Constant.WorkingMode != 0) {
+                setWorkingModeSingle();
+            }
+        }
+    }
+
+    /**
+     * 故障反馈对话框创建    //GC20220920
      */
     private NoteDialog noteDialog;
+    boolean isQuit = true;
     private void showNoteDialog() {
-        //解决TDR测试问题     //GC20220714
+        //解决TDR测试问题
         Constant.isTesting = true;
-        //有接收数据对话框取消掉   //GC20220714
+        //有对话框取先消掉  //GC20220920
         if (tDialog != null) {
-            tDialog.dismissAllowingStateLoss();
+            tDialog.dismiss();              //消正在接收数据对话框
+        }
+        if (hvWaitTriggerDialog != null) {
+            hvWaitTriggerDialog.dismiss();  //消测试等待对话框
+        }
+        if (autoDialog != null) {
+            autoDialog.dismiss();           //消高压设置对话框
+        }
+        if (switchOnNoteDialog != null) {
+            switchOnNoteDialog.dismiss();   //消合闸提示对话框
         }
         noteDialog = new NoteDialog(this);
         if (!noteDialog.isShowing()) {
             noteDialog.show();
             //外部点击禁止
             noteDialog.setCanceledOnTouchOutside(false);
-            //接地报警指示    //GC20220714
+            //接地报警指示
             if (!Constant.isWarning) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_warning_note2));
+                isQuit = false;
             }
             if (!Constant.isGear) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_gear_note2));
+                isQuit = true;
             }
             if (!Constant.isWorkingMode) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_working_mode_note2));
+                isQuit = true;
             }
             if (!Constant.isIgnitionCoil) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_ignition_coil_note2));
+                isQuit = true;
             }
             //点击退出按钮事件
             noteDialog.setTvFaultQuit(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    NoteDialog.dismiss();
-                    /*Intent home = new Intent(Intent.ACTION_MAIN);
-                    home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    home.addCategory(Intent.CATEGORY_HOME);
-                    startActivity(home);*/
-                    if (hvWaitTriggerDialog != null) {
-                        hvWaitTriggerDialog.dismiss();
+                    noteDialog.dismiss();
+                    if (isQuit) {
+                        ModeActivity.this.finish(); //结束当前Activity
+                        onDestroy();
+                        Intent startMain = new Intent(Intent.ACTION_MAIN);
+                        startMain.addCategory(Intent.CATEGORY_HOME);
+                        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(startMain);
+                        System.exit(0); //退出程序
                     }
-                    if (autoDialog != null) {
-                        autoDialog.dismiss();
-                    }
-                    ModeActivity.this.finish();//结束当前Activity
-                    onDestroy();
-                    Intent startMain = new Intent(Intent.ACTION_MAIN);
-                    startMain.addCategory(Intent.CATEGORY_HOME);
-                    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(startMain);
-                    System.exit(0);// 退出程序
                 }
             });
         }

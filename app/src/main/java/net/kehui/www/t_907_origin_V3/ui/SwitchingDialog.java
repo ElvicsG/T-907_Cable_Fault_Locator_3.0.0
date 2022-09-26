@@ -47,7 +47,7 @@ public class SwitchingDialog extends BaseDialog implements View.OnClickListener 
         //初始化
         tvNoteSw = view.findViewById(R.id.tv_note_sw);
         ivScanU = view.findViewById(R.id.iv_scan_u);
-        //画动画1——正在测试中   ...     波纹
+        //画动画 ...
         if (valueAnimator == null) {
             valueAnimator = ValueAnimator.ofInt(0, 4).setDuration(1000);
             valueAnimator.setRepeatCount(ValueAnimator.INFINITE);

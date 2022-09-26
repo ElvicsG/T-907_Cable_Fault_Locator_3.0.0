@@ -5,7 +5,7 @@ package net.kehui.www.t_907_origin_V3.application;
  * @date 2019/7/8
  */
 public class Constant {
-    public static final String SSID = "T-A310";  //GC21220411   //gc调试
+    public static final String SSID = "T-A310";  //GC20220411   //gc调试
     public static final String DEVICE_IP = "192.168.5.143";
     public static final String BASE_API = "http://cfl.kehui.cn/";
     public static final String PARAM_INFO_KEY = "param_info_key";
@@ -38,7 +38,7 @@ public class Constant {
     public static int[] Para;
 
     /**
-     * 全自动高压参数  //GC20211203
+     * 全自动高压参数
      */
     public static int WorkingMode = 0;
     public static int gear = 2; //初始化档位为32kV / 或8kV    //GC20211227

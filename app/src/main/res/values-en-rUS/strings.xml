@@ -111,6 +111,7 @@
     <string name="gain_too_low">Gain too low for auto. location</string>
     <string name="cursor_zero_set_success">Cursor zero setting successfully!</string>
     <string name="connect_success">Connect T-A310 success!</string>
+    <string name="connect_failed">Connect T-A310 failed!</string>
     <string name="communication_failed">Please check connecting…</string>
     <string name="no_records">No Data</string>
     <!-- 新的资源 -->
@@ -181,7 +182,7 @@
     <string name="chineseSpace">&#12288;</string>
     <string name="testAgain">Please test again!</string>
     <string name="company_name">Kehui International Ltd.</string>
-    <string name="v_name">V3.0.0</string>
+    <string name="v_name">V3.0.4</string>
 
     <string name="working_mode">Working Mode:</string>
     <string name="DC">D.C.</string>
@@ -219,8 +220,11 @@
     <string name="switching_success">测试方式转换成功！</string>
     <string name="switching2">正在转换电压档位</string>
     <string name="switching_gear_success">电压档位转换成功！</string>
-    <string name="switch_on_note">请确认设备硬件是否已经合闸！</string>
+    <string name="switch_on_note">正在检查设备是否合闸</string>
+    <string name="switch_on_note2">设备已合闸，请点击下一步！</string>
+    <string name="switch_on_note3">设备未合闸，请先合闸！</string>
     <string name="btn_yes">是，下一步</string>
-    <string name="btn_no">否，上一步</string>
+    <string name="btn_no">返回上一步</string>
+    <string name="danger">高压危险！测试前请务必可靠连接保护地</string>
 
 </resources>

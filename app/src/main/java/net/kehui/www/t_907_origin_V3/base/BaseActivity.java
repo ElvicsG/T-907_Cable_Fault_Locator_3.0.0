@@ -250,24 +250,16 @@ public class BaseActivity extends AppCompatActivity {
      * eb90aa55 03 70 00 sum    00：直流 01：单次 02：周期
      * 0x71 单次放电指令
      * eb90aa55 03 71 01 75    01：放电   //GC20211209
+     * 0x90 查询是否合闸指令    //GC20220919
      */
     public final static int COMMAND_VOLTAGE_SET = 0x60;
-    public final static int COMMAND_VOLTAGE_SWITCH = 0x61;
     public final static int COMMAND_VOLTAGE_QUERY = 0x62;
     public final static int COMMAND_WORKING_MODE = 0x70;
     public final static int COMMAND_SINGLE_PULSE = 0x71;
-
-    public final static int OPEN = 0x01;
-    public final static int CLOSE = 0x02;
-    public final static int QUERY = 0x00;
-    public final static int DC = 0x00;
-    public final static int PULSE = 0x01;
-    public final static int CYCLIC = 0x02;
+    public final static int COMMAND_SWITCH_ON_QUERY = 0x90; //GC20220919
 
     public int dataTransfer2;
     public int dataTransfer3;
-    public final static int GEAR1 = 0x01;
-    public final static int GEAR2 = 0x02;
 
     /*** APP接收的命令（8个字节）
      * 数据头     数据长度  指令  传输数据  校验和
@@ -391,8 +383,6 @@ public class BaseActivity extends AppCompatActivity {
 /*————enNuo————*/
 //EN20200324    发送命令和获取电量修改，增加条件限制，避免极端条件下会多次尝试连接
 //20200407  电量获取修改
-//20200416  未连接不执行
-//20200520  数据库相关
 //20200521  界面相关
 //20200522  单位转化逻辑修正
 //20200523  其它优化
@@ -426,7 +416,6 @@ public class BaseActivity extends AppCompatActivity {
 
 //GC20200313    增益显示转为百分比
 //GC20200314    模式界面电量图标同步主页界面
-//GC20200319    “等待触发”对话框重连时不消掉BUG修改
 //GC20200327    帮助功能添加
 //GC20200330    SIM标记光标添加
 //GC20200331    不同范围发射不同脉宽功能添加
@@ -446,11 +435,11 @@ public class BaseActivity extends AppCompatActivity {
 //jk20200804    二次脉冲光标定位
 //jk20200904    更改起始判断
 //jk20201022    低压脉冲自动定位以133为中心点
-//jk20201023    去掉数据库打开波形自动定位
 //jk20201130    多次脉冲增益判断数值更改
 //jk20201130    多次脉冲延时间隔增加
 //jk20201130    脉冲电流延长线不选就不计算
 //jk20210202    保存延长线参数
+//jk20210206    解决电源按键问题
 //jk20210420    脉冲电流容错处理  添加标志false_flag
 //jk20210527    求出曲线拟合后求解纵坐标值为0时横坐标的结果  一元三次方程求解
 
@@ -462,19 +451,15 @@ public class BaseActivity extends AppCompatActivity {
 /*——————————3.0.0版本整理——————————*/
 //GC20211201    UI：主界面信息栏
 //GC20211202    UI：高压操作界面对话框
-//GC20211203    UI：自定义旋钮控件、档位选择
 //GC20211206    添加协议，增加高压设定指令
 //GC20211207    高压操作界面和信息栏：初始化、参数传递
 //GC20211208    ConnectThread线程将收到的数据通过ConnectService服务传递给主界面处理//GN
 //GC20211209    下发高压模块指令
 //GC20211210    接收高压模块反馈
-//GC20211213    高压操作、等待触发界面显示
+//GC20211213    高压设置、等待触发界面显示
 //GC20211214    UI：高压数值进度条更新/服务中toast只可以跟随系统语言
 //GC20211215    UI：重新自定义等待触发对话框
-//GC20211216    "取消测试"：电压归0
-//GC20211220    UI：只有“单次”时单次放电按钮有效
-//GC20211221    故障反馈处理
-//GC20211222    切换工作方式：工作模式恢复为默认的单次
+//GC20211220    UI：只有工作方式为“单次”时“放电”按钮可点击
 //GC20211223    周期时间指令下发
 //GC20211227    高压包由32kV变为8kV
 
@@ -505,15 +490,14 @@ public class BaseActivity extends AppCompatActivity {
 /*——————————3.0.1版本整理——————————*/
 //20200520  数据库相关
 //GC20210125    波形数据以文件形式保存
-//GC21220411    连接WiFi名字
+//GC20220411    连接WiFi名字
 //GC20220413    seekBar控件添加
 //GC20220414    档位变化实时记录档位和电压数值
 
 /*——————————3.0.2版本整理——————————*/
-//GC20220617    高压操作界面只有单次时电压档位切换有效/二次脉冲无放电周期、工作模式选择
+//GC20220617    高压操作界面只有单次时电压档位切换有效/二次脉冲无放电周期、工作方式选择
 //GC20220618    适配新平板资源 px / (DPI / 160) = dp  800/(240/160)≈533.33  values-sw533dp
 //GC20220619    时间seekBar水平 //GC20220428    时间seekBar垂直
-//GC20220620    竖向信息栏放电周期、工作模式显示控制
 //GC20220621    如果是安卓10.0，需要后台获取连接的wifi名称则添加进程获取位置信息权限
 //GC20220622    低压脉冲方式下调整增益发送测试命令功能代码优化
 
@@ -527,8 +511,6 @@ public class BaseActivity extends AppCompatActivity {
 //GC20220711    电压确认闪烁提示
 //GC20220712    电压档位转换对话框添加
 //GC20220713    高压对话框“叉号”退出事件添加
-//GC20220714    接地报警指示
-//GC20220715    切换方式时电压清零
 //GC20220726    添加合闸提示对话框
 //GC20220729    对话框和测试按键冲突
 //GC20220730    对话框物理返回按键事件添加
@@ -552,12 +534,26 @@ public class BaseActivity extends AppCompatActivity {
 //GC20220823    初始增益调大
 //GC20220824    调节栏增益、平衡、延时、波速按钮状态控制
 //GC20220825    离线状态对话框简化（是否合闸、转换开关提示去掉）
+/*——————————3.0.4版本整理——————————*/
+//GC20220913    工作方式新UI相关
+//GC20220914    mode界面UI修改；ICM方式下的“延长线”按钮不显示
+//GC20220915    加减号预留
+//GC20220916    高压设置界面UI调整
+//GC20220917    WIFI断线后档位状态恢复为默认档位；档位切换实时响应
+//GC20220919    合闸状态改为命令查询    启用需放开注释//GC20190919X
+//GC20220920    对话框提示逻辑修改
+//GC20220921    工作方式重置为“单次”；设定电压重置为“0”
+//合闸后进入高压界面再分闸状态查询
 
 
+
+
+/*——————————算法调整——————————*/
+//GT20220822    增益参数修改
+//jk20220922    TDR算法开路波形容错调整
+/*——————————算法调整——————————*/
 //GT20220801    数据接收改动
 //GT屏蔽电量获取
 //GT屏蔽算法
 //GT007 907主板调试需要屏蔽
 //gc调试 改WiFi名字
-//GT20220822    增益参数修改
-

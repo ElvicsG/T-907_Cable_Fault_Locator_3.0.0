@@ -71,7 +71,6 @@ public class ConnectThread extends Thread {
             int processedByte = 0;
             int mimProcessedDataLen = 0;
             boolean needProcessSimData = false;
-            Log.e("【DEBUG】", "初始化" + needAddData);
 
             while (true) {
                 //接收设备数据

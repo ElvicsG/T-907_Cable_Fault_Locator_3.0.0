@@ -71,7 +71,7 @@ public class OperationFragment extends Fragment {
         btnRes.setImageResource(R.drawable.bg_huanyuan);
         btnWavePrevious.setVisibility(View.GONE);
         btnWaveNext.setVisibility(View.GONE);
-        btnLead1.setVisibility(View.GONE);
+        btnLead1.setVisibility(View.GONE);  //GC20220914    “延长线”按钮不显示
     }
 
     @Override

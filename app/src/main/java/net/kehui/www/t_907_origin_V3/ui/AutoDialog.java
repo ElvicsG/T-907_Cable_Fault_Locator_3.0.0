@@ -35,41 +35,45 @@ import java.util.List;
 public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
     ImageView ivCloseAuto;
-    EditText etWorkingMode;
 
-    TextView tvConfirm;
-    TextView tvQuit;
-    public ImageView ivHVPULSE;
+    public TextView tvHvGear;
+    public TextView tvHvWorkingMode;
+    public TextView tvHvIgnitionCoil;
+    public TextView tvHvCapacitor;
+    public ImageView ivWaring;
     public RadioGroup rgGear;
     public RadioButton rbGear16;
     public RadioButton rbGear32;
-    public Spinner spWorkingMode;
     /**
-     * seekBar32 控件添加//
+     * seekBar32 控件添加
      */
     public TextView hvValue;
     public KBubbleSeekBar32 seekBar32;
     public KBubbleSeekBar16 seekBar16;
-    public KBubbleSeekBar12 seekBar12;
+    public ImageView ivLightning;   //GC20220711
+    TextView tvConfirm;
 
-    public ImageView ivWaring;
     public EditText etHVINDICATOR;
-    public TextView tvHvGear;
-    public TextView tvHvWorkingMode;
-    public TextView tvHvCapacitor;
-    public TextView tvHvIgnitionCoil;
-    public ImageView ivVoltageHeight;
-    //GC20220617
-    public LinearLayout llTIME;
     public TextView tvWorkingMode;
+    public Spinner spWorkingMode;
     public View vWorkingMode;
+    /**
+     * 工作方式新UI添加   //GC20220913
+     */
+    public RadioGroup rgGearMode;
+    public RadioButton rbGearDC;
+    public RadioButton rbGearPULSE;
+    public RadioButton rbGearCYCLIC;
     public LinearLayout llPULSE;
+    public ImageView ivHVPULSE;
     public TextView tvPULSE;
+    public ImageView ivVoltageHeight;
+    public LinearLayout llTIME; //GC20220617
+    public KBubbleSeekBar12 seekBar12;
     public LinearLayout llPULSE2;
-    public TextView tvPULSE2;
     public ImageView ivHVPULSE2;
-    //GC20220711
-    public ImageView ivLightning;
+    public TextView tvPULSE2;
+    TextView tvQuit;
 
     private View view;
     private List<String> workingModeList = new ArrayList<>();
@@ -95,53 +99,61 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
 
     }
 
+    /**
+     * 高压操作界面对话框初始化
+     */
     private void initView() {
-        //对话框初始化    //GC20211203
+        //叉号退出  //GC20220713
         ivCloseAuto = view.findViewById(R.id.iv_close_auto);
-        etHVINDICATOR = view.findViewById(R.id.et_HVINDICATOR);
-        etWorkingMode = view.findViewById(R.id.et_working_mode);
-        spWorkingMode = view.findViewById(R.id.sp_working_mode);
-
+        //提示栏
+        tvHvGear = view.findViewById(R.id.tv_hv_gear);
+        tvHvWorkingMode = view.findViewById(R.id.tv_hv_working_mode);
+        tvHvIgnitionCoil = view.findViewById(R.id.tv_hv_ignition_coil);
+        tvHvCapacitor = view.findViewById(R.id.tv_hv_capacitor);    //去掉“电容无残压”词条，改为直接对话框报警
+        ivWaring = view.findViewById(R.id.iv_warning);  //去掉高压操作界面接地报警UI，改为直接对话框报警
+        //高压包档位
+        rgGear = view.findViewById(R.id.rg_gear);
+        rbGear16 = view.findViewById(R.id.rb_gear16);
+        rbGear32 = view.findViewById(R.id.rb_gear32);
         //电压滑动控件添加  //GC20220413
         hvValue = view.findViewById(R.id.tv_value);
         seekBar32 = view.findViewById(R.id.seekBar32);
         seekBar16 = view.findViewById(R.id.seekBar16);
-        seekBar12 = view.findViewById(R.id.seekBar12);
-
-        ivHVPULSE = view.findViewById(R.id.iv_HV_PULSE);
-        ivWaring = view.findViewById(R.id.iv_warning);
-        rgGear = view.findViewById(R.id.rg_gear);
-        rbGear16 = view.findViewById(R.id.rb_gear16);
-        rbGear32 = view.findViewById(R.id.rb_gear32);
-
+        ivLightning = view.findViewById(R.id.iv_lightning); //GC20220711
         tvConfirm = view.findViewById(R.id.tv_confirm);
-        tvQuit = view.findViewById(R.id.tv_quit);
-        //叉号退出  //GC20220713
-        ivCloseAuto = view.findViewById(R.id.iv_close_auto);
-        tvHvGear = view.findViewById(R.id.tv_hv_gear);
-        tvHvWorkingMode = view.findViewById(R.id.tv_hv_working_mode);
-        tvHvCapacitor = view.findViewById(R.id.tv_hv_capacitor);
-        tvHvIgnitionCoil = view.findViewById(R.id.tv_hv_ignition_coil);
-        ivVoltageHeight = view.findViewById(R.id.iv_voltage_height);
-        //GC20220617
-        llTIME = view.findViewById(R.id.ll_TIME);
+        //当前电压数值
+        etHVINDICATOR = view.findViewById(R.id.et_HVINDICATOR);
+        //工作方式旧UI
         tvWorkingMode = view.findViewById(R.id.tv_working_mode);
+        spWorkingMode = view.findViewById(R.id.sp_working_mode);
         vWorkingMode = view.findViewById(R.id.v_working_mode);
+        //工作方式新UI添加   //GC20220913
+        rgGearMode = view.findViewById(R.id.rg_gear_mode);
+        rbGearDC = view.findViewById(R.id.rb_gear_DC);
+        rbGearPULSE = view.findViewById(R.id.rb_gear_PULSE);
+        rbGearCYCLIC = view.findViewById(R.id.rb_gear_CYCLIC);
+        //放电按钮的位置1
         llPULSE = view.findViewById(R.id.ll_PULSE);
+        ivHVPULSE = view.findViewById(R.id.iv_HV_PULSE);
         tvPULSE = view.findViewById(R.id.tv_PULSE);
+        //电压进度条
+        ivVoltageHeight = view.findViewById(R.id.iv_voltage_height);
+        //周期时间滑动
+        llTIME = view.findViewById(R.id.ll_TIME);   //GC20220617
+        seekBar12 = view.findViewById(R.id.seekBar12);
+        //放电按钮的位置2
         llPULSE2 = view.findViewById(R.id.ll_PULSE2);
-        tvPULSE2 = view.findViewById(R.id.tv_PULSE2);
         ivHVPULSE2 = view.findViewById(R.id.iv_HV_PULSE2);
-        //GC20220711
-        ivLightning = view.findViewById(R.id.iv_lightning);
+        tvPULSE2 = view.findViewById(R.id.tv_PULSE2);
+        tvQuit = view.findViewById(R.id.tv_quit);
 
-        tvQuit.setOnClickListener(this);
         //叉号退出  //GC20220713
         ivCloseAuto.setOnClickListener(this);
         tvConfirm.setOnClickListener(this);
+        tvQuit.setOnClickListener(this);
+    }
 
-        //seekBar电压显示初始化
-        hvValue.setText("设定电压：0kV");
+    private void initData() {
         //接地报警初始化
         if (!Constant.isWarning) {
             ivWaring.setImageResource(R.drawable.light_red);
@@ -180,16 +192,16 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
             tvHvIgnitionCoil.setText(R.string.hv_ignition_coil_note);
             tvHvIgnitionCoil.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
         }
-
-    }
-
-    private void initData() {
+        //seekBar电压显示初始化
+        hvValue.setText("设定电压：0kV");
+        //当前电压显示初始化
         setEtHVINDICATOR();
+        //工作方式初始化
         setSpWorkingMode();
     }
 
     /**
-     * 当前电压初始化
+     * 当前电压显示初始化
      */
     private void setEtHVINDICATOR() {
         etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
@@ -260,7 +272,7 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     }
 
     /**
-     * 工作模式初始化    //GC20211203
+     * 工作方式初始化
      */
     private void setSpWorkingMode() {
         workingModeList.add(getContext().getResources().getString(R.string.PULSE));
@@ -280,6 +292,13 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
      */
     public void setRadioGroup(RadioGroup.OnCheckedChangeListener checkedChangeListener) {
         rgGear.setOnCheckedChangeListener(checkedChangeListener);
+    }
+
+    /**
+     * 监听工作方式选项变化   //GC20220913
+     */
+    public void setRadioGroupMode(RadioGroup.OnCheckedChangeListener checkedChangeListener) {
+        rgGearMode.setOnCheckedChangeListener(checkedChangeListener);
     }
 
     /**

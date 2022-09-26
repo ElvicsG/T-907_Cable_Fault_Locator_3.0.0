@@ -18,7 +18,9 @@
             android:layout_width="@dimen/dp_20"
             android:layout_height="@dimen/dp_20"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/bg_dialog_close_big"/>
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginEnd="@dimen/dp_5"
+            android:src="@drawable/bg_dialog_close_big"/>   <!--叉号位置//GC20220913-->
 
         <androidx.percentlayout.widget.PercentRelativeLayout
             android:layout_width="match_parent"
@@ -29,8 +31,9 @@
             android:gravity="center">
 
             <LinearLayout
+                android:id="@+id/ll_note"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_30"
+                android:layout_height="@dimen/dp_32"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/bg_main_msg"
                 android:gravity="center"
@@ -43,7 +46,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="@string/hv_gear_note"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
+                    android:textSize="@dimen/sp_10"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -51,7 +55,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="   "
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
+                    android:textSize="@dimen/sp_10"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_hv_working_mode"
@@ -60,7 +65,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="@string/hv_working_mode_note"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
+                    android:textSize="@dimen/sp_10"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -68,7 +74,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="   "
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
+                    android:textSize="@dimen/sp_10"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_hv_capacitor"
@@ -96,7 +103,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="@string/hv_ignition_coil_note"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
+                    android:textSize="@dimen/sp_10"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -104,7 +112,23 @@
                     android:layout_gravity="center_vertical"
                     android:text="   "
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_10" />
+                    android:textSize="@dimen/sp_10"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/iv_danger"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/dp_5"
+                    android:src="@drawable/ic_danger2"/>
+
+                <TextView
+                    android:id="@+id/tv_danger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/danger"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/sp_10" />  <!--危险提示添加//GC20220913-->
 
             </LinearLayout>
 
@@ -112,10 +136,11 @@
                 android:id="@+id/rl_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_marginTopPercent="12%"
+                android:layout_below="@id/ll_note"
+                android:layout_marginTop="@dimen/dp_10"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:gravity="center">
+                android:gravity="center">   <!--高压操作模块位置下调//GC20220913-->
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -127,35 +152,39 @@
                         android:id="@+id/tv_grounding_alarm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_12"
                         android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_12"
                         android:text="@string/grounding_alarm"
                         android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
+                        android:textSize="@dimen/sp_11"
+                        android:visibility="gone" />    <!--去掉高压操作界面接地报警UI//GC20220913-->
 
                     <ImageView
                         android:id="@+id/iv_warning"
                         android:layout_width="@dimen/dp_40"
                         android:layout_height="@dimen/dp_40"
-                        android:layout_toEndOf="@id/tv_grounding_alarm"
                         android:layout_marginStart="@dimen/dp_26"
-                        android:src="@drawable/light_gray" />
+                        android:layout_toEndOf="@id/tv_grounding_alarm"
+                        android:src="@drawable/light_gray"
+                        android:visibility="gone" />
 
-                    <!--档位-->
+                    <!--档位切换新UI//GC20220916-->
                     <LinearLayout
                         android:id="@+id/ll_gear"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/iv_warning"
                         android:layout_marginTop="@dimen/dp_4"
-                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_alignStart="@id/ll_control_voltage"
+                        android:layout_alignEnd="@id/ll_control_voltage"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <RadioGroup
                             android:id="@+id/rg_gear"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:orientation="horizontal">
 
                             <RadioButton
@@ -165,9 +194,9 @@
                                 android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
                                 android:drawablePadding="10dp"
-                                android:paddingStart="28dp"
+                                android:paddingStart="@dimen/dp_16"
+                                android:paddingEnd="@dimen/dp_16"
                                 android:paddingTop="@dimen/dp_6"
-                                android:paddingEnd="28dp"
                                 android:paddingBottom="@dimen/dp_6"
                                 android:text="@string/Gear1"
                                 android:textColor="@color/white"
@@ -179,9 +208,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
-                                android:paddingStart="28dp"
+                                android:paddingStart="@dimen/dp_16"
+                                android:paddingEnd="@dimen/dp_16"
                                 android:paddingTop="@dimen/dp_6"
-                                android:paddingEnd="28dp"
                                 android:paddingBottom="@dimen/dp_6"
                                 android:text="@string/Gear2"
                                 android:textColor="@color/white"
@@ -196,6 +225,38 @@
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_below="@id/ll_gear"
                         android:orientation="horizontal">
+
+                        <!--减号//GC20220915-->
+                        <LinearLayout
+                            android:id="@+id/ll_info_lightning2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:visibility="invisible">
+
+                            <LinearLayout
+                                android:id="@+id/ll_lightning2"
+                                android:layout_width="@dimen/dp_20"
+                                android:layout_height="@dimen/dp_50"
+                                android:layout_marginTop="@dimen/dp_5"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:id="@+id/iv_lightning2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/lightning_false"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="@dimen/dp_20"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="kV"
+                                android:textColor="@color/T_F2"
+                                android:textSize="@dimen/sp_11" /><!--//GC20220618-->
+                        </LinearLayout>
 
                         <!--滑块-->
                         <LinearLayout
@@ -237,7 +298,7 @@
                                     kosmos:bsb_min="0"
                                     kosmos:bsb_progress="0"
                                     kosmos:bsb_second_track_color="#00F0FF"
-                                    kosmos:bsb_section_count="2"
+                                    kosmos:bsb_section_count="1"
                                     kosmos:bsb_section_text_position="below_section_mark"
                                     kosmos:bsb_show_progress_in_float="true"
                                     kosmos:bsb_show_section_mark="false"
@@ -261,11 +322,11 @@
                                     kosmos:bsb_bubble_text_size="28sp"
                                     kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
                                     kosmos:bsb_marks="false"
-                                    kosmos:bsb_max="32"
+                                    kosmos:bsb_max="16"
                                     kosmos:bsb_min="0"
                                     kosmos:bsb_progress="0"
                                     kosmos:bsb_second_track_color="#00F0FF"
-                                    kosmos:bsb_section_count="2"
+                                    kosmos:bsb_section_count="1"
                                     kosmos:bsb_section_text_position="below_section_mark"
                                     kosmos:bsb_show_progress_in_float="true"
                                     kosmos:bsb_show_section_mark="false"
@@ -312,6 +373,28 @@
                         </LinearLayout>
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/ll_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ll_control_voltage"
+                        android:layout_alignStart="@id/ll_control_voltage"
+                        android:layout_alignEnd="@id/ll_control_voltage"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_confirm"
+                            android:layout_width="@dimen/dp_75"
+                            android:layout_height="@dimen/dp_25"
+                            android:background="@drawable/shape_solide_0ff6ff"
+                            android:gravity="center"
+                            android:text="@string/hv_confirm"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/sp_13" />
+                    </LinearLayout>
+
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -319,26 +402,90 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true">
 
+                    <!--工作方式新UI//GC20220913-->
+                    <LinearLayout
+                        android:id="@+id/ll_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_4"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <RadioGroup
+                            android:id="@+id/rg_gear_mode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rb_gear_DC"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:button="@drawable/rb_button_style"
+                                android:drawablePadding="10dp"
+                                android:paddingStart="@dimen/dp_10"
+                                android:paddingTop="@dimen/dp_6"
+                                android:paddingEnd="@dimen/dp_10"
+                                android:paddingBottom="@dimen/dp_6"
+                                android:text="@string/DC"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/sp_12" />
+
+                            <RadioButton
+                                android:id="@+id/rb_gear_PULSE"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:button="@drawable/rb_button_style"
+                                android:paddingStart="@dimen/dp_10"
+                                android:paddingTop="@dimen/dp_6"
+                                android:paddingEnd="@dimen/dp_10"
+                                android:paddingBottom="@dimen/dp_6"
+                                android:text="@string/PULSE"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/sp_12" />
+
+                            <RadioButton
+                                android:id="@+id/rb_gear_CYCLIC"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:button="@drawable/rb_button_style"
+                                android:paddingStart="@dimen/dp_10"
+                                android:paddingTop="@dimen/dp_6"
+                                android:paddingEnd="@dimen/dp_10"
+                                android:paddingBottom="@dimen/dp_6"
+                                android:text="@string/CYCLIC"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/sp_12" />
+                        </RadioGroup>
+
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/tv_HVINDICATOR"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignEnd="@id/ll_hv"
+                        android:layout_below="@id/ll_mode"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/HVINDICATOR"
                         android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
+                        android:textSize="@dimen/sp_11" />  <!--当前电压位置调整//GC20220913-->
 
                     <EditText
                         android:id="@+id/et_HVINDICATOR"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/tv_HVINDICATOR"
+                        android:layout_below="@id/ll_mode"
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_marginStart="@dimen/dp_10"
                         android:background="@null"
                         android:minWidth="@dimen/dp_70"
-                        android:text="9"
+                        android:text="0.00"
                         android:textColor="@color/T_red"
                         android:textSize="@dimen/sp_11" />
 
@@ -346,6 +493,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignEnd="@id/et_HVINDICATOR"
+                        android:layout_below="@id/ll_mode"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="kV"
                         android:textColor="@color/T_F2"
@@ -368,29 +516,19 @@
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/working_mode"
                         android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
-
-                    <EditText
-                        android:id="@+id/et_working_mode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/et_HVINDICATOR"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:layout_toEndOf="@id/tv_working_mode"
-                        android:background="@null"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
+                        android:textSize="@dimen/sp_11"
+                        android:visibility="gone" />    <!--工作方式去掉旧UI//GC20220913-->
 
                     <Spinner
                         android:id="@+id/sp_working_mode"
                         android:layout_width="@dimen/dp_70"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/et_HVINDICATOR"
-                        android:layout_toEndOf="@+id/tv_working_mode"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
+                        android:layout_toEndOf="@+id/tv_working_mode"
                         android:gravity="end"
+                        android:visibility="gone"
                         app:layout_column="4" />
 
                     <View
@@ -400,15 +538,16 @@
                         android:layout_below="@id/sp_working_mode"
                         android:layout_alignStart="@id/sp_working_mode"
                         android:layout_alignEnd="@id/sp_working_mode"
-                        android:background="@color/blue_72FBFD" />
+                        android:background="@color/blue_72FBFD"
+                        android:visibility="gone" />
 
                     <LinearLayout
                         android:id="@+id/ll_PULSE"
                         android:layout_width="@dimen/dp_60"
                         android:layout_height="@dimen/dp_60"
                         android:layout_below="@id/tv_HVINDICATOR"
-                        android:layout_marginTop="@dimen/dp_40"
-                        android:orientation="vertical">
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:orientation="vertical"> <!--放电按钮上下位置微调//GC20220913-->
 
                         <ImageView
                             android:id="@+id/iv_HV_PULSE"
@@ -436,7 +575,7 @@
                         android:layout_height="@dimen/dp_60"
                         android:layout_below="@id/tv_HVINDICATOR"
                         android:layout_toEndOf="@id/ll_PULSE"
-                        android:layout_marginTop="@dimen/dp_40"
+                        android:layout_marginTop="@dimen/dp_20"
                         android:layout_marginStart="@dimen/dp_10"
                         android:gravity="center">
 
@@ -453,7 +592,7 @@
                         android:layout_height="@dimen/dp_60"
                         android:layout_below="@id/tv_HVINDICATOR"
                         android:layout_marginStart="@dimen/dp_10"
-                        android:layout_marginTop="@dimen/dp_40"
+                        android:layout_marginTop="@dimen/dp_20"
                         android:layout_toEndOf="@id/ll_hv"
                         android:orientation="vertical"
                         android:visibility="invisible">
@@ -485,7 +624,7 @@
                         android:layout_height="@dimen/dp_100"
                         android:layout_below="@id/tv_HVINDICATOR"
                         android:layout_toEndOf="@id/ll_hv"
-                        android:layout_marginTop="@dimen/dp_30"
+                        android:layout_marginTop="@dimen/dp_10"
                         android:layout_marginStart="@dimen/dp_10"
                         android:orientation="vertical">
 
@@ -506,11 +645,11 @@
                                     kosmos:bsb_bubble_text_size="28sp"
                                     kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
                                     kosmos:bsb_marks="false"
-                                    kosmos:bsb_max="32"
+                                    kosmos:bsb_max="12"
                                     kosmos:bsb_min="0"
                                     kosmos:bsb_progress="0"
                                     kosmos:bsb_second_track_color="#00F0FF"
-                                    kosmos:bsb_section_count="2"
+                                    kosmos:bsb_section_count="1"
                                     kosmos:bsb_section_text_position="below_section_mark"
                                     kosmos:bsb_show_progress_in_float="true"
                                     kosmos:bsb_show_section_mark="false"
@@ -551,33 +690,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/rl_info"
-                android:layout_centerHorizontal="true"
+                android:layout_alignStart="@id/rl_info"
+                android:layout_alignEnd="@id/rl_info"
+                android:layout_marginTop="@dimen/dp_10"
+                android:gravity="end"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tv_confirm"
-                    android:layout_width="@dimen/dp_75"
+                <LinearLayout
+                    android:id="@+id/btn_back"
+                    android:layout_width="@dimen/dp_110"
                     android:layout_height="@dimen/dp_25"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:layout_marginBottom="@dimen/dp_10"
-                    android:background="@drawable/shape_solide_0ff6ff"
+                    android:layout_marginEnd="@dimen/dp_10"
+                    android:background="@drawable/shape_solide_back"
                     android:gravity="center"
-                    android:text="@string/hv_confirm"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_13" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tv_quit"
-                    android:layout_width="@dimen/dp_90"
-                    android:layout_height="@dimen/dp_25"
-                    android:layout_marginStart="@dimen/dp_160"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:layout_marginBottom="@dimen/dp_10"
-                    android:background="@drawable/shape_solide_0ff6ff"
-                    android:gravity="center"
-                    android:text="@string/enter_test"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/sp_13" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_back" />  <!--添加返回图标//GC20220913-->
+
+                    <TextView
+                        android:id="@+id/tv_quit"
+                        android:layout_width="@dimen/dp_90"
+                        android:layout_height="@dimen/dp_25"
+                        android:gravity="center"
+                        android:text="@string/enter_test"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/sp_13" />
+                </LinearLayout>
             </LinearLayout>
 
         </androidx.percentlayout.widget.PercentRelativeLayout>
