@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -278,7 +277,7 @@ public class ConnectService extends Service {
                         connectThread.start();
                     }
                     if (processThread == null) {
-                        Log.e("【SOCKET连接】", "启动接收数据线程processThread");
+                        Log.e("【SOCKET连接】", "启动接收数据线程connectThread");
                         processThread = new ProcessThread(handler);
                         processThread.start();
                     }
@@ -352,7 +351,7 @@ public class ConnectService extends Service {
             //TODO 20200407 发送数据是判断连接是否正常，否则不发送
             if (connectThread != null && ConnectService.isConnected) {
                 connectThread.sendCommand(request);
-                Log.e("#【APP-->设备】", "指令：" + command + " 传输数据3：" + dataTransfer3);
+                Log.e("#【APP-->设备】", "指令：" + command + " 传输数据3：" + sendDataTransfer(command, dataTransfer3));   //GC20221110
             }
         } else {
             byte[] request = new byte[8];
@@ -476,6 +475,41 @@ public class ConnectService extends Service {
         }
         if (cmdStr == 10) {
             returnStr = dataStr + " / 脉宽";
+        }
+        //以下是高压控制相关指令   //GC20221110
+        if (cmdStr == 96) {
+            switch (dataStr) {
+                case 1:
+                    returnStr = "0x01 / 4kV档位";
+                    break;
+                case 2:
+                    returnStr = "0x02 / 8kV档位";
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (cmdStr == 98) {
+            returnStr = dataStr + " / 电压查询";    //GC20220919
+        }
+        if (cmdStr == 112) {
+            switch (dataStr) {
+                case 0:
+                    returnStr = "0x00 / 直流";
+                    break;
+                case 1:
+                    returnStr = "0x01 / 单次";
+                    break;
+                case 2:
+                    returnStr = "0x02 / 周期";
+                    break;
+                default:
+                    returnStr = "周期";
+                    break;
+            }
+        }
+        if (cmdStr == 113) {
+            returnStr = dataStr + " / 单次放电";    //GC20220919
         }
         if (cmdStr == 144) {
             returnStr = dataStr + " / 合闸查询";    //GC20220919

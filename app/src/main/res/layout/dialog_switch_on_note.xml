@@ -42,7 +42,7 @@
                         android:id="@+id/iv_scan_switch_on"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_marginStart="@dimen/dp_5"
                         android:src="@drawable/ic_wait_empty" />
                 </LinearLayout>
 
@@ -69,20 +69,20 @@
                         android:paddingBottom="@dimen/dp_5"
                         android:layout_marginTop="@dimen/dp_12"
                         android:layout_marginEnd="@dimen/dp_50"
-                        android:background="@drawable/shape_solide_0ff6ff"
+                        android:background="@drawable/shape_solide_blue"
                         android:gravity="center"
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_back" />  <!--添加返回图标//GC20220919-->
+                            android:layout_width="@dimen/dp_18"
+                            android:layout_height="@dimen/dp_22"
+                            android:src="@drawable/ic_back" /> <!--添加返回图标//GC20220919-->
 
                         <TextView
                             android:id="@+id/tv_no"
                             android:layout_width="@dimen/dp_70"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/shape_solide_0ff6ff"
+                            android:background="@drawable/shape_solide_blue"
                             android:textColor="@color/white"
                             android:gravity="center"
                             android:text="@string/btn_no"
@@ -94,13 +94,14 @@
                         android:layout_width="@dimen/dp_70"
                         android:layout_height="@dimen/dp_25"
                         android:layout_marginTop="@dimen/dp_12"
-                        android:background="@drawable/shape_solide_0ff6ff"
+                        android:background="@drawable/shape_solide_blue"
                         android:gravity="center"
                         android:paddingTop="@dimen/dp_5"
                         android:paddingBottom="@dimen/dp_5"
                         android:text="@string/btn_yes"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/sp_12"/>   <!--下一步初始状态为不可见//GC20220919X android:visibility="invisible" />-->
+                        android:textSize="@dimen/sp_12"
+                        android:visibility="invisible" />   <!--下一步初始状态为不可见//GC20220919X-->
                 </LinearLayout>
 
             </LinearLayout>

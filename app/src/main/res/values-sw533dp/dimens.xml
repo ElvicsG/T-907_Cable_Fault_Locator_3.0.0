@@ -13,7 +13,7 @@
 	<dimen name="dp_0">0.0000dp</dimen>
 	<dimen name="dp_0_1">0.1481dp</dimen>
 	<dimen name="dp_0_5">0.7403dp</dimen>
-	<dimen name="dp_1">1.4806dp</dimen>
+	<dimen name="dp_1">2.5dp</dimen><!--新平板适配//GC20220929-->
 	<dimen name="dp_1_5">2.2208dp</dimen>
 	<dimen name="dp_2">2.9611dp</dimen>
 	<dimen name="dp_2_5">3.7014dp</dimen>

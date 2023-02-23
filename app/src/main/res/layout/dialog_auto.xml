@@ -25,8 +25,8 @@
         <androidx.percentlayout.widget.PercentRelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_marginLeftPercent="12%"
-            app:layout_marginRightPercent="12%"
+            app:layout_marginLeftPercent="9%"
+            app:layout_marginRightPercent="9%"
             android:layout_centerVertical="true"
             android:gravity="center">
 
@@ -143,9 +143,9 @@
                 android:gravity="center">   <!--高压操作模块位置下调//GC20220913-->
 
                 <RelativeLayout
+                    android:id="@+id/rl_left"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true">
+                    android:layout_height="wrap_content"><!--//GC20221112-->
 
                     <!--接地报警-->
                     <TextView
@@ -157,7 +157,7 @@
                         android:text="@string/grounding_alarm"
                         android:textColor="@color/T_F2"
                         android:textSize="@dimen/sp_11"
-                        android:visibility="gone" />    <!--去掉高压操作界面接地报警UI//GC20220913-->
+                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/iv_warning"
@@ -166,213 +166,193 @@
                         android:layout_marginStart="@dimen/dp_26"
                         android:layout_toEndOf="@id/tv_grounding_alarm"
                         android:src="@drawable/light_gray"
-                        android:visibility="gone" />
+                        android:visibility="gone" />    <!--去掉高压操作界面接地报警UI//GC20220913-->
 
-                    <!--档位切换新UI//GC20220916-->
+                    <!--设定电压操作-->
                     <LinearLayout
-                        android:id="@+id/ll_gear"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/ll_control_voltage"
+                        android:layout_width="@dimen/dp_190"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_12"
+                        android:background="@drawable/shape_solide_back"
                         android:layout_below="@id/iv_warning"
-                        android:layout_marginTop="@dimen/dp_4"
-                        android:layout_alignStart="@id/ll_control_voltage"
-                        android:layout_alignEnd="@id/ll_control_voltage"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"><!--高压设置界面调整//GC20221112-->
 
-                        <RadioGroup
-                            android:id="@+id/rg_gear"
-                            android:layout_width="wrap_content"
+                        <!--设定电压-->
+                        <LinearLayout
+                            android:id="@+id/ll_value"
+                            android:layout_width="@dimen/dp_120"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_5"
                             android:gravity="center"
                             android:orientation="horizontal">
 
-                            <RadioButton
-                                android:id="@+id/rb_gear16"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:button="@drawable/rb_button_style"
-                                android:drawablePadding="10dp"
-                                android:paddingStart="@dimen/dp_16"
-                                android:paddingEnd="@dimen/dp_16"
-                                android:paddingTop="@dimen/dp_6"
-                                android:paddingBottom="@dimen/dp_6"
-                                android:text="@string/Gear1"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/sp_12" />
-
-                            <RadioButton
-                                android:id="@+id/rb_gear32"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:button="@drawable/rb_button_style"
-                                android:paddingStart="@dimen/dp_16"
-                                android:paddingEnd="@dimen/dp_16"
-                                android:paddingTop="@dimen/dp_6"
-                                android:paddingBottom="@dimen/dp_6"
-                                android:text="@string/Gear2"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/sp_12" />
-                        </RadioGroup>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_control_voltage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:layout_below="@id/ll_gear"
-                        android:orientation="horizontal">
-
-                        <!--减号//GC20220915-->
-                        <LinearLayout
-                            android:id="@+id/ll_info_lightning2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:visibility="invisible">
-
-                            <LinearLayout
-                                android:id="@+id/ll_lightning2"
-                                android:layout_width="@dimen/dp_20"
-                                android:layout_height="@dimen/dp_50"
-                                android:layout_marginTop="@dimen/dp_5"
-                                android:orientation="vertical">
-
-                                <ImageView
-                                    android:id="@+id/iv_lightning2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/lightning_false"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="@dimen/dp_20"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="kV"
-                                android:textColor="@color/T_F2"
-                                android:textSize="@dimen/sp_11" /><!--//GC20220618-->
-                        </LinearLayout>
-
-                        <!--滑块-->
-                        <LinearLayout
-                            android:id="@+id/ll_control_voltage1"
-                            android:layout_width="@dimen/dp_150"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
                             <TextView
                                 android:id="@+id/tv_value"
-                                android:layout_width="match_parent"
-                                android:layout_height="@dimen/dp_25"
-                                android:layout_marginStart="@dimen/dp_15"
-                                android:layout_marginEnd="@dimen/dp_15"
-                                android:layout_gravity="center"
-                                android:background="@drawable/bg_main_msg"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:gravity="center"
+                                android:layout_marginStart="@dimen/dp_2"
+                                android:layout_marginEnd="@dimen/dp_2"
                                 android:text="@string/set_voltage"
                                 android:textColor="@color/colorPrimary"
-                                android:textSize="18sp" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar32
-                                    android:id="@+id/seekBar32"
-                                    android:layout_width="@dimen/dp_150"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/dp_8"
-                                    kosmos:bsb_bubble_color="#24d1b4"
-                                    kosmos:bsb_bubble_text_color="#bc4306"
-                                    kosmos:bsb_bubble_text_size="28sp"
-                                    kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
-                                    kosmos:bsb_marks="false"
-                                    kosmos:bsb_max="32"
-                                    kosmos:bsb_min="0"
-                                    kosmos:bsb_progress="0"
-                                    kosmos:bsb_second_track_color="#00F0FF"
-                                    kosmos:bsb_section_count="1"
-                                    kosmos:bsb_section_text_position="below_section_mark"
-                                    kosmos:bsb_show_progress_in_float="true"
-                                    kosmos:bsb_show_section_mark="false"
-                                    kosmos:bsb_show_section_text="true"
-                                    kosmos:bsb_show_thumb_text="true"
-                                    kosmos:bsb_thumb_color="#24d1b4"
-                                    kosmos:bsb_thumb_text_color="#bc4306"
-                                    kosmos:bsb_touch_to_seek="true"
-                                    kosmos:bsb_thumb_text_size="18sp"
-                                    kosmos:bsb_track_color="#606968"
-                                    kosmos:bsb_track_size="@dimen/dp_28"/>
-
-                                <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar16
-                                    android:id="@+id/seekBar16"
-                                    android:layout_width="@dimen/dp_150"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/dp_8"
-                                    android:visibility="gone"
-                                    kosmos:bsb_bubble_color="#24d1b4"
-                                    kosmos:bsb_bubble_text_color="#bc4306"
-                                    kosmos:bsb_bubble_text_size="28sp"
-                                    kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
-                                    kosmos:bsb_marks="false"
-                                    kosmos:bsb_max="16"
-                                    kosmos:bsb_min="0"
-                                    kosmos:bsb_progress="0"
-                                    kosmos:bsb_second_track_color="#00F0FF"
-                                    kosmos:bsb_section_count="1"
-                                    kosmos:bsb_section_text_position="below_section_mark"
-                                    kosmos:bsb_show_progress_in_float="true"
-                                    kosmos:bsb_show_section_mark="false"
-                                    kosmos:bsb_show_section_text="true"
-                                    kosmos:bsb_show_thumb_text="true"
-                                    kosmos:bsb_thumb_color="#24d1b4"
-                                    kosmos:bsb_thumb_text_color="#bc4306"
-                                    kosmos:bsb_thumb_text_size="18sp"
-                                    kosmos:bsb_touch_to_seek="true"
-                                    kosmos:bsb_track_color="#606968"
-                                    kosmos:bsb_track_size="@dimen/dp_28" />
-                            </LinearLayout>
+                                android:textSize="@dimen/sp_13" />
                         </LinearLayout>
 
-                        <!--闪电符号//GC20220711-->
+                        <!--档位-->
                         <LinearLayout
-                            android:id="@+id/ll_info_lightning"
+                            android:id="@+id/ll_gear"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_8"
+                            android:gravity="center"
+                            android:orientation="vertical"><!--//GC20221112-->
 
-                            <LinearLayout
-                                android:id="@+id/ll_lightning"
-                                android:layout_width="@dimen/dp_20"
-                                android:layout_height="@dimen/dp_50"
-                                android:layout_marginTop="@dimen/dp_5"
-                                android:orientation="vertical">
-
-                                <ImageView
-                                    android:id="@+id/iv_lightning"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/lightning_false"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="@dimen/dp_20"
+                            <RadioGroup
+                                android:id="@+id/rg_gear"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="kV"
-                                android:textColor="@color/T_F2"
-                                android:textSize="@dimen/sp_11" /><!--//GC20220618-->
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/rb_gear16"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:button="@drawable/rb_button_style"
+                                    android:drawablePadding="@dimen/dp_15"
+                                    android:paddingTop="@dimen/dp_5"
+                                    android:paddingBottom="@dimen/dp_5"
+                                    android:paddingStart="@dimen/dp_10"
+                                    android:paddingEnd="@dimen/dp_10"
+                                    android:text="@string/Gear1"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/sp_13" />
+
+                                <RadioButton
+                                    android:id="@+id/rb_gear32"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:button="@drawable/rb_button_style"
+                                    android:drawablePadding="@dimen/dp_15"
+                                    android:paddingTop="@dimen/dp_5"
+                                    android:paddingBottom="@dimen/dp_5"
+                                    android:paddingStart="@dimen/dp_10"
+                                    android:paddingEnd="@dimen/dp_10"
+                                    android:layout_marginStart="@dimen/dp_20"
+                                    android:text="@string/Gear2"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/sp_13" />
+                            </RadioGroup>
+                        </LinearLayout>
+
+                        <!--seekBar-->
+                        <LinearLayout
+                            android:id="@+id/ll_seekBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginEnd="@dimen/dp_5"
+                                android:gravity="top"
+                                android:orientation="vertical"><!--//GC20221206-->
+
+                                <ImageView
+                                    android:id="@+id/iv_minus"
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="@dimen/dp_17"
+                                    android:layout_marginTop="@dimen/dp_1"
+                                    android:src="@drawable/bg_minus_selector"
+                                    android:text="" />  <!--设定电压减号//GC20220927-->
+                            </LinearLayout>
+
+                            <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar32
+                                android:id="@+id/seekBar32"
+                                android:layout_width="@dimen/dp_130"
+                                android:layout_height="wrap_content"
+                                kosmos:bsb_bubble_color="#24d1b4"
+                                kosmos:bsb_bubble_text_color="#bc4306"
+                                kosmos:bsb_bubble_text_size="28sp"
+                                kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                                kosmos:bsb_marks="false"
+                                kosmos:bsb_max="8"
+                                kosmos:bsb_min="0"
+                                kosmos:bsb_progress="0"
+                                kosmos:bsb_second_track_color="#00F0FF"
+                                kosmos:bsb_section_count="1"
+                                kosmos:bsb_section_text_position="below_section_mark"
+                                kosmos:bsb_show_progress_in_float="true"
+                                kosmos:bsb_show_section_mark="false"
+                                kosmos:bsb_show_section_text="true"
+                                kosmos:bsb_show_thumb_text="true"
+                                kosmos:bsb_thumb_color="#24d1b4"
+                                kosmos:bsb_thumb_text_color="#bc4306"
+                                kosmos:bsb_touch_to_seek="true"
+                                kosmos:bsb_thumb_text_size="18sp"
+                                kosmos:bsb_track_color="#606968"
+                                kosmos:bsb_track_size="@dimen/dp_24"/>
+
+                            <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar16
+                                android:id="@+id/seekBar16"
+                                android:layout_width="@dimen/dp_130"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone"
+                                kosmos:bsb_bubble_color="#24d1b4"
+                                kosmos:bsb_bubble_text_color="#bc4306"
+                                kosmos:bsb_bubble_text_size="28sp"
+                                kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                                kosmos:bsb_marks="false"
+                                kosmos:bsb_max="4"
+                                kosmos:bsb_min="0"
+                                kosmos:bsb_progress="0"
+                                kosmos:bsb_second_track_color="#00F0FF"
+                                kosmos:bsb_section_count="4"
+                                kosmos:bsb_section_text_position="below_section_mark"
+                                kosmos:bsb_show_progress_in_float="true"
+                                kosmos:bsb_show_section_mark="false"
+                                kosmos:bsb_show_section_text="true"
+                                kosmos:bsb_show_thumb_text="true"
+                                kosmos:bsb_thumb_color="#24d1b4"
+                                kosmos:bsb_thumb_text_color="#bc4306"
+                                kosmos:bsb_thumb_text_size="18sp"
+                                kosmos:bsb_touch_to_seek="true"
+                                kosmos:bsb_track_color="#606968"
+                                kosmos:bsb_track_size="@dimen/dp_24" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/dp_5"
+                                android:gravity="top"
+                                android:orientation="vertical"><!--//GC20221206-->
+
+                                <ImageView
+                                    android:id="@+id/iv_plus"
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="@dimen/dp_17"
+                                    android:layout_marginTop="@dimen/dp_1"
+                                    android:src="@drawable/bg_plus_selector"
+                                    android:text="" />  <!--设定电压加号//GC20220927-->
+
+                                <TextView
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="kV"
+                                    android:textColor="@color/T_F2"
+                                    android:textSize="@dimen/sp_11"
+                                    kosmos:visibility="invisible" /><!--//GC20220618-->
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
 
+                    <!--电压确认-->
                     <LinearLayout
                         android:id="@+id/ll_confirm"
                         android:layout_width="wrap_content"
@@ -380,19 +360,34 @@
                         android:layout_below="@id/ll_control_voltage"
                         android:layout_alignStart="@id/ll_control_voltage"
                         android:layout_alignEnd="@id/ll_control_voltage"
-                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginTop="@dimen/dp_20"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"><!--//GC20221112-->
 
-                        <TextView
-                            android:id="@+id/tv_confirm"
-                            android:layout_width="@dimen/dp_75"
-                            android:layout_height="@dimen/dp_25"
-                            android:background="@drawable/shape_solide_0ff6ff"
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/dp_6"
+                            android:paddingTop="@dimen/dp_2"
+                            android:paddingBottom="@dimen/dp_2"
+                            android:background="@drawable/shape_solide_blue"
                             android:gravity="center"
-                            android:text="@string/hv_confirm"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="@dimen/sp_13" />
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/iv_lightning"
+                                android:layout_width="@dimen/dp_18"
+                                android:layout_height="@dimen/dp_22"
+                                android:src="@drawable/lightning_false"/>  <!--闪电符号//GC20220711--><!--//GC20221112-->
+
+                            <TextView
+                                android:id="@+id/tv_confirm"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hv_confirm"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/sp_13" />
+                        </LinearLayout>
                     </LinearLayout>
 
                 </RelativeLayout>
@@ -400,15 +395,16 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true">
+                    android:layout_toEndOf="@+id/rl_left"
+                    android:layout_marginStart="@dimen/dp_30"><!--//GC20221112-->
 
                     <!--工作方式新UI//GC20220913-->
                     <LinearLayout
                         android:id="@+id/ll_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_4"
-                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_alignStart="@id/ll_current_voltage"
+                        android:layout_alignEnd="@id/ll_current_voltage"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -416,103 +412,139 @@
                             android:id="@+id/rg_gear_mode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:orientation="horizontal">
 
                             <RadioButton
                                 android:id="@+id/rb_gear_DC"
-                                android:layout_width="0dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
-                                android:drawablePadding="10dp"
+                                android:drawablePadding="@dimen/dp_15"
                                 android:paddingStart="@dimen/dp_10"
-                                android:paddingTop="@dimen/dp_6"
+                                android:paddingTop="@dimen/dp_15"
                                 android:paddingEnd="@dimen/dp_10"
-                                android:paddingBottom="@dimen/dp_6"
+                                android:paddingBottom="@dimen/dp_15"
                                 android:text="@string/DC"
                                 android:textColor="@color/white"
-                                android:textSize="@dimen/sp_12" />
+                                android:textSize="@dimen/sp_13"
+                                kosmos:visibility="gone" /><!--visibility="gone"//GC20221111-->
 
                             <RadioButton
                                 android:id="@+id/rb_gear_PULSE"
-                                android:layout_width="0dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
+                                android:drawablePadding="@dimen/dp_15"
+                                android:paddingTop="@dimen/dp_15"
+                                android:paddingBottom="@dimen/dp_15"
                                 android:paddingStart="@dimen/dp_10"
-                                android:paddingTop="@dimen/dp_6"
                                 android:paddingEnd="@dimen/dp_10"
-                                android:paddingBottom="@dimen/dp_6"
                                 android:text="@string/PULSE"
                                 android:textColor="@color/white"
-                                android:textSize="@dimen/sp_12" />
+                                android:textSize="@dimen/sp_13" />
 
                             <RadioButton
                                 android:id="@+id/rb_gear_CYCLIC"
-                                android:layout_width="0dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:button="@drawable/rb_button_style"
+                                android:drawablePadding="@dimen/dp_15"
+                                android:paddingTop="@dimen/dp_15"
+                                android:paddingBottom="@dimen/dp_15"
                                 android:paddingStart="@dimen/dp_10"
-                                android:paddingTop="@dimen/dp_6"
                                 android:paddingEnd="@dimen/dp_10"
-                                android:paddingBottom="@dimen/dp_6"
+                                android:layout_marginStart="@dimen/dp_20"
                                 android:text="@string/CYCLIC"
                                 android:textColor="@color/white"
-                                android:textSize="@dimen/sp_12" />
+                                android:textSize="@dimen/sp_13" /><!--layout_marginStart//GC20221111-->
                         </RadioGroup>
-
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tv_HVINDICATOR"
-                        android:layout_width="wrap_content"
+                    <!--当前电压控制-->
+                    <LinearLayout
+                        android:id="@+id/ll_current_voltage"
+                        android:layout_width="@dimen/dp_190"
                         android:layout_height="wrap_content"
-                        android:layout_alignEnd="@id/ll_hv"
                         android:layout_below="@id/ll_mode"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:text="@string/HVINDICATOR"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />  <!--当前电压位置调整//GC20220913-->
+                        android:gravity="center"
+                        android:orientation="horizontal"><!--dp_190//GC20221112-->
 
-                    <EditText
-                        android:id="@+id/et_HVINDICATOR"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/tv_HVINDICATOR"
-                        android:layout_below="@id/ll_mode"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:background="@null"
-                        android:minWidth="@dimen/dp_70"
-                        android:text="0.00"
-                        android:textColor="@color/T_red"
-                        android:textSize="@dimen/sp_11" />
+                        <!--当前电压显示-->
+                        <LinearLayout
+                            android:layout_width="@dimen/dp_70"
+                            android:layout_height="@dimen/dp_60"
+                            android:padding="@dimen/dp_3"
+                            android:background="@drawable/shape_solide_back"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignEnd="@id/et_HVINDICATOR"
-                        android:layout_below="@id/ll_mode"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:text="kV"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dp_12"
+                                android:gravity="center">
 
-                    <View
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dp_0_5"
-                        android:layout_below="@id/et_HVINDICATOR"
-                        android:layout_alignStart="@id/et_HVINDICATOR"
-                        android:layout_alignEnd="@id/et_HVINDICATOR"
-                        android:background="@color/blue_72FBFD" />
+                                <ImageView
+                                    android:id="@+id/iv_voltage_height"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_vltage_height_0" />
+                            </LinearLayout>
+
+                            <!--当前电压-->
+                            <LinearLayout
+                                android:id="@+id/ll_HVINDICATOR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/dp_3"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tv_HVINDICATOR"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0.00"
+                                    android:textColor="@color/T_red"
+                                    android:textSize="@dimen/sp_16" /><!--//GC20221206-->
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="kV"
+                                    android:textColor="@color/T_F2"
+                                    android:textSize="@dimen/sp_16" /><!--//GC20221206-->
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/HVINDICATOR"
+                                android:textColor="@color/T_F2"
+                                android:textSize="@dimen/sp_11" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_PULSE"
+                            android:layout_width="@dimen/dp_75"
+                            android:layout_height="@dimen/dp_75"
+                            android:layout_marginStart="@dimen/dp_15"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/iv_HV_PULSE"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/bg_pulse_selector"
+                                android:text="" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tv_working_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/et_HVINDICATOR"
-                        android:layout_alignEnd="@id/ll_hv"
+                        android:layout_below="@id/ll_current_voltage"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/working_mode"
                         android:textColor="@color/T_F2"
@@ -523,7 +555,7 @@
                         android:id="@+id/sp_working_mode"
                         android:layout_width="@dimen/dp_70"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/et_HVINDICATOR"
+                        android:layout_below="@id/ll_current_voltage"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_toEndOf="@+id/tv_working_mode"
@@ -541,145 +573,101 @@
                         android:background="@color/blue_72FBFD"
                         android:visibility="gone" />
 
-                    <LinearLayout
-                        android:id="@+id/ll_PULSE"
-                        android:layout_width="@dimen/dp_60"
-                        android:layout_height="@dimen/dp_60"
-                        android:layout_below="@id/tv_HVINDICATOR"
-                        android:layout_marginTop="@dimen/dp_20"
-                        android:orientation="vertical"> <!--放电按钮上下位置微调//GC20220913-->
-
-                        <ImageView
-                            android:id="@+id/iv_HV_PULSE"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/bg_pulse_selector"
-                            android:text="" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tv_PULSE"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/ll_PULSE"
-                        android:layout_alignStart="@id/ll_PULSE"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:layout_marginStart="@dimen/dp_7"
-                        android:text="@string/PULSE2"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11" />
-
-                    <LinearLayout
-                        android:id="@+id/ll_hv"
-                        android:layout_width="@dimen/dp_20"
-                        android:layout_height="@dimen/dp_60"
-                        android:layout_below="@id/tv_HVINDICATOR"
-                        android:layout_toEndOf="@id/ll_PULSE"
-                        android:layout_marginTop="@dimen/dp_20"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:id="@+id/iv_voltage_height"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_vltage_height_0" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_PULSE2"
-                        android:layout_width="@dimen/dp_60"
-                        android:layout_height="@dimen/dp_60"
-                        android:layout_below="@id/tv_HVINDICATOR"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:layout_marginTop="@dimen/dp_20"
-                        android:layout_toEndOf="@id/ll_hv"
-                        android:orientation="vertical"
-                        android:visibility="invisible">
-
-                        <ImageView
-                            android:id="@+id/iv_HV_PULSE2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/bg_pulse_selector"
-                            android:text="" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tv_PULSE2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/ll_PULSE"
-                        android:layout_alignStart="@id/ll_PULSE2"
-                        android:layout_marginStart="@dimen/dp_7"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:text="@string/PULSE2"
-                        android:textColor="@color/T_F2"
-                        android:textSize="@dimen/sp_11"
-                        android:visibility="invisible" />
-
+                    <!--放电周期-->
                     <LinearLayout
                         android:id="@+id/ll_TIME"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dp_100"
-                        android:layout_below="@id/tv_HVINDICATOR"
-                        android:layout_toEndOf="@id/ll_hv"
+                        android:layout_width="@dimen/dp_190"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/ll_current_voltage"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:orientation="vertical">
+                        android:gravity="center"
+                        android:orientation="vertical"><!--dp_190//GC20221112-->
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:id="@+id/ll_seekBar_time"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_5"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:gravity="center"
                             android:orientation="horizontal">
 
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="top"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/TIME"
+                                    android:textColor="@color/T_F2"
+                                    android:textSize="@dimen/sp_12" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="top"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:id="@+id/iv_minus_time"
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="@dimen/dp_17"
+                                    android:src="@drawable/bg_minus_selector"
+                                    android:text="" />  <!--减号//GC20220927-->
+                            </LinearLayout>
+
                             <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar12
-                                    android:id="@+id/seekBar12"
-                                    android:layout_width="@dimen/dp_90"
-                                    android:layout_height="@dimen/dp_80"
-                                    android:layout_marginTop="@dimen/dp_33"
-                                    android:visibility="visible"
-                                    kosmos:bsb_bubble_color="#24d1b4"
-                                    kosmos:bsb_bubble_text_color="#bc4306"
-                                    kosmos:bsb_bubble_text_size="28sp"
-                                    kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
-                                    kosmos:bsb_marks="false"
-                                    kosmos:bsb_max="12"
-                                    kosmos:bsb_min="0"
-                                    kosmos:bsb_progress="0"
-                                    kosmos:bsb_second_track_color="#00F0FF"
-                                    kosmos:bsb_section_count="1"
-                                    kosmos:bsb_section_text_position="below_section_mark"
-                                    kosmos:bsb_show_progress_in_float="true"
-                                    kosmos:bsb_show_section_mark="false"
-                                    kosmos:bsb_show_section_text="true"
-                                    kosmos:bsb_show_thumb_text="true"
-                                    kosmos:bsb_thumb_color="#24d1b4"
-                                    kosmos:bsb_thumb_text_color="#bc4306"
-                                    kosmos:bsb_thumb_text_size="18sp"
-                                    kosmos:bsb_touch_to_seek="true"
-                                    kosmos:bsb_track_color="#606968"
-                                    kosmos:bsb_track_size="@dimen/dp_28" />
-
-                            <TextView
-                                android:layout_width="@dimen/dp_20"
+                                android:id="@+id/seekBar12"
+                                android:layout_width="@dimen/dp_90"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/dp_53"
-                                android:text="S"
-                                android:textColor="@color/T_F2"
-                                android:textSize="@dimen/sp_11" /><!--//GC20220618-->
-                        </LinearLayout>
+                                android:visibility="visible"
+                                kosmos:bsb_bubble_color="#24d1b4"
+                                kosmos:bsb_bubble_text_color="#bc4306"
+                                kosmos:bsb_bubble_text_size="28sp"
+                                kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                                kosmos:bsb_marks="false"
+                                kosmos:bsb_max="12"
+                                kosmos:bsb_min="0"
+                                kosmos:bsb_progress="0"
+                                kosmos:bsb_second_track_color="#00F0FF"
+                                kosmos:bsb_section_count="1"
+                                kosmos:bsb_section_text_position="below_section_mark"
+                                kosmos:bsb_show_progress_in_float="true"
+                                kosmos:bsb_show_section_mark="false"
+                                kosmos:bsb_show_section_text="true"
+                                kosmos:bsb_show_thumb_text="true"
+                                kosmos:bsb_thumb_color="#24d1b4"
+                                kosmos:bsb_thumb_text_color="#bc4306"
+                                kosmos:bsb_thumb_text_size="18sp"
+                                kosmos:bsb_touch_to_seek="true"
+                                kosmos:bsb_track_color="#606968"
+                                kosmos:bsb_track_size="@dimen/dp_20" />
 
-                        <TextView
-                            android:id="@+id/tv_TIME"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/dp_11"
-                            android:layout_marginStart="@dimen/dp_30"
-                            android:text="@string/TIME"
-                            android:textColor="@color/T_F2"
-                            android:textSize="@dimen/sp_11" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="top"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:id="@+id/iv_plus_time"
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="@dimen/dp_17"
+                                    android:src="@drawable/bg_plus_selector"
+                                    android:text="" />  <!--加号//GC20220927-->
+
+                                <TextView
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="S"
+                                    android:textColor="@color/T_F2"
+                                    android:textSize="@dimen/sp_11"/><!--//GC20220618-->
+                            </LinearLayout>
+                        </LinearLayout>
                     </LinearLayout>
 
                 </RelativeLayout>
@@ -692,29 +680,31 @@
                 android:layout_below="@id/rl_info"
                 android:layout_alignStart="@id/rl_info"
                 android:layout_alignEnd="@id/rl_info"
-                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_5"
                 android:gravity="end"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/btn_back"
-                    android:layout_width="@dimen/dp_110"
-                    android:layout_height="@dimen/dp_25"
-                    android:layout_marginEnd="@dimen/dp_10"
-                    android:background="@drawable/shape_solide_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/dp_6"
+                    android:paddingTop="@dimen/dp_2"
+                    android:paddingBottom="@dimen/dp_2"
+                    android:layout_marginEnd="@dimen/dp_30"
+                    android:background="@drawable/shape_solide_blue"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/dp_18"
+                        android:layout_height="@dimen/dp_22"
                         android:src="@drawable/ic_back" />  <!--添加返回图标//GC20220913-->
 
                     <TextView
                         android:id="@+id/tv_quit"
-                        android:layout_width="@dimen/dp_90"
-                        android:layout_height="@dimen/dp_25"
-                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/enter_test"
                         android:textColor="@color/colorPrimary"
                         android:textSize="@dimen/sp_13" />

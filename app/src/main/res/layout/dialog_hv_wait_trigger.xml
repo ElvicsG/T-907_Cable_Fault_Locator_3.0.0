@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:kosmos="http://schemas.android.com/tools"
     android:gravity="center"
     android:background="#00000000"
     android:orientation="vertical">
@@ -23,19 +24,116 @@
                 android:orientation="vertical"
                 android:gravity="center">
 
-                <TextView
-                    android:id="@+id/tv_note"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/wait_trigger"
-                    android:textSize="@dimen/sp_15"
-                    android:textColor="@color/T_4D"/>
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="@dimen/dp_200"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <!--信息框-->
+                        <LinearLayout
+                            android:layout_width="@dimen/dp_120"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_main_msg"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_note_wait"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/wait_trigger"
+                                android:textColor="@color/gray2"
+                                android:textSize="@dimen/sp_14" />
+                        </LinearLayout>
+
+                        <!--当前电压显示-->
+                        <LinearLayout
+                            android:layout_width="@dimen/dp_70"
+                            android:layout_height="@dimen/dp_60"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:padding="@dimen/dp_3"
+                            android:background="@drawable/shape_solide_back"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/dp_12"
+                                android:gravity="center">
+
+                                <ImageView
+                                    android:id="@+id/iv_trigger_voltage_height"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_vltage_height_0" />
+                            </LinearLayout>
+
+                            <!--当前电压-->
+                            <LinearLayout
+                                android:id="@+id/ll_HVINDICATOR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/dp_3"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tv_trigger_HVINDICATOR"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0.00"
+                                    android:textColor="@color/T_red"
+                                    android:textSize="@dimen/sp_16" /><!--//GC20221206-->
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="kV"
+                                    android:textColor="@color/T_F2"
+                                    android:textSize="@dimen/sp_16" /><!--//GC20221206-->
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/HVINDICATOR"
+                                android:textColor="@color/T_F2"
+                                android:textSize="@dimen/sp_11" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!--单次放电-->
+                    <LinearLayout
+                        android:id="@+id/ll_PULSE"
+                        android:layout_width="@dimen/dp_75"
+                        android:layout_height="@dimen/dp_75"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/iv_trigger_PULSE"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/bg_pulse_selector"
+                            android:text="" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <View
                     android:id="@+id/line"
                     android:layout_width="wrap_content"
                     android:layout_height="1dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginBottom="@dimen/dp_10"
                     android:background="@color/T_F2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -44,43 +142,229 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_10"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tv_hv"
-                        android:layout_width="@dimen/dp_60"
+                    <!--设定电压-->
+                    <LinearLayout
+                        android:id="@+id/ll_trigger_control_voltage"
+                        android:layout_width="@dimen/dp_200"
                         android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/dp_5"
-                        android:paddingBottom="@dimen/dp_5"
-                        android:layout_marginTop="@dimen/dp_12"
-                        android:layout_marginEnd="@dimen/dp_30"
-                        android:background="@drawable/shape_stroke_gray_99"
-                        android:textColor="@color/T_4D"
+                        android:background="@drawable/shape_solide_back"
                         android:gravity="center"
-                        android:text="高压设置"
-                        android:textSize="@dimen/sp_12"/>
+                        android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/iv_trigger_PULSE"
-                        android:layout_width="@dimen/dp_50"
-                        android:layout_height="@dimen/dp_50"
-                        android:layout_marginEnd="@dimen/dp_30"
-                        android:src="@drawable/bg_pulse_selector"
-                        android:text="" />
+                        <LinearLayout
+                            android:id="@+id/ll_trigger_value"
+                            android:layout_width="@dimen/dp_120"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_5"
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tv_hv_cancel"
-                        android:layout_width="@dimen/dp_60"
+                            <TextView
+                                android:id="@+id/tv_trigger_value"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/dp_2"
+                                android:layout_marginEnd="@dimen/dp_2"
+                                android:gravity="center"
+                                android:text="@string/set_voltage"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/sp_13" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_trigger_seekBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_5"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginEnd="@dimen/dp_5"
+                                android:gravity="top"
+                                android:orientation="vertical"><!--//GC20221206-->
+
+                                <ImageView
+                                    android:id="@+id/iv_trigger_minus"
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="@dimen/dp_17"
+                                    android:layout_marginTop="@dimen/dp_1"
+                                    android:src="@drawable/bg_minus_selector"
+                                    android:text="" />  <!--设定电压减号//GC20220927-->
+                            </LinearLayout>
+
+                            <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar32
+                                android:id="@+id/seekBar32_trigger"
+                                android:layout_width="@dimen/dp_130"
+                                android:layout_height="wrap_content"
+                                kosmos:bsb_bubble_color="#24d1b4"
+                                kosmos:bsb_bubble_text_color="#bc4306"
+                                kosmos:bsb_bubble_text_size="28sp"
+                                kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                                kosmos:bsb_marks="false"
+                                kosmos:bsb_max="8"
+                                kosmos:bsb_min="0"
+                                kosmos:bsb_progress="0"
+                                kosmos:bsb_second_track_color="#00F0FF"
+                                kosmos:bsb_section_count="1"
+                                kosmos:bsb_section_text_position="below_section_mark"
+                                kosmos:bsb_show_progress_in_float="true"
+                                kosmos:bsb_show_section_mark="false"
+                                kosmos:bsb_show_section_text="true"
+                                kosmos:bsb_show_thumb_text="true"
+                                kosmos:bsb_thumb_color="#24d1b4"
+                                kosmos:bsb_thumb_text_color="#bc4306"
+                                kosmos:bsb_thumb_text_size="18sp"
+                                kosmos:bsb_touch_to_seek="true"
+                                kosmos:bsb_track_color="#606968"
+                                kosmos:bsb_track_size="@dimen/dp_24" />
+
+                            <net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar16
+                                android:id="@+id/seekBar16_trigger"
+                                android:layout_width="@dimen/dp_130"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone"
+                                kosmos:bsb_bubble_color="#24d1b4"
+                                kosmos:bsb_bubble_text_color="#bc4306"
+                                kosmos:bsb_bubble_text_size="28sp"
+                                kosmos:bsb_colors="#ffEEEE00_#ffe1992e_#CD0000"
+                                kosmos:bsb_marks="false"
+                                kosmos:bsb_max="4"
+                                kosmos:bsb_min="0"
+                                kosmos:bsb_progress="0"
+                                kosmos:bsb_second_track_color="#00F0FF"
+                                kosmos:bsb_section_count="4"
+                                kosmos:bsb_section_text_position="below_section_mark"
+                                kosmos:bsb_show_progress_in_float="true"
+                                kosmos:bsb_show_section_mark="false"
+                                kosmos:bsb_show_section_text="true"
+                                kosmos:bsb_show_thumb_text="true"
+                                kosmos:bsb_thumb_color="#24d1b4"
+                                kosmos:bsb_thumb_text_color="#bc4306"
+                                kosmos:bsb_thumb_text_size="18sp"
+                                kosmos:bsb_touch_to_seek="true"
+                                kosmos:bsb_track_color="#606968"
+                                kosmos:bsb_track_size="@dimen/dp_24" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/dp_5"
+                                android:gravity="top"
+                                android:orientation="vertical"><!--//GC20221206-->
+
+                                <ImageView
+                                    android:id="@+id/iv_trigger_plus"
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="@dimen/dp_17"
+                                    android:layout_marginTop="@dimen/dp_1"
+                                    android:src="@drawable/bg_plus_selector"
+                                    android:text="" />  <!--设定电压加号//GC20220927-->
+
+                                <TextView
+                                    android:layout_width="@dimen/dp_17"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="kV"
+                                    android:textColor="@color/T_F2"
+                                    android:textSize="@dimen/sp_11"
+                                    kosmos:visibility="invisible" /><!--//GC20220618-->
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!--按钮控制-->
+                    <LinearLayout
+                        android:layout_width="@dimen/dp_75"
                         android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/dp_5"
-                        android:paddingBottom="@dimen/dp_5"
-                        android:layout_marginTop="@dimen/dp_12"
-                        android:background="@drawable/shape_stroke_gray_99"
-                        android:textColor="@color/T_4D"
+                        android:layout_marginStart="@dimen/dp_20"
                         android:gravity="center"
-                        android:text="@string/btn_cancel"
-                        android:textSize="@dimen/sp_12"/>
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/ll_hv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/dp_6"
+                            android:paddingTop="@dimen/dp_2"
+                            android:paddingBottom="@dimen/dp_2"
+                            android:layout_marginBottom="@dimen/dp_12"
+                            android:background="@drawable/shape_solide_blue"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="@dimen/dp_18"
+                                android:layout_height="@dimen/dp_22"
+                                android:src="@drawable/flash"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="调节电压"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/sp_12"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_hv_confirm"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/dp_6"
+                            android:paddingTop="@dimen/dp_2"
+                            android:paddingBottom="@dimen/dp_2"
+                            android:layout_marginBottom="@dimen/dp_12"
+                            android:background="@drawable/shape_solide_blue"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/iv_hv_lightning"
+                                android:layout_width="@dimen/dp_18"
+                                android:layout_height="@dimen/dp_22"
+                                android:src="@drawable/lightning_false"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="电压确认"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/sp_12" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_hv_cancel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/dp_6"
+                            android:paddingTop="@dimen/dp_2"
+                            android:paddingBottom="@dimen/dp_2"
+                            android:background="@drawable/shape_solide_blue"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="@dimen/dp_18"
+                                android:layout_height="@dimen/dp_22"
+                                android:src="@drawable/ic_back" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/btn_cancel"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/sp_12"/>
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>

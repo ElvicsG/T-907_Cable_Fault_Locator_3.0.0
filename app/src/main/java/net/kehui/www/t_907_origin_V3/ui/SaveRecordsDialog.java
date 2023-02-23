@@ -75,13 +75,13 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
     String time;
     Date date1 = new Date(System.currentTimeMillis());
     ImageView ivClose;
-    EditText tvCableId;
+    EditText etCableId;
     EditText tvDate;
     EditText tvMode;
     EditText tvRange;
     EditText tvCableLength;
     EditText tvFaultLocation;
-    EditText tvPhase;
+    EditText evPhase;
     EditText tvOperator;
     EditText tvTestSite;
     TextView tvFalutLocationUnit;
@@ -126,13 +126,13 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
 
     private void initView() {
         ivClose = view.findViewById(R.id.iv_close);
-        tvCableId = view.findViewById(R.id.tv_cable_id);
+        etCableId = view.findViewById(R.id.et_cable_id);
         tvDate = view.findViewById(R.id.tv_date);
         tvMode = view.findViewById(R.id.tv_mode);
         tvRange = view.findViewById(R.id.tv_range);
         tvCableLength = view.findViewById(R.id.tv_cable_length);
         tvFaultLocation = view.findViewById(R.id.tv_fault_location);
-        tvPhase = view.findViewById(R.id.tv_phase);
+        evPhase = view.findViewById(R.id.et_phase);
         tvOperator = view.findViewById(R.id.tv_operator);
         tvTestSite = view.findViewById(R.id.tv_test_site);
         tvSave = view.findViewById(R.id.tv_save);
@@ -165,7 +165,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
 
     private void setCableId() {
         if (paramInfo != null) {
-            tvCableId.setText(paramInfo.getCableId());
+            etCableId.setText(paramInfo.getCableId());
         }
 
     }
@@ -439,7 +439,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
      */
     private Data formatData(Data data) {
         data.date = Constant.Date.trim();
-        data.cableId = tvCableId.getText().toString();
+        data.cableId = etCableId.getText().toString();
         data.time = Constant.Time.trim();
         data.mode = Constant.Mode + "";
         data.range = Constant.Range;

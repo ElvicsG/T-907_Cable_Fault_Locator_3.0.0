@@ -32,6 +32,12 @@ public class BaseActivity extends AppCompatActivity {
     public boolean isSwitchOn;      //GC20220726
     public boolean isFirstStart;    //GC20220802
     public boolean alreadyDisplayWave;  //GC20220822
+    public boolean isSetVoltageChanged;  //GC20220926
+    public boolean needSet0;  //GC20221010
+    public boolean allowSetRange;   //GC20221019
+    public boolean allowSetMode;
+    public boolean allowSetOperation;
+    public boolean allowSetHv;   //GC20221108
 
     /**
      * 波形参数
@@ -243,8 +249,8 @@ public class BaseActivity extends AppCompatActivity {
      * eb90aa55 05 60 0c cc 02 sum   0x0ccc：32kV 0x02：30mA档位 / 8kV.120mA
      * eb90aa55 05 60 06 66 01 sum   0x0666：16kV 0x01：60mA档位 / 4kV.240mA
      * 0x61 开关指令（8个字节）
-     * eb90aa55 03 61 01 sum    01:高压开 02：高压关
-     * 0x62 查询指令
+     * eb90aa55 03 61 01 sum    01:高压开 02：高压关 （未使用）
+     * 0x62 电压查询指令
      * eb90aa55 03 62 00 sum
      * 0x70 工作方式指令
      * eb90aa55 03 70 00 sum    00：直流 01：单次 02：周期
@@ -256,7 +262,7 @@ public class BaseActivity extends AppCompatActivity {
     public final static int COMMAND_VOLTAGE_QUERY = 0x62;
     public final static int COMMAND_WORKING_MODE = 0x70;
     public final static int COMMAND_SINGLE_PULSE = 0x71;
-    public final static int COMMAND_SWITCH_ON_QUERY = 0x90; //GC20220919
+    public final static int COMMAND_SWITCH_ON_QUERY = 0x90;     //GC20220919
 
     public int dataTransfer2;
     public int dataTransfer3;
@@ -461,7 +467,6 @@ public class BaseActivity extends AppCompatActivity {
 //GC20211215    UI：重新自定义等待触发对话框
 //GC20211220    UI：只有工作方式为“单次”时“放电”按钮可点击
 //GC20211223    周期时间指令下发
-//GC20211227    高压包由32kV变为8kV
 
 /**
  * //                       _ooOoo_
@@ -515,7 +520,7 @@ public class BaseActivity extends AppCompatActivity {
 //GC20220729    对话框和测试按键冲突
 //GC20220730    对话框物理返回按键事件添加
 //GC20220801    TDR增益调整后不发测试命令
-//GC20220802    APP首次启动档位初始化命令发送（907主板调试需要屏蔽）
+//GC20220802    APP首次启动档位初始化命令发送
 //GC20220803    当前电压大于2kV
 //GC20220806    点击SIM范围自动寻找
 //GC20220808    打开数据库BUG修复
@@ -537,23 +542,54 @@ public class BaseActivity extends AppCompatActivity {
 /*——————————3.0.4版本整理——————————*/
 //GC20220913    工作方式新UI相关
 //GC20220914    mode界面UI修改；ICM方式下的“延长线”按钮不显示
-//GC20220915    加减号预留
-//GC20220916    高压设置界面UI调整
 //GC20220917    WIFI断线后档位状态恢复为默认档位；档位切换实时响应
-//GC20220919    合闸状态改为命令查询    启用需放开注释//GC20190919X
+//GC20220919    合闸状态改为命令查询
 //GC20220920    对话框提示逻辑修改
 //GC20220921    工作方式重置为“单次”；设定电压重置为“0”
+//GC20220926    设定电压变化关联
+//GC20220927    加减号档位微调，seekBar改为Step移动
+//GC20220928    高压设置界面UI修改
+//GC20220929    UI显示bug修改
+//GC20220929    加减号新平板适配//GC20220618
+/*——————————3.0.5版本整理——————————*/
+//GC20221010    切换和切出直流档位时设定电压要清零、直流档位去掉“电压确认”按钮UI（升压控制实时响应测试）、放电周期显示UI跟随工作方式变化
+//GC20221011    工作模式添加“脉冲电流-直闪”
+//GC20221019    “方式、范围、操作”按钮快速点击限制处理
+//GC20221025    数据库打开波形后记忆比较操作BUG
+//GC20221026    直闪方式的方法重写
+//GC20221017    点击“否，上一步”，SIM方式记录取消
+//GC20221102    等待触发界面电压控制UI添加、方法编写
+//GC20221108    等待触发界面放电按钮、设定电压控制初始化和显示变化
+//GC20221109    不同测试方式等待触发界面UI变化
+//GC20221110    直闪方式方法的逻辑修改
+//GC20221111    冲闪方式直流档位去掉
+//GC20221112    高压设置界面UI调整
+//GC20221114    SIM方式范围寻找界面优化、直闪模式设定电压清零、数据库直闪方式添加
+//GC20221115    离线可弹等待触发对话框、等待触发界面电压确认闪电提示效果添加
+//GC20221122    周期最小时间限制为4s
+//GC20221123    方式为SIM时重新连接WIFI未重置为TDR
+/*——————————3.0.6版本整理——————————*/
+//GC20221203    添加实时监测合闸反馈功能；波形数据混入高压状态信息后抛掉多余部分
+//GC20221205    直闪方式下UI无周期显示；直闪模式带电压情况下可以切到冲闪；直闪切到其它方式高压命令无效bug
+//GC20221206    接地报警提示和退出优化，接地报警时电压和工作方式重置；UI加减号拉开距离；UI电容电压字体变大
+//GC20221210    工作方式是“直流”可以点击直接放电
+
+
+
+
 //合闸后进入高压界面再分闸状态查询
-
-
-
-
 /*——————————算法调整——————————*/
 //GT20220822    增益参数修改
 //jk20220922    TDR算法开路波形容错调整
+//jk20221019    SIM算法数组下标越界异常处理
+//jk20221020    数组容错处理
 /*——————————算法调整——————————*/
 //GT20220801    数据接收改动
 //GT屏蔽电量获取
 //GT屏蔽算法
-//GT007 907主板调试需要屏蔽
+//907主板调试 需要屏蔽
 //gc调试 改WiFi名字
+/*——————————T-A310_4/8版本修改——————————*/
+//GC20211227    高压包由32kV变为8kV
+//GC20220903    转换开关时间缩短
+/*——————————T-A310_4/8版本修改——————————*/

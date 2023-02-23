@@ -40,7 +40,7 @@
                     android:layout_alignParentStart="true">
 
                     <TextView
-                        android:id="@+id/tv_working_mode"
+                        android:id="@+id/tv_cable_id"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/cable_id"
@@ -48,11 +48,11 @@
                         android:textSize="@dimen/sp_11" />
 
                     <EditText
-                        android:id="@+id/tv_cable_id"
+                        android:id="@+id/et_cable_id"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_10"
-                        android:layout_toEndOf="@id/tv_working_mode"
+                        android:layout_toEndOf="@id/tv_cable_id"
                         android:background="@null"
                         android:minWidth="@dimen/dp_100"
                         android:singleLine="true"
@@ -63,17 +63,17 @@
                     <View
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/dp_0_5"
-                        android:layout_below="@id/tv_cable_id"
-                        android:layout_alignStart="@id/tv_cable_id"
-                        android:layout_alignEnd="@id/tv_cable_id"
+                        android:layout_below="@id/et_cable_id"
+                        android:layout_alignStart="@id/et_cable_id"
+                        android:layout_alignEnd="@id/et_cable_id"
                         android:background="@color/blue_72FBFD" />
 
                     <TextView
                         android:id="@+id/tv_date_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tv_cable_id"
-                        android:layout_alignEnd="@id/tv_working_mode"
+                        android:layout_below="@id/et_cable_id"
+                        android:layout_alignEnd="@id/tv_cable_id"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/date_text"
                         android:textColor="@color/T_F2"
@@ -83,7 +83,7 @@
                         android:id="@+id/tv_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tv_cable_id"
+                        android:layout_below="@id/et_cable_id"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_toEndOf="@id/tv_date_text"
@@ -106,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_date_text"
-                        android:layout_alignEnd="@id/tv_working_mode"
+                        android:layout_alignEnd="@id/tv_cable_id"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/mode_text"
                         android:textColor="@color/T_F2"
@@ -139,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_mode_text"
-                        android:layout_alignEnd="@id/tv_working_mode"
+                        android:layout_alignEnd="@id/tv_cable_id"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/range_text"
                         android:textColor="@color/T_F2"
@@ -173,7 +173,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_range"
-                        android:layout_alignEnd="@id/tv_working_mode"
+                        android:layout_alignEnd="@id/tv_cable_id"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/cable_length"
                         android:textColor="@color/T_F2"
@@ -259,7 +259,7 @@
                         android:background="@color/blue_72FBFD" />
 
                     <TextView
-                        android:id="@+id/tv_working_mode"
+                        android:id="@+id/tv_phase"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_fault_location"
@@ -270,13 +270,13 @@
                         android:textSize="@dimen/sp_11" />
 
                     <EditText
-                        android:id="@+id/tv_phase"
+                        android:id="@+id/et_phase"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_fault_location"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:layout_toEndOf="@id/tv_working_mode"
+                        android:layout_toEndOf="@id/tv_phase"
                         android:background="@null"
                         android:textColor="@color/T_F2"
                         android:textSize="@dimen/sp_11" />
@@ -288,7 +288,7 @@
                         android:layout_below="@id/tv_fault_location"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:layout_toEndOf="@+id/tv_working_mode"
+                        android:layout_toEndOf="@+id/tv_phase"
                         android:gravity="end"
                         app:layout_column="4" />
 
@@ -305,7 +305,7 @@
                         android:id="@+id/tv_operator_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tv_working_mode"
+                        android:layout_below="@id/tv_phase"
                         android:layout_alignEnd="@id/tv_fault_location_text"
                         android:layout_marginTop="@dimen/dp_10"
                         android:text="@string/tv_tester"
@@ -316,7 +316,7 @@
                         android:id="@+id/tv_operator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tv_phase"
+                        android:layout_below="@id/et_phase"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
                         android:layout_toEndOf="@id/tv_operator_text"
@@ -379,7 +379,7 @@
                 android:layout_below="@id/rl_info"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/dp_15"
-                android:background="@drawable/shape_solide_0ff6ff"
+                android:background="@drawable/shape_solide_blue"
                 android:gravity="center"
                 android:text="@string/btn_save"
                 android:textColor="@color/colorPrimary"

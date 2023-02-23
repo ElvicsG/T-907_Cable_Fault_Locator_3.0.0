@@ -34,8 +34,7 @@
             android:layout_marginTop="@dimen/dp_4"
             android:layout_weight="1"
             android:gravity="center"
-            android:src="@drawable/bg_icmc_mode_selector"
-            android:visibility="gone" />
+            android:src="@drawable/bg_icmc_mode_selector" />
 
         <ImageView
             android:id="@+id/btn_sim"

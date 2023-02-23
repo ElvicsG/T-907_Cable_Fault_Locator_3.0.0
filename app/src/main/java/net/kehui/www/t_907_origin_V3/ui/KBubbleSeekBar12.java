@@ -161,28 +161,27 @@ public class KBubbleSeekBar12 extends View {
         mProgress = ta.getFloat(R.styleable.KBubbleSeekBar32_bsb_progress, mMin);
         isFloatType = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_is_float_type, false);
         //滑轨大小  dp2px(2)
-        mTrackSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_track_size, dp2px(28));
+        mTrackSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_track_size, dp2px(20));  //滑轨窄一些旧28 //GC20220928
         mSecondTrackSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_second_track_size,
             mTrackSize + dp2px(2));
         mThumbRadius = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_thumb_radius, mSecondTrackSize / 2 + dp2px(1));
         mThumbRadiusOnDragging = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_thumb_radius_on_dragging,
             mThumbRadius + dp2px(2));
         //切分的份数 10
-        mSectionCount = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_section_count, 1);   //GC20220916    切割的份数改为1
+        mSectionCount = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_section_count, 12);  //GC20220927 改为step点击,切割的份数改为12
         //滑轨底色  colorPrimary
         mTrackColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_track_color,ContextCompat.getColor(context, R.color.gray2));
         //圆点、气泡颜色   colorAccent
         mSecondTrackColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_second_track_color, ContextCompat.getColor(context, R.color.white));
-        //
         mThumbColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_thumb_color, mSecondTrackColor);
         isShowSectionText = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_show_section_text, false);
         //底部分割刻度字体大小  14
         mSectionTextSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_section_text_size, sp2px(22));
         mSectionTextColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_section_text_color, mTrackColor);
-        isSeekStepSection = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_seek_step_section, false);
+        isSeekStepSection = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_seek_step_section, true);   //GC20220927 false改为true，变为step点击
         isSeekBySection = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_seek_by_section, false);
-        //底部分割显示  NONE
-        int pos = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_section_text_position, BELOW_SECTION_MARK);
+        //底部分割显示
+        int pos = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_section_text_position, NONE);    //GC20220927 改为NONE
         if (pos == 0) {
             mSectionTextPosition = SIDES;
         } else if (pos == 1) {
@@ -195,7 +194,7 @@ public class KBubbleSeekBar12 extends View {
         mSectionTextInterval = ta.getInteger(R.styleable.KBubbleSeekBar32_bsb_section_text_interval, 1);
         //圆点位置相关
         isShowThumbText = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_show_thumb_text, true);
-        mThumbTextSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_thumb_text_size, sp2px(30));
+        mThumbTextSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_thumb_text_size, sp2px(22)); //GC20220927 30改为22
         mThumbTextColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_thumb_text_color, mSecondTrackColor);
         //气泡相关  sp2px(14)
         mBubbleColor = ta.getColor(R.styleable.KBubbleSeekBar32_bsb_bubble_color, mSecondTrackColor);

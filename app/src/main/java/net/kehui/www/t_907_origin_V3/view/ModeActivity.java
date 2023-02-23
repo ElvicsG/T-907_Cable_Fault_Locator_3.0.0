@@ -53,11 +53,13 @@ import net.kehui.www.t_907_origin_V3.ui.KBubbleSeekBar32;
 import net.kehui.www.t_907_origin_V3.ui.MoveView;
 import net.kehui.www.t_907_origin_V3.ui.MoveWaveView;
 import net.kehui.www.t_907_origin_V3.ui.NoteDialog;
+import net.kehui.www.t_907_origin_V3.ui.WarningNoteDialog;
 import net.kehui.www.t_907_origin_V3.ui.SaveRecordsDialog;
 import net.kehui.www.t_907_origin_V3.ui.ShowRecordsDialog;
 import net.kehui.www.t_907_origin_V3.ui.SparkView.SparkView;
 import net.kehui.www.t_907_origin_V3.ui.HvWaitTriggerDialog;
 import net.kehui.www.t_907_origin_V3.ui.SwitchOnNoteDialog;
+import net.kehui.www.t_907_origin_V3.ui.SwitchOnDialog;
 import net.kehui.www.t_907_origin_V3.ui.SwitchingDialog;
 import net.kehui.www.t_907_origin_V3.util.AppUtils;
 import net.kehui.www.t_907_origin_V3.util.StateUtils;
@@ -265,8 +267,6 @@ public class ModeActivity extends BaseActivity {
     //初始化滑块位置
     private int fenzi2;
     private int currentActionDownX = 0;
-    //20200407
-    private boolean allowSetRange = true;
     //20200523
     private boolean canClickCancelButton;
     //设置是否需要进入页面接收数据，此处是为了适配从主页面展示 波形时重复接收数据
@@ -340,12 +340,17 @@ public class ModeActivity extends BaseActivity {
                 Constant.isTesting = false;
                 ConnectService.canAskPower = true;
                 allowSetRange = true;
+                allowSetMode = true;    //波形测试结束后可以点击   //GC20221019
                 tvTest.setEnabled(true);
                 Log.e("【请求电量时机控制】", "波形绘制完毕，允许请求电量。");  //GC20211209 是否需要添加波形和高压指令的判断？
                 //TDR自动测距结束后，且是点击SIM，根据得到的合适范围进入SIM    //GC20220806
                 if (Constant.isClickSim && !isLongClick) {
                     Constant.isClickSim = false;
                     clickSim();
+                }
+                //直闪模式设定电压清零    //GC20221114
+                if (mode == ICM_DECAY) {
+                    setHv0();
                 }
                 break;
             case DISPLAY_DATABASE:
@@ -381,7 +386,9 @@ public class ModeActivity extends BaseActivity {
                     //网络连接，更换网络图标
                     ConnectService.isConnected = true;
                     ivWifiStatus.setImageResource(R.drawable.ic_wifi_connected);
-                    //重连有对话框消对话框    //GC20220920
+                    //WIFI重连后恢复为默认档位    //GC20220917
+                    Constant.gear = 2;
+                    //WIFI重连有对话框消对话框    //GC20220920
                     if (tDialog != null) {
                         tDialog.dismiss();              //消正在接收数据对话框
                     }
@@ -395,10 +402,19 @@ public class ModeActivity extends BaseActivity {
                         switchOnNoteDialog.dismiss();   //消合闸提示对话框  //GC20220919
                     }
                     if (noteDialog != null) {
-                        noteDialog.dismiss();       //消T-A310已断开对话框  //GC20220920
+                        noteDialog.dismiss();           //消警告对话框  //GC20220920
+                    }
+                    if (switchOnDialog != null) {
+                        switchOnDialog.dismiss();       //消实时监测合闸提示对话框  //GC20221203
+                    }
+                    if (warningNoteDialog != null) {
+                        warningNoteDialog.dismiss();    //消接地报警提示对话框  //GC20221206
                     }
                     Constant.isTesting = false;
+                    Constant.isClickSim = false;    //GC20221123
                     allowSetRange = true;
+                    allowSetMode = true;        //重新连接成功后可以点击   //GC20221019
+                    allowSetOperation = true;   //重新连接成功后可以点击   //GC20221019
                     alreadyDisplayWave = false;
                     //如果网络连接后于读取本地波形数据，则再网络连接时设置读出的几个参数。
                     if (!isReceiveData || isDatabase) {
@@ -455,8 +471,6 @@ public class ModeActivity extends BaseActivity {
                     batteryValue = -1;
                     //WIFI断线后认为分闸   //GC20220726
                     isSwitchOn = false;
-                    //WIFI断线后档位状态恢复为默认档位    //GC20220917
-                    Constant.gear = 2;
                     //WIFI断线后报警状态重置 //GC20220920
                     Constant.isWarning = true;
                     break;
@@ -682,6 +696,7 @@ public class ModeActivity extends BaseActivity {
             Log.e("DIA", "正在接受数据隐藏" + " 波形绘制完成");
         }
         alreadyDisplayWave = true;
+        allowSetOperation = true;    //波形绘制完成后可以点击   //GC20221019
         setZoomInOutRes();  //GC20220822
     }
 
@@ -1418,16 +1433,16 @@ public class ModeActivity extends BaseActivity {
         else if ((wifiArray[5] == COMMAND_VOLTAGE) && (wifiArray[4] == 0x04)) {
             int hvValue = wifiArray[6] * 256 + wifiArray[7];
             //0x0ccc（3276）：32kV   0x0666：16kV   显示数值需要换算一下
-            Constant.currentVoltage = hvValue / 3276.0 * 32;  //GC20211227
+            Constant.currentVoltage = hvValue / 3276.0 * 32;  //接收高压数值换算    //GC20211227
 //            Constant.currentVoltage = hvValue / 3276.0 * 8;
             //主界面信息栏更新当前电压
             tvInfoHV.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
             //高压设置对话框更新当前电压   //GC20211210
             if (Constant.isShowHV) {
-                autoDialog.etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
+                autoDialog.tvHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
                 if (workingModeData == 0x01) {
                     //当前电压大于2kV     //GC20220803
-                    if (Constant.currentVoltage > 2) {
+                    if (Constant.currentVoltage >= 2) {
                         //当前电压数值变化的档位无效  //GC20220913
                         autoDialog.rbGear16.setClickable(false);
                         autoDialog.rbGear32.setClickable(false);
@@ -1462,6 +1477,9 @@ public class ModeActivity extends BaseActivity {
                     }
                 }
             }
+            if (Constant.isShowHVWait) {    //等待触发界面电容电压数值变化    //GC20221109
+                hvWaitTriggerDialog.tvTriggerHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
+            }
             //高压数值进度条UI更新   //GC20211214
             handleVoltageHeightView(Constant.currentVoltage);
         }
@@ -1470,21 +1488,40 @@ public class ModeActivity extends BaseActivity {
             byte temp = (byte) wifiArray[6];
             byte[] array;
             array = getBooleanArray(temp);
+            //更新合闸反馈
+            if (mode != TDR) {  //TDR方式下无需处理合闸反馈    //GC20221203
+                if (array[2] == 1) {
+                    Log.e("合闸反馈", "T-A310处于合闸状态");
+                    if (switchOnDialog != null) {
+                        Constant.isSwitchOn = true;
+                        switchOnDialog.dismiss();   //消实时监测合闸提示对话框  //GC20221203
+                    }
+                } else {
+                    Log.e("合闸反馈", "T-A310处于未合闸状态");
+                    if (Constant.isSwitchOn) {   //添加条件限制，只提示一次 //GC20221203
+                        Constant.isSwitchOn = false;
+                        showSwitchOnDialog();
+                    }
+                }
+            }
             //更新接地报警   //GC20211210
             if (array[3] == 1) {
                 Log.e("接地报警反馈", "报警" + ConnectService.isConnected);
                 if (Constant.isWarning) {   //添加条件限制，只报警一次  //GC20220920
                     Constant.isWarning = false;
-                    if (Constant.isShowHV) {
+                    showWarningNoteDialog();   //接地报警提示优化   //GC20221206
+                    /*if (Constant.isShowHV) {
                         autoDialog.ivWaring.setImageResource(R.drawable.light_red);
-                    }
-//                    Toast.makeText(ModeActivity.this, R.string.hv_warning_note2, Toast.LENGTH_LONG).show();
-                    showNoteDialog();
+                        Toast.makeText(ModeActivity.this, R.string.hv_warning_note2, Toast.LENGTH_LONG).show();
+                    }*/
                 }
             } else {
                 Log.e("接地报警反馈", "正常" );
-                /*Constant.isWarning = true;
-                if (Constant.isShowHV) {
+                if (warningNoteDialog != null) {   //接地报警退出优化   //GC20221206
+                    Constant.isWarning = true;
+                    warningNoteDialog.dismiss();   //消接地报警提示对话框
+                }
+                /*if (Constant.isShowHV) {
                     autoDialog.ivWaring.setImageResource(R.drawable.light_gray);
                 }*/
             }
@@ -1538,7 +1575,7 @@ public class ModeActivity extends BaseActivity {
                     }
                     Toast.makeText(ModeActivity.this, R.string.hv_working_mode_note2, Toast.LENGTH_LONG).show();
                     //报警时取消方式转换倒计时 //GC20220710
-                    timerWorkingMode.cancel();
+                    timerMode.cancel();
                     showNoteDialog();
                 }
             } else {
@@ -1632,6 +1669,9 @@ public class ModeActivity extends BaseActivity {
         changeInfoVoltageHeightView(heightPosition);
         if (Constant.isShowHV) {
             changeVoltageHeightView(heightPosition);
+        }
+        if (Constant.isShowHVWait) {    //等待触发界面电压进度条变化 //GC20221109
+            changeWaitVoltageHeightView(heightPosition);
         }
     }
 
@@ -1728,6 +1768,52 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
+     * 等待触发操作对话框电压进度条变化   //GC20221109
+     *
+     * @param position
+     */
+    public void changeWaitVoltageHeightView(int position) {
+        switch (position) {
+            case 0:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_0);
+                break;
+            case 1:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_1);
+                break;
+            case 2:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_2);
+                break;
+            case 3:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_3);
+                break;
+            case 4:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_4);
+                break;
+            case 5:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_5);
+                break;
+            case 6:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_6);
+                break;
+            case 7:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_7);
+                break;
+            case 8:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_8);
+                break;
+            case 9:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_9);
+                break;
+            case 10:
+                hvWaitTriggerDialog.ivTriggerVoltageHeight.setImageResource(R.drawable.ic_vltage_height_10);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    /**
      * 将byte转换为一个长度为8的byte数组，数组每个值代表bit
      */
     public static byte[] getBooleanArray(byte b) {
@@ -1768,7 +1854,7 @@ public class ModeActivity extends BaseActivity {
         modeFragment.btnTdr.setEnabled(false);
         modeFragment.btnTdr.setImageResource(R.drawable.bg_tdr_mode_pressed);
         modeFragment.btnIcm.setEnabled(true);
-        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal);
+        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal11); //GC20221011
         modeFragment.btnIcmc.setEnabled(true);
         modeFragment.btnIcmc.setImageResource(R.drawable.icmz1);
         modeFragment.btnSim.setEnabled(true);
@@ -1824,12 +1910,12 @@ public class ModeActivity extends BaseActivity {
         //定点模式添加    //GC20220809
         if (Constant.isClickLocate) {
             modeFragment.btnIcm.setEnabled(true);
-            modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal);
+            modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal11);  //GC20221011
             modeFragment.btnIcml.setEnabled(false);
             modeFragment.btnIcml.setImageResource(R.drawable.bg_locate_mode_pressed);
         } else {
             modeFragment.btnIcm.setEnabled(false);
-            modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_pressed);
+            modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_pressed11);  //GC20221011
             modeFragment.btnIcml.setEnabled(true);
             modeFragment.btnIcml.setImageResource(R.drawable.bg_locate_mode_normal);
         }
@@ -1873,13 +1959,14 @@ public class ModeActivity extends BaseActivity {
         //竖向信息栏方式初始化  //GC20211207
         tvInfoMode.setText(getResources().getText(R.string.btn_icm_decay));
         //非TDR高压操作按钮和竖向信息栏显示    //GC20211207
-        llAUTO.setVisibility(View.VISIBLE);
+        llAUTO.setVisibility(View.GONE); //GC20221011    旧VISIBLE
         llInfoHv.setVisibility(View.VISIBLE);
         //竖向信息栏放电周期、工作方式显示  //GC20220914
         tvModeWorkingMode.setVisibility(View.VISIBLE);
         tvInfoWorkingMode.setVisibility(View.VISIBLE);
-        tvModeTIME.setVisibility(View.VISIBLE);
-        llInfoTIME.setVisibility(View.VISIBLE);
+        //直闪方式无周期显示 //GC20221205
+        tvModeTIME.setVisibility(View.INVISIBLE);
+        llInfoTIME.setVisibility(View.INVISIBLE);
     }
 
     private void initICMDECAYFragment() {
@@ -1887,7 +1974,7 @@ public class ModeActivity extends BaseActivity {
         modeFragment.btnTdr.setEnabled(true);
         modeFragment.btnTdr.setImageResource(R.drawable.bg_tdr_mode_normal);
         modeFragment.btnIcm.setEnabled(true);
-        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal);
+        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal11); //GC20221011
         modeFragment.btnIcmc.setEnabled(false);
         modeFragment.btnIcmc.setImageResource(R.drawable.icmz);
         modeFragment.btnSim.setEnabled(true);
@@ -1936,7 +2023,7 @@ public class ModeActivity extends BaseActivity {
         modeFragment.btnTdr.setEnabled(true);
         modeFragment.btnTdr.setImageResource(R.drawable.bg_tdr_mode_normal);
         modeFragment.btnIcm.setEnabled(true);
-        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal);
+        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal11);  //GC20221011
         modeFragment.btnIcmc.setEnabled(true);
         modeFragment.btnIcmc.setImageResource(R.drawable.icmz1);
         modeFragment.btnSim.setEnabled(false);
@@ -1994,7 +2081,7 @@ public class ModeActivity extends BaseActivity {
         modeFragment.btnTdr.setEnabled(true);
         modeFragment.btnTdr.setImageResource(R.drawable.bg_tdr_mode_normal);
         modeFragment.btnIcm.setEnabled(true);
-        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal);
+        modeFragment.btnIcm.setImageResource(R.drawable.bg_icms_mode_normal11);  //GC20221011
         modeFragment.btnIcmc.setEnabled(true);
         modeFragment.btnIcmc.setImageResource(R.drawable.icmz1);
         modeFragment.btnSim.setEnabled(true);
@@ -2129,81 +2216,85 @@ public class ModeActivity extends BaseActivity {
             double[] b = new double[4];
             double[][] a = new double[4][4];
 
-            for (int h = tdrTurning; h < tdrExtreme; h++) {
-                X[h - tdrTurning] = h - tdrTurning;
-                Y[h - tdrTurning] = tdrFilter[h];    //jk20220711tdr
-            }
-            for (int i = 0; i < tdrExtreme - tdrTurning; i++) {
-                atemp[1] += X[i];
-                atemp[2] += Math.pow(X[i], 2);
-                atemp[3] += Math.pow(X[i], 3);
-                atemp[4] += Math.pow(X[i], 4);
-                atemp[5] += Math.pow(X[i], 5);
-                atemp[6] += Math.pow(X[i], 6);
-                b[0] += Y[i];
-                b[1] += X[i] * Y[i];
-                b[2] += Math.pow(X[i], 2) * Y[i];
-                b[3] += Math.pow(X[i], 3) * Y[i];
-            }
-
-            atemp[0] = tdrExtreme - tdrTurning;
-
-            for (int i1 = 0; i1 < 4; i1++) {
-                int k = i1;
-                for (int j = 0; j < 4; j++) {
-                    a[i1][j] = atemp[k++];
+            if (tdrExtreme - tdrTurning < 1000) { //jk20221020
+                for (int h = tdrTurning; h < tdrExtreme; h++) {
+                    X[h - tdrTurning] = h - tdrTurning;
+                    Y[h - tdrTurning] = tdrFilter[h];    //jk20220711tdr
                 }
-            }
+                for (int i = 0; i < tdrExtreme - tdrTurning; i++) {
+                    atemp[1] += X[i];
+                    atemp[2] += Math.pow(X[i], 2);
+                    atemp[3] += Math.pow(X[i], 3);
+                    atemp[4] += Math.pow(X[i], 4);
+                    atemp[5] += Math.pow(X[i], 5);
+                    atemp[6] += Math.pow(X[i], 6);
+                    b[0] += Y[i];
+                    b[1] += X[i] * Y[i];
+                    b[2] += Math.pow(X[i], 2) * Y[i];
+                    b[3] += Math.pow(X[i], 3) * Y[i];
+                }
 
-            for (int k = 0; k < 3; k++) {
-                int column = k;
-                double mainelement = a[k][k];
-                for (int i2 = k; i2 < 4; i2++) {
-                    if (Math.abs((a[i2][k])) > mainelement) {
-                        mainelement = Math.abs((a[i2][k]));
-                        column = i2;
+                atemp[0] = tdrExtreme - tdrTurning;
+
+                for (int i1 = 0; i1 < 4; i1++) {
+                    int k = i1;
+                    for (int j = 0; j < 4; j++) {
+                        a[i1][j] = atemp[k++];
                     }
                 }
 
-                for (int j = k; j < 4; j++) {
-                    double atemp_1 = a[k][j];
-                    a[k][j] = a[column][j];
-                    a[column][j] = atemp_1;
-                }
+                for (int k = 0; k < 3; k++) {
+                    int column = k;
+                    double mainelement = a[k][k];
+                    for (int i2 = k; i2 < 4; i2++) {
+                        if (Math.abs((a[i2][k])) > mainelement) {
+                            mainelement = Math.abs((a[i2][k]));
+                            column = i2;
+                        }
+                    }
 
-                double btemp = b[k];
-                b[k] = b[column];
-                b[column] = btemp;
-
-                for (int i3 = k + 1; i3 < 4; i3++) {
-                    double Mik = a[i3][k] / a[k][k];
                     for (int j = k; j < 4; j++) {
-                        a[i3][j] -= Mik * a[k][j];
+                        double atemp_1 = a[k][j];
+                        a[k][j] = a[column][j];
+                        a[column][j] = atemp_1;
                     }
-                    b[i3] -= Mik * b[k];
+
+                    double btemp = b[k];
+                    b[k] = b[column];
+                    b[column] = btemp;
+
+                    for (int i3 = k + 1; i3 < 4; i3++) {
+                        double Mik = a[i3][k] / a[k][k];
+                        for (int j = k; j < 4; j++) {
+                            a[i3][j] -= Mik * a[k][j];
+                        }
+                        b[i3] -= Mik * b[k];
+                    }
                 }
-            }
 
-            b[3] /= a[3][3];
+                b[3] /= a[3][3];
 
-            for (int i = 2; i >= 0; i--) {
-                double sum = 0;
-                for (int j = i + 1; j < 4; j++) {
-                    sum += a[i][j] * b[j];
+                for (int i = 2; i >= 0; i--) {
+                    double sum = 0;
+                    for (int j = i + 1; j < 4; j++) {
+                        sum += a[i][j] * b[j];
+                    }
+                    b[i] = (b[i] - sum) / a[i][i];
                 }
-                b[i] = (b[i] - sum) / a[i][i];
-            }
 
-            int autoLocationTemp;
-            //盛金公式  //jk20220711tdr
-            autoLocationTemp = solve3Polynomial(b[3], b[2], b[1], b[0]) + tdrTurning;
-            if(Math.abs(autoLocationTemp - tdrTurning) > pulseRemovePoint[rangeState]){
-                autoLocationTemp = tdrTurning;
+                int autoLocationTemp;
+                //盛金公式  //jk20220711tdr
+                autoLocationTemp = solve3Polynomial(b[3], b[2], b[1], b[0]) + tdrTurning;
+                if(Math.abs(autoLocationTemp - tdrTurning) > pulseRemovePoint[rangeState]){
+                    autoLocationTemp = tdrTurning;
+                }
+                if (autoLocationTemp <= pulseRemovePoint[rangeState] * 2) {
+                    autoLocationTemp = simOriginalZero;   //更改自动测距时TDR实光标零点位置     //GC20220811  0
+                }
+                tdrAutoLocation = autoLocationTemp; //jk20220711tdr
+            }else {
+                tdrAutoLocation = tdrTurning;
             }
-            if (autoLocationTemp <= pulseRemovePoint[rangeState] * 2) {
-                autoLocationTemp = simOriginalZero;   //更改自动测距时TDR实光标零点位置     //GC20220811  0
-            }
-            tdrAutoLocation = autoLocationTemp; //jk20220711tdr
         }else{
             tdrAutoLocation = simOriginalZero;   //更改自动测距时TDR实光标零点位置     //GC20220811  0
         }
@@ -2451,7 +2542,7 @@ public class ModeActivity extends BaseActivity {
         }
 
         //计算波形有效数据的极值   //jk20200904 更改起始判断位置   //jk20220922 调整位置
-        for (i = pulseRemoveTdrWave[rangeState] ; i < dataMax - removeTdrSim[rangeState]-30; i++) {  //jk20220711tdrRange pulselongtdrRemove数组变动
+        for (i = pulseRemoveTdrWave[rangeState] * 2 ; i < dataMax - removeTdrSim[rangeState]-30; i++) {  //jk20220711tdrRange pulselongtdrRemove数组变动
             sub1 = waveArray[i] - medianValue;
             if (Math.abs(sub1) > max1) {
                 max1 = Math.abs(sub1);
@@ -3066,7 +3157,7 @@ public class ModeActivity extends BaseActivity {
                 Log.e("tdr", "tdrr2");
 //            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos > pulseRemoveTdrWave[rangeState] * 2 && min < medianValue -15 && min- medianValue > secondJudgeMax)||(maxPos > pulseRemoveTdrWave[rangeState] &&  secondJudgeMin > secondJudgeMax && maxPos > minPos &&secondMinPos>maxPos&&secondMaxPos>secondMinPos&&min < medianValue -15)) {
             //极值点条件判断修改  //GT20220822
-            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos > pulseRemoveTdrWave[rangeState] * 2 && min < medianValue -15 && Math.abs(min- medianValue) > secondJudgeMax)){ //jk20220922
+            }else if ((maxPos < pulseRemoveTdrWave[rangeState] && minPos > pulseRemoveTdrWave[rangeState] * 2 && min < medianValue -15 && Math.abs(min- medianValue) > secondJudgeMax)){//jk20220922
                 tdrExtreme = minPos;
                 point_x();
                 Log.e("tdr", "tdrr3");
@@ -4766,6 +4857,7 @@ public class ModeActivity extends BaseActivity {
      * 相关计算
      */
     int n, n1, n2, n3, n4, n5, n6, n7, n8, p;
+    int n1Temp, n2Temp, n3Temp, n4Temp, n5Temp, n6Temp, n7Temp, n8Temp; //jk20221019
     public void simRelevantJudgment() {
         simFilter();
         int selectWaveNum = 1;
@@ -4788,9 +4880,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
+            n1Temp = n1; //jk20221019
             while (n1 > 1){
                 if(Math.abs(simArray1Filter[n1+1]-simArray0Filter[n1+1]) <= 1.5) {
                     n1 = n1 + 1;
+                    if (n1 == dataLength) { //jk20221019
+                        n1 = n1Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -4829,9 +4926,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
+            n2Temp = n2; //jk20221019
             while (n2 > 1){
                 if(Math.abs(simArray2Filter[n2+1]-simArray0Filter[n2+1]) <= 1.5) {
                     n2 = n2 + 1;
+                    if (n2 == dataLength) { //jk20221019
+                        n2 = n2Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -4869,9 +4971,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
+            n3Temp = n3;
             while (n3 > 1){
                 if(Math.abs(simArray3Filter[n3+1]-simArray0Filter[n3+1]) <= 1.5) {
                     n3 = n3 + 1;
+                    if (n3 == dataLength) { //jk20221019
+                        n3 = n3Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -4909,10 +5016,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
-
+            n4Temp = n4;
             while (n4 > 1){
                 if(Math.abs(simArray4Filter[n4+1]-simArray0Filter[n4+1]) <= 1.5) {
                     n4 = n4 + 1;
+                    if (n4 == dataLength) { //jk20221019
+                        n4 = n4Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -4950,9 +5061,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
+            n5Temp = n5;
             while (n5 > 1){
                 if(Math.abs(simArray5Filter[n5+1]-simArray0Filter[n5+1]) <= 1.5) {
                     n5 = n5 + 1;
+                    if (n5 == dataLength) { //jk20221019
+                        n5 = n5Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -4990,9 +5106,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
+            n6Temp = n6;
             while (n6 > 1){
                 if(Math.abs(simArray6Filter[n6+1]-simArray0Filter[n6+1]) <= 1.5) {
                     n6 = n6 + 1;
+                    if (n6 == dataLength) { //jk20221019
+                        n6 = n6Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -5030,9 +5151,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
+            n7Temp = n7;
             while (n7 > 1){
                 if(Math.abs(simArray7Filter[n7+1]-simArray0Filter[n7+1]) <= 1.5) {
                     n7 = n7 + 1;
+                    if (n7 == dataLength) { //jk20221019
+                        n7 = n7Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -5069,9 +5195,14 @@ public class ModeActivity extends BaseActivity {
                     break;
                 }
             }
+            n8Temp = n8;
             while (n8 > 1){
                 if(Math.abs(simArray8Filter[n8+1]-simArray0Filter[n8+1]) <= 1.5) {
                     n8 = n8 + 1;
+                    if (n8 == dataLength) { //jk20221019
+                        n8 = n8Temp;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -5179,80 +5310,84 @@ public class ModeActivity extends BaseActivity {
         double[] b = new double[4];
         double[][] a = new double[4][4];
 
-        for (int h = simTurning; h < simExtreme; h++) {
-            X[h - simTurning] = h - simTurning;
-            Y[h - simTurning] = simArrayF[h];    //jk20220711Sim
-        }
-
-        for (int i = 0; i < simExtreme - simTurning; i++) {
-            atemp[1] += X[i];
-            atemp[2] += Math.pow(X[i], 2);
-            atemp[3] += Math.pow(X[i], 3);
-            atemp[4] += Math.pow(X[i], 4);
-            atemp[5] += Math.pow(X[i], 5);
-            atemp[6] += Math.pow(X[i], 6);
-            b[0] += Y[i];
-            b[1] += X[i] * Y[i];
-            b[2] += Math.pow(X[i], 2) * Y[i];
-            b[3] += Math.pow(X[i], 3) * Y[i];
-        }
-
-        atemp[0] = simExtreme - simTurning;
-
-        for (int i1 = 0; i1 < 4; i1++) {
-            int k = i1;
-            for (int j = 0; j < 4; j++) {
-                a[i1][j] = atemp[k++];
+        if (simExtreme - simTurning < 1000) { //jk20221020
+            for (int h = simTurning; h < simExtreme; h++) {
+                X[h - simTurning] = h - simTurning;
+                Y[h - simTurning] = simArrayF[h];    //jk20220711Sim
             }
-        }
 
-        for (int k = 0; k < 3; k++) {
-            int column = k;
-            double mainelement = a[k][k];
-            for (int i2 = k; i2 < 4; i2++) {
-                if (Math.abs((a[i2][k])) > mainelement) {
-                    mainelement = Math.abs((a[i2][k]));
-                    column = i2;
+            for (int i = 0; i < simExtreme - simTurning; i++) {
+                atemp[1] += X[i];
+                atemp[2] += Math.pow(X[i], 2);
+                atemp[3] += Math.pow(X[i], 3);
+                atemp[4] += Math.pow(X[i], 4);
+                atemp[5] += Math.pow(X[i], 5);
+                atemp[6] += Math.pow(X[i], 6);
+                b[0] += Y[i];
+                b[1] += X[i] * Y[i];
+                b[2] += Math.pow(X[i], 2) * Y[i];
+                b[3] += Math.pow(X[i], 3) * Y[i];
+            }
+
+            atemp[0] = simExtreme - simTurning;
+
+            for (int i1 = 0; i1 < 4; i1++) {
+                int k = i1;
+                for (int j = 0; j < 4; j++) {
+                    a[i1][j] = atemp[k++];
                 }
             }
-            for (int j = k; j < 4; j++) {
-                double atemp_1 = a[k][j];
-                a[k][j] = a[column][j];
-                a[column][j] = atemp_1;
-            }
-            double btemp = b[k];
-            b[k] = b[column];
-            b[column] = btemp;
-            for (int i3 = k + 1; i3 < 4; i3++) {
-                double Mik = a[i3][k] / a[k][k];
+
+            for (int k = 0; k < 3; k++) {
+                int column = k;
+                double mainelement = a[k][k];
+                for (int i2 = k; i2 < 4; i2++) {
+                    if (Math.abs((a[i2][k])) > mainelement) {
+                        mainelement = Math.abs((a[i2][k]));
+                        column = i2;
+                    }
+                }
                 for (int j = k; j < 4; j++) {
-                    a[i3][j] -= Mik * a[k][j];
+                    double atemp_1 = a[k][j];
+                    a[k][j] = a[column][j];
+                    a[column][j] = atemp_1;
                 }
-                b[i3] -= Mik * b[k];
+                double btemp = b[k];
+                b[k] = b[column];
+                b[column] = btemp;
+                for (int i3 = k + 1; i3 < 4; i3++) {
+                    double Mik = a[i3][k] / a[k][k];
+                    for (int j = k; j < 4; j++) {
+                        a[i3][j] -= Mik * a[k][j];
+                    }
+                    b[i3] -= Mik * b[k];
+                }
             }
-        }
 
-        b[3] /= a[3][3];
+            b[3] /= a[3][3];
 
-        for (int i = 2; i >= 0; i--) {
-            double sum = 0;
-            for (int j = i + 1; j < 4; j++) {
-                sum += a[i][j] * b[j];
+            for (int i = 2; i >= 0; i--) {
+                double sum = 0;
+                for (int j = i + 1; j < 4; j++) {
+                    sum += a[i][j] * b[j];
+                }
+                b[i] = (b[i] - sum) / a[i][i];
             }
-            b[i] = (b[i] - sum) / a[i][i];
-        }
-        int autoLocation = 0;
-        //求出曲线拟合后求解纵坐标值为0时横坐标的结果  一元三次方程求解  //jk20210527
+            int autoLocation = 0;
+            //求出曲线拟合后求解纵坐标值为0时横坐标的结果  一元三次方程求解  //jk20210527
 //        autoLocation = equationSolving(b[3], b[2], b[1], b[0], -5, 5) + simTurning;
-        autoLocation = solve3Polynomial(b[3], b[2], b[1], b[0]) + simTurning;  // jk20220711Sim
-        if (autoLocation <= 0) {  //对于结果为0的补充
-            autoLocation = simTurning;
-            //针对开路测试情况，SIM虚光标定位到零点  //GC20220814
-            if (simTurning == 0){
-                 autoLocation = simOriginalZero;
+            autoLocation = solve3Polynomial(b[3], b[2], b[1], b[0]) + simTurning;  // jk20220711Sim
+            if (autoLocation <= 0) {  //对于结果为0的补充
+                autoLocation = simTurning;
+                //针对开路测试情况，SIM虚光标定位到零点  //GC20220814
+                if (simTurning == 0){
+                    autoLocation = simOriginalZero;
+                }
             }
+            simAutoLocation = autoLocation;
+        } else {
+            simAutoLocation = simTurning;
         }
-        simAutoLocation = autoLocation;
 
         //清标志位
         selectSim1 = false;
@@ -5619,6 +5754,8 @@ public class ModeActivity extends BaseActivity {
             //利用比较功能绘制SIM的第二条波形数据
             isCom = true;
         }
+        //如果放大缩小过还原到最初状态    //GC20221025
+        currentStart = 0;
     }
 
     /**
@@ -5639,7 +5776,7 @@ public class ModeActivity extends BaseActivity {
                 break;
             case ICM_DECAY:
                 initICMDECAYView();
-                initICMDECAYFragment(); //GC20220819
+                initICMDECAYFragment(); //GC20221011
                 break;
             case SIM:
                 initSIMView();
@@ -5677,7 +5814,7 @@ public class ModeActivity extends BaseActivity {
                 break;
             case ICM_DECAY:
                 initICMDECAYView();
-                initICMDECAYFragment(); //GC20220821
+                initICMDECAYFragment(); //GC20221011
                 break;
             case SIM:
                 initSIMView();
@@ -5792,11 +5929,6 @@ public class ModeActivity extends BaseActivity {
      * @param range 需要发送的范围控制命令值 / 响应信息栏范围变化
      */
     public void setRange(int range) {
-        //20200407
-        if (!allowSetRange) {
-            return;
-        }
-        allowSetRange = false;
         this.range = range;
         switch (range) {
             case RANGE_250:
@@ -6820,20 +6952,7 @@ public class ModeActivity extends BaseActivity {
                 llCalAdjust.setVisibility(View.GONE);
                 setAdjustRestore();    //GC20220810
                 break;
-            default:
-                break;
-        }
-        //如果未连接不执行
-        if (!ConnectService.isConnected) {
-            Toast.makeText(ModeActivity.this, R.string.test_on_no_connect, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //如果测试中不执行后续代码
-        if (Constant.isTesting) {
-            return;
-        }
-        switch (view.getId()) {
-            case R.id.tv_test:
+            case R.id.tv_test:  //离线可弹等待触发对话框    //GC20221115
                 closeAllView();
                 isReceiveData = true;
                 clickTest();
@@ -6841,6 +6960,20 @@ public class ModeActivity extends BaseActivity {
                 count = 6;
                 isLongClick = false;
                 break;
+            default:
+                break;
+        }
+        //如果未连接不执行
+        if (!ConnectService.isConnected) {
+            Toast.makeText(ModeActivity.this, R.string.test_on_no_connect, Toast.LENGTH_SHORT).show();
+            allowSetOperation = true;    //未连接,操作可以点击 //GC20221019
+            return;
+        }
+        //如果测试中不执行后续代码
+        if (Constant.isTesting) {
+            return;
+        }
+        switch (view.getId()) {
             case R.id.tv_pulse_width_save:
                 savePulseWidth();
                 break;
@@ -6855,7 +6988,6 @@ public class ModeActivity extends BaseActivity {
     /**
      * @param index 侧边栏设置   //jk20210123
      */
-
     public void setTabSelection(int index) {
         //开启一个Fragment事务
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -7316,6 +7448,7 @@ public class ModeActivity extends BaseActivity {
      * 闪电动画   //GC20220711
      */
     private ValueAnimator valueAnimator;
+    private ValueAnimator valueAnimatorHv;  //GC20221115
     private int[] lightning = {R.drawable.lightning, R.drawable.lightning_false};
 
     private void showAutoDialog() {
@@ -7323,16 +7456,24 @@ public class ModeActivity extends BaseActivity {
         if (!autoDialog.isShowing()) {
             autoDialog.show();
             Constant.isShowHV = true;   //高压设置对话框显示状态记录     //GC20211210
-            //档位初始化 //GC20211227
+            //档位初始化
             currentGear = Constant.gear;
             switch (currentGear) {
                 case 1:
                     autoDialog.rgGear.check(autoDialog.rbGear16.getId());
                     autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));    //档位选中效果修改  //GC20220913
+                    if (Constant.WorkingMode != 0) {    //工作方式非“单次”时,另一个按钮无效    //GC20220929
+                        autoDialog.rbGear32.setClickable(false);
+                        autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                    }
                     break;
                 case 2:
                     autoDialog.rgGear.check(autoDialog.rbGear32.getId());
                     autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                    if (Constant.WorkingMode != 0) {    //工作方式非“单次”时,另一个按钮无效    //GC20220929
+                        autoDialog.rbGear16.setClickable(false);
+                        autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                    }
                     break;
                 default:
                     break;
@@ -7357,7 +7498,7 @@ public class ModeActivity extends BaseActivity {
                     } else if (autoDialog.rbGear32.getId() == checkedId) {
                         autoDialog.rbGear32.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));    //档位选中效果修改  //GC20220913
                         autoDialog.rbGear16.setTextColor(getBaseContext().getResources().getColor(R.color.white));
-                        currentGear = 2;    //GC20211227
+                        currentGear = 2;
                         //改变档位设定电压初始化为0
                         Constant.setVoltage = 0;
                         //档位变化实时记录档位和电压数值 //GC20220414
@@ -7368,8 +7509,7 @@ public class ModeActivity extends BaseActivity {
                         autoDialog.seekBar32.setVisibility(View.VISIBLE);
                         autoDialog.seekBar32.setProgress(0);
                     }
-                    //判断是否有动画 //GC20220917
-                    judgeHV();
+                    judgeHV();  //档位变化时判断是否有动画 //GC20220917
                     //如果未连接不执行  //GC20220917
                     if (!ConnectService.isConnected) {
                         Toast.makeText(ModeActivity.this, R.string.test_on_no_connect, Toast.LENGTH_SHORT).show();
@@ -7398,19 +7538,42 @@ public class ModeActivity extends BaseActivity {
                 autoDialog.seekBar32.setVisibility(View.VISIBLE);
                 autoDialog.seekBar32.setProgress(currentSetVoltage);
             } else if (currentGear == 1) {//16kV档位 / 4kV
-                autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV"); //seekBar32设定电压显示 //GC20220413
+                autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV"); //seekBar16设定电压显示 //GC20220413
                 autoDialog.seekBar32.setVisibility(View.GONE);
                 autoDialog.seekBar16.setVisibility(View.VISIBLE);
                 autoDialog.seekBar16.setProgress(currentSetVoltage);
             }
-            //判断是否有动画 //GC20220711
-            judgeHV();
+            judgeHV();  //高压设置对话框弹出时判断是否有动画 //GC20220711
             //设定电压变化监听seekBar32    //GC20220413
             autoDialog.seekBar32.setOnProgressChangedListener(new KBubbleSeekBar32.OnProgressChangedListener() {
                 @Override
                 public void onProgressChanged(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
                     autoDialog.hvValue.setText("设定电压：" + progress + "kV");
+                    if (currentSetVoltage != progress) {
+                        if ((Constant.WorkingMode != 2) && !needSet0) {    //直流时、直流切换至单次电压归0时不记录电压变化状态 //GC20221010
+                            isSetVoltageChanged = true; //GC20220926 seekBar16设定电压变化时状态记录
+                        }
+                    }
                     currentSetVoltage = progress;
+                    //切换到直流时操作     //GC20221010
+                    if (Constant.WorkingMode == 2) {
+                        //记录改变的设定电压
+                        Constant.setVoltage = currentSetVoltage;
+                        tvInfoSetVoltage.setText(currentSetVoltage + "");
+                        //发送高压设定电压指令    //GC20211209
+                        ConnectService.isHV = true;
+                        command = COMMAND_VOLTAGE_SET;
+                        //电压数值
+                        int temp = currentSetVoltage * 3276 / 32;    //GC20211227
+//                        int temp =  currentSetVoltage * 3276 / 8;
+                        dataTransfer = (byte) (temp >> 8 & 0xff);
+                        dataTransfer2 = (byte) (temp & 0xff);
+                        //档位
+                        dataTransfer3 = currentGear;    //同 GEAR1 = 0x01 GEAR2 = 0x02
+                        startService();
+                    } else {
+                        judgeHV();  //判断seekBar32改变是否有动画 //GC20220926
+                    }
                 }
 
                 @Override
@@ -7428,7 +7591,31 @@ public class ModeActivity extends BaseActivity {
                 @Override
                 public void onProgressChanged(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
                     autoDialog.hvValue.setText("设定电压：" + progress + "kV");
+                    if (currentSetVoltage != progress) {
+                        if ((Constant.WorkingMode != 2) && !needSet0) {    //直流时、直流切换至单次电压归0时不记录电压变化状态 //GC20221010
+                            isSetVoltageChanged = true; //GC20220926 seekBar16设定电压变化时状态记录
+                        }
+                    }
                     currentSetVoltage = progress;
+                    //切换到直流时操作     //GC20221010
+                    if (Constant.WorkingMode == 2) {
+                        //记录改变的设定电压
+                        Constant.setVoltage = currentSetVoltage;
+                        tvInfoSetVoltage.setText(currentSetVoltage + "");
+                        //发送高压设定电压指令    //GC20211209
+                        ConnectService.isHV = true;
+                        command = COMMAND_VOLTAGE_SET;
+                        //电压数值
+                        int temp = currentSetVoltage * 3276 / 32;    //GC20211227
+//                        int temp =  currentSetVoltage * 3276 / 8;
+                        dataTransfer = (byte) (temp >> 8 & 0xff);
+                        dataTransfer2 = (byte) (temp & 0xff);
+                        //档位
+                        dataTransfer3 = currentGear;    //同 GEAR1 = 0x01 GEAR2 = 0x02
+                        startService();
+                    } else {
+                        judgeHV();  //判断seekBar16改变时是否有动画 //GC20220926
+                    }
                 }
 
                 @Override
@@ -7441,14 +7628,58 @@ public class ModeActivity extends BaseActivity {
 
                 }
             });
+            //设定电压点击“－”按钮事件 //GC20220927
+            autoDialog.setIvMinus(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (currentSetVoltage > 0) {
+                        currentSetVoltage--;
+                        isSetVoltageChanged = true; //GC20220926 点击“－”设定电压变化时状态记录
+                        if (currentGear == 2) { //32kV档位 / 8kV
+                            autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            autoDialog.seekBar32.setProgress(currentSetVoltage);
+                        } else if (currentGear == 1) {//16kV档位 / 4kV
+                            autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            autoDialog.seekBar16.setProgress(currentSetVoltage);
+                        }
+                    } else {
+                        Toast.makeText(ModeActivity.this, R.string.hv_toast2, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            //设定电压点击“+”按钮事件 //GC20220927
+            autoDialog.setIvPlus(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (currentGear == 2) { //32kV档位 / 8kV
+                        if (currentSetVoltage < 32) {    //GC20211227
+                            currentSetVoltage++;
+                            isSetVoltageChanged = true; //GC20220926 8kV点击“+”设定电压变化时状态记录
+                            autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            autoDialog.seekBar32.setProgress(currentSetVoltage);
+                        } else {
+                            Toast.makeText(ModeActivity.this, R.string.hv_toast4, Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (currentGear == 1) {//16kV档位 / 4kV
+                        if (currentSetVoltage < 16) {    //GC20211227
+                            currentSetVoltage++;
+                            isSetVoltageChanged = true; //GC20220926 4kV点击“+”设定电压变化时状态记录
+                            autoDialog.hvValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            autoDialog.seekBar16.setProgress(currentSetVoltage);
+                        } else {
+                            Toast.makeText(ModeActivity.this, R.string.hv_toast3, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
             //点击“电压确认”按钮事件
-            autoDialog.setTvConfirmButton(new View.OnClickListener() {
+            autoDialog.setLlConfirmButton(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //记录改变的电压档位
                     Constant.gear = currentGear;
-                    gearMemory = currentGear;
-                    /*if (clickGear) {
+                    /*gearMemory = currentGear;
+                    if (clickGear) {
                         //开始倒计时弹出电压档位转换对话框   //GC20220712
                         showSwitchingDialog();
                         timerGear.start();
@@ -7457,13 +7688,13 @@ public class ModeActivity extends BaseActivity {
                     Constant.setVoltage = currentSetVoltage;
                     tvInfoSetVoltage.setText(currentSetVoltage + "");
                     Toast.makeText(ModeActivity.this, R.string.hv_toast, Toast.LENGTH_SHORT).show();
-                    //判断是否有动画 //GC20220711
-                    judgeHV();
+                    isSetVoltageChanged = false;    //GC20220926 点击“电压确认”设定电压变化状态记录
+                    judgeHV();  //点击“电压确认”判断是否有动画 //GC20220711
                     //发送高压设定电压指令    //GC20211209
                     ConnectService.isHV = true;
                     command = COMMAND_VOLTAGE_SET;
                     //电压数值
-                    int temp = currentSetVoltage * 3276 / 32;    //GC20211227
+                    int temp = currentSetVoltage * 3276 / 32;   //发送高压数值换算  //GC20211227
 //                    int temp =  currentSetVoltage * 3276 / 8;
                     dataTransfer = (byte) (temp >> 8 & 0xff);
                     dataTransfer2 = (byte) (temp & 0xff);
@@ -7477,14 +7708,20 @@ public class ModeActivity extends BaseActivity {
                 case 0:
                     autoDialog.rgGearMode.check(autoDialog.rbGearPULSE.getId());
                     autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                    autoDialog.llConfirm.setVisibility(View.VISIBLE); //GC20221010
+                    autoDialog.llTIME.setVisibility(View.INVISIBLE);    //没有周期调整
                     break;
                 case 1:
                     autoDialog.rgGearMode.check(autoDialog.rbGearCYCLIC.getId());
                     autoDialog.rbGearCYCLIC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                    autoDialog.llConfirm.setVisibility(View.VISIBLE); //GC20221010
+                    autoDialog.llTIME.setVisibility(View.VISIBLE);    //有周期调整
                     break;
                 case 2:
                     autoDialog.rgGearMode.check(autoDialog.rbGearDC.getId());
                     autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                    autoDialog.llConfirm.setVisibility(View.INVISIBLE); //直流档位没有电压确认按钮  //GC20221010
+                    autoDialog.llTIME.setVisibility(View.INVISIBLE);    //没有周期调整
                     break;
                 default:
                     break;
@@ -7495,13 +7732,18 @@ public class ModeActivity extends BaseActivity {
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     if (autoDialog.rbGearPULSE.getId() == checkedId) {
                         tvInfoWorkingMode.setText(R.string.PULSE);
+                        autoDialog.llConfirm.setVisibility(View.VISIBLE);   //GC20221010
+                        autoDialog.llTIME.setVisibility(View.INVISIBLE);    //没有周期调整
+                        if (Constant.WorkingMode == 2) {    //由直流档切换到单次 //GC20221010
+                            needSet0 = true;
+                        }
                         Constant.WorkingMode = 0;
                         workingModeData = 0x01;
                         autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
                         if (Constant.isClickLocate) {   //定点方式下“直流”无    //GC20220913
-                            autoDialog.rbGearDC.setVisibility(View.INVISIBLE);
+                            autoDialog.rbGearDC.setVisibility(View.GONE);  //GC20221111 旧INVISIBLE
                         } else {
-                            autoDialog.rbGearDC.setVisibility(View.VISIBLE);
+                            autoDialog.rbGearDC.setVisibility(View.GONE);  //GC20221111 旧VISIBLE
                             autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.white));
                         }
                         autoDialog.rbGearCYCLIC.setVisibility(View.VISIBLE);
@@ -7527,11 +7769,13 @@ public class ModeActivity extends BaseActivity {
 
                     } else if (autoDialog.rbGearCYCLIC.getId() == checkedId) {
                         tvInfoWorkingMode.setText(R.string.CYCLIC);
+                        autoDialog.llConfirm.setVisibility(View.VISIBLE); //GC20221010
+                        autoDialog.llTIME.setVisibility(View.VISIBLE);    //有周期调整
                         Constant.WorkingMode = 1;
                         workingModeData = 0x02;
                         autoDialog.rbGearCYCLIC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
                         autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.white));
-                        autoDialog.rbGearDC.setVisibility(View.INVISIBLE);
+                        autoDialog.rbGearDC.setVisibility(View.GONE);  //GC20221111 旧INVISIBLE
                         //工作方式非“单次”，电压档位切换无效   //GC20220913
                         autoDialog.rbGear16.setClickable(false);
                         autoDialog.rbGear32.setClickable(false);
@@ -7553,6 +7797,9 @@ public class ModeActivity extends BaseActivity {
 
                     } else if (autoDialog.rbGearDC.getId() == checkedId) {
                         tvInfoWorkingMode.setText(R.string.DC);
+                        autoDialog.llConfirm.setVisibility(View.INVISIBLE); //直流档位没有电压确认按钮  //GC20221010
+                        autoDialog.llTIME.setVisibility(View.INVISIBLE);    //没有周期调整
+                        needSet0 = true;    //切换至直流档时   //GC20221010
                         Constant.WorkingMode = 2;
                         workingModeData = 0x00;
                         autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
@@ -7587,7 +7834,19 @@ public class ModeActivity extends BaseActivity {
                         dataTransfer = workingModeData;
                     }
                     startService();
-
+                    //切换和切出直流档位时设定电压要清零     //GC20221010
+                    if (needSet0) {
+                        if (currentSetVoltage != 0) {
+                            handler.postDelayed(ModeActivity.this::setHv0, 20);
+                            if (currentGear == 2) { //32kV档位 / 8kV
+                                autoDialog.seekBar32.setProgress(0);
+                            } else if (currentGear == 1) {//16kV档位 / 4kV
+                                autoDialog.seekBar16.setProgress(0);
+                            }
+                            autoDialog.ivLightning.setImageResource(R.drawable.lightning_false);
+                        }
+                        needSet0 = false;
+                    }
                 }
             });
             //工作方式初始化旧UI
@@ -7667,16 +7926,11 @@ public class ModeActivity extends BaseActivity {
                 autoDialog.spWorkingMode.setVisibility(View.GONE);
                 autoDialog.vWorkingMode.setVisibility(View.GONE);*/
                 //SIM方式下工作方式不可选   //GC20220913
-                autoDialog.rbGearDC.setVisibility(View.GONE);
-                autoDialog.rbGearPULSE.setVisibility(View.GONE);
-                autoDialog.rbGearCYCLIC.setVisibility(View.GONE);
+                autoDialog.rbGearDC.setVisibility(View.GONE);  //GC20221111 旧INVISIBLE
+                autoDialog.rbGearPULSE.setVisibility(View.INVISIBLE);
+                autoDialog.rbGearCYCLIC.setVisibility(View.INVISIBLE);
                 //SIM方式下无放电周期  //GC20220617
                 autoDialog.llTIME.setVisibility(View.INVISIBLE);
-                //“放电”按钮位置调整
-                autoDialog.llPULSE.setVisibility(View.INVISIBLE);
-                autoDialog.tvPULSE.setVisibility(View.INVISIBLE);
-                autoDialog.llPULSE2.setVisibility(View.VISIBLE);
-                autoDialog.tvPULSE2.setVisibility(View.VISIBLE);
             } else {
                 //工作方式旧UI
                 /*autoDialog.tvWorkingMode.setVisibility(View.VISIBLE);
@@ -7684,19 +7938,16 @@ public class ModeActivity extends BaseActivity {
                 autoDialog.vWorkingMode.setVisibility(View.VISIBLE);*/
                 //非SIM方式下工作方式可选     //GC20220913
                 if (Constant.isClickLocate) {   //定点方式下“直流”无    //GC20220913
-                    autoDialog.rbGearDC.setVisibility(View.INVISIBLE);
+                    autoDialog.rbGearDC.setVisibility(View.GONE);  //GC20221111 旧INVISIBLE
                 } else {
-                    autoDialog.rbGearDC.setVisibility(View.VISIBLE);
+                    autoDialog.rbGearDC.setVisibility(View.GONE);  //GC20221111 旧VISIBLE
                 }
                 autoDialog.rbGearPULSE.setVisibility(View.VISIBLE);
                 autoDialog.rbGearCYCLIC.setVisibility(View.VISIBLE);
-                //非SIM方式下有放电周期  //GC20220617
-                autoDialog.llTIME.setVisibility(View.VISIBLE);
-                //“放电”按钮位置调整
-                autoDialog.llPULSE.setVisibility(View.VISIBLE);
-                autoDialog.tvPULSE.setVisibility(View.VISIBLE);
-                autoDialog.llPULSE2.setVisibility(View.INVISIBLE);
-                autoDialog.tvPULSE2.setVisibility(View.INVISIBLE);
+                //非SIM方式下有放电周期  //GC20220617    //初始化添加工作方式限制  //GC20221010
+                if (Constant.WorkingMode == 1) {
+                    autoDialog.llTIME.setVisibility(View.VISIBLE);
+                }
                 //“放电周期”的时间初始化
                 currentSetTime = Constant.time;
                 autoDialog.seekBar12.setProgress(currentSetTime);
@@ -7704,16 +7955,22 @@ public class ModeActivity extends BaseActivity {
                 autoDialog.seekBar12.setOnProgressChangedListener(new KBubbleSeekBar12.OnProgressChangedListener() {
                     @Override
                     public void onProgressChanged(KBubbleSeekBar12 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
-                        currentSetTime = progress;
-                        //改变放电周期
-                        Constant.time = currentSetTime;
-                        tvInfoTIME.setText(currentSetTime + "");
-                        if (workingModeData == 0x02) {
-                            //发送工作方式指令
-                            command = COMMAND_WORKING_MODE;
-                            //数据
-                            dataTransfer = (currentSetTime << 4) + 2;
-                            startService();
+                        if (progress < 4 ) {    //最小时间修改为4s //GC20221122
+                            currentSetTime = 4;
+                            autoDialog.seekBar12.setProgress(currentSetTime);
+                            Toast.makeText(ModeActivity.this, R.string.time_toast1, Toast.LENGTH_SHORT).show();
+                        } else {
+                            currentSetTime = progress;
+                            //改变放电周期
+                            Constant.time = currentSetTime;
+                            tvInfoTIME.setText(currentSetTime + "");
+                            if (workingModeData == 0x02) {
+                                //发送工作方式指令
+                                command = COMMAND_WORKING_MODE;
+                                //数据
+                                dataTransfer = (currentSetTime << 4) + 2;
+                                startService();
+                            }
                         }
                     }
 
@@ -7728,6 +7985,30 @@ public class ModeActivity extends BaseActivity {
                     }
                 });
             }
+            //放电周期点击“－”按钮事件 //GC20220927
+            autoDialog.setIvMinusTime(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (currentSetTime > 4) {   //最小时间修改为4s //GC20221122
+                        currentSetTime--;
+                        autoDialog.seekBar12.setProgress(currentSetTime);
+                    } else {
+                        Toast.makeText(ModeActivity.this, R.string.time_toast1, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            //放电周期点击“+”按钮事件 //GC20220927
+            autoDialog.setIvPlusTime(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (currentSetTime < 12) {
+                        currentSetTime++;
+                        autoDialog.seekBar12.setProgress(currentSetTime);
+                    } else {
+                        Toast.makeText(ModeActivity.this, R.string.time_toast2, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
             //“放电”按钮状态初始化——工作方式非“单次”时无法点击   //GC20211220
             if (Constant.WorkingMode != 0) {
                 autoDialog.ivHVPULSE.setEnabled(false);
@@ -7755,9 +8036,11 @@ public class ModeActivity extends BaseActivity {
             autoDialog.setQuit(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //高压设置对话框退出状态记录     //GC20211210
+                    //对话框退出状态记录     //GC20211210
                     Constant.isShowHV = false;
+                    isSetVoltageChanged = false;    //GC20220926 点击进入测试界面设定电压变化状态重置
                     tvTest.setEnabled(true);   //GC20220729
+                    allowSetMode = true;        //高压设置界面退出（测距）后方式可点击   //GC20221019
                     ivAUTO.setEnabled(true);
                     autoDialog.dismiss();
                     //定点模式进入测试界面（退出）时，切换至ICM界面  //GC20220809
@@ -7784,8 +8067,10 @@ public class ModeActivity extends BaseActivity {
                 public void onClick(View v) {
                     //对话框退出状态记录
                     Constant.isShowHV = false;
+                    isSetVoltageChanged = false;    //GC20220926 点击叉号设定电压变化状态重置
                     allowSetRange = true;
                     tvTest.setEnabled(true);   //GC20220729
+                    allowSetMode = true;        //高压设置界面叉号退出后方式可点击   //GC20221019
                     ivAUTO.setEnabled(true);
                     autoDialog.dismiss();
                     //定点模式叉号退出时，切换至ICM界面  //GC20220809
@@ -7806,14 +8091,14 @@ public class ModeActivity extends BaseActivity {
      *  当前电压大于2kV     //GC20220803
      */
     public void dangerousNote() {
-        Toast.makeText(ModeActivity.this, "当前显示电压大于2kV，请先放掉电压再进行转换操作！", Toast.LENGTH_LONG).show();
+        Toast.makeText(ModeActivity.this, "当前显示电压大于2kV，请先点击“电容放电”按钮放掉电压后再进行转换操作！", Toast.LENGTH_LONG).show();
     }
 
     /**
      * 判断电压数值 //GC20220711
      */
     private void judgeHV() {
-        if (Constant.setVoltage != 0) {
+        if (isSetVoltageChanged) {  //GC20220926
             //画闪电动画
             if (valueAnimator == null) {
                 valueAnimator = ValueAnimator.ofInt(0, 2).setDuration(1000);
@@ -7827,13 +8112,79 @@ public class ModeActivity extends BaseActivity {
                 });
             }
             valueAnimator.start();
+            //“放电”按钮无法点击  //GC20220926
+            autoDialog.ivHVPULSE.setEnabled(false);
+            autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_false);
+            //工作方式不可选择  //GC20220926
+            autoDialog.rbGearDC.setClickable(false);
+            autoDialog.rbGearPULSE.setClickable(false);
+            autoDialog.rbGearCYCLIC.setClickable(false);
+            switch (Constant.WorkingMode) {
+                case 0: //单次
+                    autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                    autoDialog.rbGearCYCLIC.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                    break;
+                case 1: //周期
+                    autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                    break;
+                case 2: //直流
+                    autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.colorPrimaryDark));
+                    break;
+                default:
+                    break;
+            }
         } else {
             //闪烁动画关闭
             if (valueAnimator != null) {
                 valueAnimator.end();
             }
-            autoDialog.ivLightning.setImageResource(R.drawable.lightning_false);
+            //根据设定电压判断闪电符号颜色
+            if (currentSetVoltage != 0) {
+                autoDialog.ivLightning.setImageResource(R.drawable.lightning);
+            } else {
+                autoDialog.ivLightning.setImageResource(R.drawable.lightning_false);
+            }
+            //工作方式可恢复选择   //GC20220926
+            autoDialog.rbGearDC.setClickable(true);
+            autoDialog.rbGearPULSE.setClickable(true);
+            autoDialog.rbGearCYCLIC.setClickable(true);
+            switch (Constant.WorkingMode) {
+                case 0: //单次
+                    autoDialog.rbGearDC.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                    autoDialog.rbGearCYCLIC.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                    //只有单次时“放电”按钮可恢复点击  //GC20220926
+                    autoDialog.ivHVPULSE.setEnabled(true);
+                    autoDialog.ivHVPULSE.setImageResource(R.drawable.bg_pulse_selector);
+                    break;
+                case 1: //周期
+                    autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                    break;
+                case 2: //直流
+                    autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.white));
+                    break;
+                default:
+                    break;
+            }
         }
+    }
+
+    /**
+     * 判断触发界面电压数值 //GC20221115
+     */
+    private void judgeHVWait() {
+        //画闪电动画
+        if (valueAnimatorHv == null) {
+            valueAnimatorHv = ValueAnimator.ofInt(0, 2).setDuration(1000);
+            valueAnimatorHv.setRepeatCount(ValueAnimator.INFINITE);
+            valueAnimatorHv.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    int i = (int) animation.getAnimatedValue();
+                    hvWaitTriggerDialog.ivHvLightning.setImageResource(lightning[i % lightning.length]);
+                }
+            });
+        }
+        valueAnimatorHv.start();
     }
 
     /**
@@ -7843,6 +8194,9 @@ public class ModeActivity extends BaseActivity {
         //TODO 20200407 点击测试按钮的前提是与设备连接成功，否则吐司，禁止继续执行代码
         if (!ConnectService.isConnected) {
             Toast.makeText(ModeActivity.this, R.string.test_on_no_connect, Toast.LENGTH_SHORT).show();
+            if ((mode == ICM) || (mode == ICM_DECAY) || (mode == SIM) || (mode == DECAY)) {
+                showHvWaitTriggerDialog();  //离线可弹等待触发对话框    //GC20221115
+            }
             return;
         }
         //TODO 20200415 如果测试中不要再测试
@@ -7861,13 +8215,17 @@ public class ModeActivity extends BaseActivity {
         }
         //初始化距离
         if (mode == TDR) {
-            tDialog = new TDialog.Builder(getSupportFragmentManager())
-                    .setLayoutRes(R.layout.dialog_receiving_data)
-                    .setScreenWidthAspect(this, 0.25f)
-                    .setCancelableOutside(false)
-                    .create()
-                    .show();
-            Log.e("DIA", " 正在接受数据显示" + " TDR");
+            if (!Constant.isClickSim) {  //不弹出正在接收数据对话框  //GC20221114
+                tDialog = new TDialog.Builder(getSupportFragmentManager())
+                        .setLayoutRes(R.layout.dialog_receiving_data)
+                        .setScreenWidthAspect(this, 0.25f)
+                        .setCancelableOutside(false)
+                        .create()
+                        .show();
+                Log.e("DIA", " 正在接受数据显示" + " TDR");
+            } else {
+                Log.e("DIA", " SIM正在寻找合适范围");
+            }
             command = COMMAND_TEST;
             dataTransfer = TESTING;
             startService();
@@ -7908,13 +8266,14 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
-     * 自定义合闸提示对话框 //GC20220726
+     * 自定义合闸提示对话框2 //GC20220726
      */
     public SwitchOnNoteDialog switchOnNoteDialog;
     public void showSwitchOnNoteDialog() {
         //如果未连接不执行（点击ICM、SIM、定点方式）  //GC20220825
         if (!ConnectService.isConnected) {
             Toast.makeText(ModeActivity.this, R.string.test_on_no_connect, Toast.LENGTH_SHORT).show();
+            allowSetMode = true;    //未连接,方式可以点击 //GC20221019
             Constant.isClickLocate = false;    //定点模式状态取消，定点按钮点击无效  //GC20220825
             switch (modeClick) {
                 case 0x22:
@@ -7922,6 +8281,9 @@ public class ModeActivity extends BaseActivity {
                     break;
                 case 0x33:
                     setMode(0x33);
+                    break;
+                case 0x55:
+                    setMode(0x55);  //GC20221026
                     break;
                 default:
                     break;
@@ -7935,17 +8297,19 @@ public class ModeActivity extends BaseActivity {
             switchOnNoteDialog.show();
             //外部点击禁止
             switchOnNoteDialog.setCanceledOnTouchOutside(false);
-            /*//进入合闸提示对话框，开始发送合闸查询命令  //GC20220919X    907主板调试需要屏蔽
-            command = COMMAND_SWITCH_ON_QUERY;
-            //数据
-            dataTransfer = 0x01;
-            startService();
-            timerSwitch.start();*/
+            handler.postDelayed(() -> { //合闸查询命令发送延时添加，尝试解决直闪切到其它方式高压命令无效bug  //GC20221205
+                //进入合闸提示对话框，开始发送合闸查询命令  //GC20220919    907主板调试需要屏蔽
+                command = COMMAND_SWITCH_ON_QUERY;
+                //数据
+                dataTransfer = 0x01;
+                startService();
+                timerSwitch.start();
+            }, 50);
             //点击“是，下一步”按钮事件
             switchOnNoteDialog.setTvYes(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    timerSwitch.cancel();   //GC20220919X
+                    timerSwitch.cancel();   //GC20220919
                     switchOnNoteDialog.dismiss();
                     isSwitchOn = true;
                     switch (modeClick) {
@@ -7955,6 +8319,10 @@ public class ModeActivity extends BaseActivity {
                             break;
                         case 0x33:
                             simAutoTest();  //GC20220806
+                            break;
+                        case 0x55:
+                            setMode(0x55);  //GC20221026
+                            modeTest();
                             break;
                         default:
                             break;
@@ -7966,8 +8334,15 @@ public class ModeActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     tvTest.setEnabled(true);   //GC20220729
+                    allowSetMode = true;    //点击“否，上一步”，方式可以点击 //GC20221019
+                    if (Constant.isClickSim) {  //点击“否，上一步”，SIM方式记录取消   //GC20221017
+                        Constant.isClickSim = false;
+                    }
+                    if (mode == ICM_DECAY) {    //点击“否，上一步”，直闪工作方式变为DC档   //GC20221110
+                        handler.postDelayed(ModeActivity.this::setWorkingModeDC, 100);
+                    }
                     ivAUTO.setEnabled(true);
-//                    timerSwitch.cancel();   //GC20220919X
+                    timerSwitch.cancel();   //GC20220919
                     switchOnNoteDialog.dismiss();
                 }
             });
@@ -7975,9 +8350,69 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
+     * 自定义实时监测合闸提示对话框2  //GC20221203
+     */
+    public SwitchOnDialog switchOnDialog;
+    public void showSwitchOnDialog() {
+        switchOnDialog = new SwitchOnDialog(this);
+        if (!switchOnDialog.isShowing()) {
+            switchOnDialog.show();
+            //外部点击禁止
+            switchOnDialog.setCanceledOnTouchOutside(false);
+        }
+    }
+
+    /**
+     * 自定义接地报警提示对话框 //GC20221206
+     */
+    public WarningNoteDialog warningNoteDialog;
+    public void showWarningNoteDialog() {
+        warningNoteDialog = new WarningNoteDialog(this);
+        if (!warningNoteDialog.isShowing()) {
+            warningNoteDialog.show();
+            //外部点击禁止
+            warningNoteDialog.setCanceledOnTouchOutside(false);
+            if (Constant.WorkingMode == 2) {
+                setHv0();   //直闪模式下只重置设定电压  //GC20221206
+            } else {
+                resetHvWorkingMode();   //接地报警时重置设定电压和工作方式
+            }
+            if (Constant.isShowHV) {
+                //设定电压UI重置为0
+                if (currentGear == 2) { //32kV档位 / 8kV
+                    autoDialog.hvValue.setText("设定电压：" + 0 + "kV"); //seekBar32设定电压显示
+                    autoDialog.seekBar32.setProgress(0);
+                } else if (currentGear == 1) {//16kV档位 / 4kV
+                    autoDialog.hvValue.setText("设定电压：" + 0 + "kV"); //seekBar16设定电压显示
+                    autoDialog.seekBar16.setProgress(0);
+                }
+                //工作方式UI重置单次
+                autoDialog.rgGearMode.check(autoDialog.rbGearPULSE.getId());
+                autoDialog.rbGearPULSE.setTextColor(getBaseContext().getResources().getColor(R.color.yellow5));
+                autoDialog.llTIME.setVisibility(View.INVISIBLE);
+            }
+            if (Constant.isShowHVWait) {
+                //设定电压UI重置
+                if (currentGear == 2) { //32kV档位 / 8kV
+                    hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + 0 + "kV"); //seekBar32设定电压显示
+                    hvWaitTriggerDialog.seekBar32Trigger.setProgress(0);
+                } else if (currentGear == 1) {//16kV档位 / 4kV
+                    hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + 0 + "kV"); //seekBar16设定电压显示
+                    hvWaitTriggerDialog.seekBar16Trigger.setProgress(0);
+                }
+                //工作方式UI重置
+                if (Constant.WorkingMode != 2) {    //不是直闪模式才重置为单次  //GC20221206
+                    hvWaitTriggerDialog.ivTriggerPULSE.setEnabled(true);
+                    hvWaitTriggerDialog.ivTriggerPULSE.setImageResource(R.drawable.bg_pulse_selector);
+                }
+            }
+        }
+    }
+
+    /**
      * 倒计时0.6s处理    //GC20220919
      */
-    /*private CountDownTimer timerSwitch = new CountDownTimer(500, 100) {
+    private CountDownTimer timerSwitch = new CountDownTimer(500, 100) {
 
         @Override
         public void onTick(long millisUntilFinished) {
@@ -7985,15 +8420,15 @@ public class ModeActivity extends BaseActivity {
 
         @Override
         public void onFinish() {
-            //进入合闸提示对话框，开始发送合闸查询命令  //GC20220919X    907主板调试需要屏蔽
+            //进入合闸提示对话框，开始发送合闸查询命令  //GC20220919    907主板调试需要屏蔽
             command = COMMAND_SWITCH_ON_QUERY;
             //数据
             dataTransfer = 0x01;
             startService();
-            timerSwitch.start();
+            timerSwitch.start();    //倒计时结束，继续发送查询命令
         }
 
-    };*/
+    };
 
     /**
      * 方式测试方法    //GC20220706
@@ -8010,6 +8445,7 @@ public class ModeActivity extends BaseActivity {
         //如果未连接不执行（点击TDR、ICM、定点方式）  //GC20220825
         if (!ConnectService.isConnected) {
             Toast.makeText(ModeActivity.this, R.string.test_on_no_connect, Toast.LENGTH_SHORT).show();
+            allowSetMode = true;    //未连接,方式可以点击 //GC20221019
             return;
         }
         handler.postDelayed(() -> {
@@ -8067,20 +8503,34 @@ public class ModeActivity extends BaseActivity {
         //测试方式转换对话框提示逻辑
         if (mode == TDR) {
             if (modeMemory == SIM) {
-                handler.postDelayed(ModeActivity.this::clickTest, 100);  //情形1：上次方式是SIM,直接测试
-            } else if (modeMemory == ICM) {
+                handler.postDelayed(ModeActivity.this::clickTest, 500);  //情形1：上次方式是SIM,直接测试    //增益调整后切换至TDR增益未响应100变500    //GC20220812
+            } else if ((modeMemory == ICM) || (modeMemory == ICM_DECAY)) {          //添加上次是直闪情况(modeMemory == ICM)  //GC20221026
                 showSwitchingDialog();                                              //情形2：上次方式是ICM（定点），弹方式转换对话框
-                timerWorkingMode.start();
+                timerMode.start();
             }
         } else if (mode == ICM) {
-            if (modeMemory == ICM) {    //情形1：上次是ICM（定点），直接弹出高压操作对话框
-                showAutoDialog();
+            if ((modeMemory == ICM) || (modeMemory == ICM_DECAY)) {     //添加上次是直闪情况(modeMemory == ICM)  //GC20221026
+                showAutoDialog();       //情形1：上次是ICM（定点），直接弹出高压操作对话框
             } else {
                 showSwitchingDialog();  //情形2：上次是TDR或SIM,弹方式转换对话框
-                timerWorkingMode.start();
+                timerMode.start();
+            }
+        } else if (mode == ICM_DECAY) { //添加直闪方式    //GC20221026
+            if (modeMemory == ICM) {    //情形1：上次是ICM（定点），直接弹出等待触发对话框
+                if (Constant.WorkingMode != 2) {    //切换到直闪方式时要重置到DC档-情形①  //GC20221110
+                    handler.postDelayed(ModeActivity.this::setWorkingModeDC, 100);
+                }
+                handler.postDelayed(ModeActivity.this::clickTest, 600); //旧100
+            } else {
+                showSwitchingDialog();  //情形2：上次是TDR或SIM,弹方式转换对话框
+                timerMode.start();
             }
         } else if (mode == SIM) {
-            showAutoDialog();   //这是SIM的第二步，直接弹出高压操作对话框  //GC20220806
+            //SIM方式转换对话框消失   //GC20221114
+            if (switchingDialog != null) {
+                switchingDialog.dismiss();
+            }
+            showAutoDialog();    //方式（SIM）测试方法，第二步：弹出高压操作对话框  //GC20220806
         }
         modeMemory = mode;
     }
@@ -8098,6 +8548,7 @@ public class ModeActivity extends BaseActivity {
         isLongClick = true;
         isReceiveData = true;
         if (modeMemory == TDR) {    //TDR方式下，直接自动测距
+            showSwitchingDialog();  //SIM方式转换对话框弹出   //GC20221114
             handler.postDelayed(ModeActivity.this::clickTest, 100);
         } else {                    //ICM方式下，先弹方式转换对话框进入TDR方式，再进行自动测距
             modeClick = 0x11;
@@ -8117,9 +8568,9 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
-     * 测试方式对话框取消倒计时处理
+     * 测试方式对话框取消倒计时处理   //GC20220903 转换开关时间缩短
      */
-    private CountDownTimer timerWorkingMode = new CountDownTimer(3500, 1000) {
+    private CountDownTimer timerMode = new CountDownTimer(3500, 1000) {
 
         @Override
         public void onTick(long millisUntilFinished) {
@@ -8127,24 +8578,39 @@ public class ModeActivity extends BaseActivity {
 
         @Override
         public void onFinish() {
-            //取消正在转换对话框
-            if (switchingDialog != null) {
-                switchingDialog.dismiss();
-            }
-            if (!clickGear) {
-                Toast.makeText(ModeActivity.this, R.string.switching_success, Toast.LENGTH_LONG).show();
-                if (mode == TDR) {
-                    handler.postDelayed(ModeActivity.this::clickTest, 500);     //ICM增益调整后切换至TDR增益未响应    //GC20220812
-                } else {
-                    showAutoDialog();
+            if (mode != ICM_DECAY) {    //不是直闪方式方式转换提示对话框可直接取消  //GC20221110
+                if (!Constant.isClickSim) {  //SIM方式转换时对话框不消失 //GC20221114
+                    //取消正在转换对话框
+                    if (switchingDialog != null) {
+                        switchingDialog.dismiss();
+                    }
+                    Toast.makeText(ModeActivity.this, R.string.switching_success, Toast.LENGTH_LONG).show();
                 }
+            }
+            if (mode == TDR) {
+                handler.postDelayed(ModeActivity.this::clickTest, 500); //ICM增益调整后切换至TDR增益未响应    //GC20220812
+            } else if (mode == ICM_DECAY) {
+                if (Constant.WorkingMode != 2) {    //切换到直闪方式时要重置到DC档-情形②  //GC20221110
+                    handler.postDelayed(ModeActivity.this::setWorkingModeDC, 1200);
+                }
+//                handler.postDelayed(ModeActivity.this::clickTest, 1500); //添加直闪方式    //GC20221026 旧500
+                handler.postDelayed(() -> {
+                    //直闪方式等待时间长，取消正在转换对话框时间滞后 //GC20221110
+                    if (switchingDialog != null) {
+                        switchingDialog.dismiss();
+                    }
+                    Toast.makeText(ModeActivity.this, R.string.switching_success, Toast.LENGTH_LONG).show();
+                    clickTest();
+                }, 1700);
+            } else {
+                showAutoDialog();
             }
         }
 
     };
 
     /**
-     * 电压档位对话框取消倒计时处理
+     * 电压档位对话框取消倒计时处理   //GC20220903 转换开关时间缩短
      */
     private CountDownTimer timerGear = new CountDownTimer(6000, 1000) {
 
@@ -8232,58 +8698,328 @@ public class ModeActivity extends BaseActivity {
      * 自定义等待触发对话框创建 //GC20211215
      */
     private HvWaitTriggerDialog hvWaitTriggerDialog;
-
     private void showHvWaitTriggerDialog() {
         hvWaitTriggerDialog = new HvWaitTriggerDialog(this);
         if (!hvWaitTriggerDialog.isShowing()) {
             hvWaitTriggerDialog.show();
+            Constant.isShowHVWait = true;   //等待触发对话框显示状态记录     //GC20221109
             //外部点击禁止
             hvWaitTriggerDialog.setCanceledOnTouchOutside(false);
-            //“放电”按钮状态初始化——工作方式非“单次”时无法点击     //GC20211220
-            if (Constant.WorkingMode != 0) {
+            /*if (Constant.WorkingMode != 0) {
+                //工作方式不是“单次”时无法点击“放电”按钮   //GC20211220
                 hvWaitTriggerDialog.ivTriggerPULSE.setEnabled(false);
                 hvWaitTriggerDialog.ivTriggerPULSE.setImageResource(R.drawable.bg_pulse_false);
+                if (Constant.WorkingMode == 2) {    //工作方式是“直流”时无电压确认，可直接调节电压 //GC20221109
+                    hvWaitTriggerDialog.llHv.setVisibility(View.GONE);
+                    hvWaitTriggerDialog.llHvConfirm.setVisibility(View.GONE);
+                }
+            }*/
+            if (Constant.WorkingMode == 1) {            //工作方式是“周期”时无法点击“放电”按钮   //GC20211220
+                hvWaitTriggerDialog.ivTriggerPULSE.setEnabled(false);
+                hvWaitTriggerDialog.ivTriggerPULSE.setImageResource(R.drawable.bg_pulse_false);
+            } else if (Constant.WorkingMode == 2) {     //工作方式是“直流”时无电压确认，可直接调节电压 //GC20221109
+                hvWaitTriggerDialog.llHv.setVisibility(View.GONE);
+                hvWaitTriggerDialog.llHvConfirm.setVisibility(View.GONE);
+                hvWaitTriggerDialog.ivTriggerPULSE.setImageResource(R.drawable.bg_capacitor_pulse_selector); //添加电容放电UI  //GC20221210
             }
             //点击单次放电按钮事件
             hvWaitTriggerDialog.setIvTriggerPULSE(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //发送单次放电指令  //GC20211209
-                    command = COMMAND_SINGLE_PULSE;
-                    //数据
-                    dataTransfer = 0x01;
-                    startService();
-                    handler.postDelayed(() -> {
-                        //发送查询指令  //GC20211209
-                        command = COMMAND_VOLTAGE_QUERY;
+                    if (Constant.WorkingMode == 2) {
+                        //发送电容放电指令  //GC20221210
+                        command = 0xA0;
                         //数据
-                        dataTransfer = 0x00;
+                        dataTransfer = 0x01;
                         startService();
-                    }, 20);
+                    } else {
+                        //发送单次放电指令  //GC20211209
+                        command = COMMAND_SINGLE_PULSE;
+                        //数据
+                        dataTransfer = 0x01;
+                        startService();
+                        handler.postDelayed(() -> {
+                            //发送查询指令  //GC20211209
+                            command = COMMAND_VOLTAGE_QUERY;
+                            //数据
+                            dataTransfer = 0x00;
+                            startService();
+                        }, 20);
+                    }
                 }
             });
-            //点击“高压设置”按钮事件
+            //设定电压初始化   //GC20221102
+            currentSetVoltage = Constant.setVoltage;
+            if (mode == ICM_DECAY) {    //直闪方式可以直接调节设定电压    //GC20221109
+                allowSetHv = true;
+            } else {
+                allowSetHv = false; //GC20221108
+            }
+            if (currentGear == 2) { //32kV档位 / 8kV
+                hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + currentSetVoltage + "kV"); //seekBar32设定电压显示
+                hvWaitTriggerDialog.seekBar16Trigger.setVisibility(View.GONE);
+                hvWaitTriggerDialog.seekBar32Trigger.setVisibility(View.VISIBLE);
+                hvWaitTriggerDialog.seekBar32Trigger.setProgress(currentSetVoltage);
+                if (allowSetHv) {
+                    hvWaitTriggerDialog.seekBar32Trigger.setEnabled(true);  //设定电压seekBar可以操作    //GC20221109
+                } else {
+                    hvWaitTriggerDialog.seekBar32Trigger.setEnabled(false); //GC20221108
+                }
+            } else if (currentGear == 1) {//16kV档位 / 4kV
+                hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + currentSetVoltage + "kV"); //seekBar16设定电压显示
+                hvWaitTriggerDialog.seekBar32Trigger.setVisibility(View.GONE);
+                hvWaitTriggerDialog.seekBar16Trigger.setVisibility(View.VISIBLE);
+                hvWaitTriggerDialog.seekBar16Trigger.setProgress(currentSetVoltage);
+                if (allowSetHv) {
+                    hvWaitTriggerDialog.seekBar16Trigger.setEnabled(true); //设定电压seekBar可以操作    //GC20221109
+                } else {
+                    hvWaitTriggerDialog.seekBar16Trigger.setEnabled(false); //GC20221108
+                }
+            }
+            //设定电压点击seekBar32事件
+            hvWaitTriggerDialog.setSeekBar32Trigger(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!allowSetHv) {  //GC20221108
+                        Toast.makeText(ModeActivity.this, "请点击电压微调按钮后再操作！", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            });
+            //设定电压点击seekBar16事件
+            hvWaitTriggerDialog.setSeekBar16Trigger(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!allowSetHv) {  //GC20221108
+                        Toast.makeText(ModeActivity.this, "请点击电压微调按钮后再操作！", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            });
+            //设定电压变化监听seekBar32 //GC20221102
+            hvWaitTriggerDialog.seekBar32Trigger.setOnProgressChangedListener(new KBubbleSeekBar32.OnProgressChangedListener() {
+                @Override
+                public void onProgressChanged(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                    hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + progress + "kV");
+                    currentSetVoltage = progress;
+                    //切换到直流时操作     //GC20221010
+                    if (Constant.WorkingMode == 2) {
+                        //记录改变的设定电压
+                        Constant.setVoltage = currentSetVoltage;
+                        tvInfoSetVoltage.setText(currentSetVoltage + "");
+                        //发送高压设定电压指令    //GC20211209
+                        ConnectService.isHV = true;
+                        command = COMMAND_VOLTAGE_SET;
+                        //电压数值
+                        int temp = currentSetVoltage * 3276 / 32;    //GC20211227
+//                        int temp =  currentSetVoltage * 3276 / 8;
+                        dataTransfer = (byte) (temp >> 8 & 0xff);
+                        dataTransfer2 = (byte) (temp & 0xff);
+                        //档位
+                        dataTransfer3 = currentGear;    //同 GEAR1 = 0x01 GEAR2 = 0x02
+                        startService();
+                    } else {
+                        judgeHVWait();  //触发界面判断seekBar32改变是否有动画 //GC20221115
+                    }
+                }
+
+                @Override
+                public void getProgressOnActionUp(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat) {
+
+                }
+
+                @Override
+                public void getProgressOnFinally(KBubbleSeekBar32 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
+                }
+            });
+            //设定电压变化监听seekBar16 //GC20221102
+            hvWaitTriggerDialog.seekBar16Trigger.setOnProgressChangedListener(new KBubbleSeekBar16.OnProgressChangedListener() {
+                @Override
+                public void onProgressChanged(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                    hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + progress + "kV");
+                    currentSetVoltage = progress;
+                    //切换到直流时操作     //GC20221010
+                    if (Constant.WorkingMode == 2) {
+                        //记录改变的设定电压
+                        Constant.setVoltage = currentSetVoltage;
+                        tvInfoSetVoltage.setText(currentSetVoltage + "");
+                        //发送高压设定电压指令    //GC20211209
+                        ConnectService.isHV = true;
+                        command = COMMAND_VOLTAGE_SET;
+                        //电压数值
+                        int temp = currentSetVoltage * 3276 / 32;    //GC20211227
+//                        int temp =  currentSetVoltage * 3276 / 8;
+                        dataTransfer = (byte) (temp >> 8 & 0xff);
+                        dataTransfer2 = (byte) (temp & 0xff);
+                        //档位
+                        dataTransfer3 = currentGear;    //同 GEAR1 = 0x01 GEAR2 = 0x02
+                        startService();
+                    } else {
+                        judgeHVWait();  //触发界面判断seekBar16改变是否有动画 //GC20221115
+                    }
+                }
+
+                @Override
+                public void getProgressOnActionUp(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat) {
+
+                }
+
+                @Override
+                public void getProgressOnFinally(KBubbleSeekBar16 bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
+                }
+            });
+            //设定电压点击“－”按钮事件 //GC20221102
+            hvWaitTriggerDialog.setIvTriggerMinus(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!allowSetHv) {  //GC20221108
+                        Toast.makeText(ModeActivity.this, "请点击电压微调按钮后再操作！", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (currentSetVoltage > 0) {
+                        currentSetVoltage--;
+                        if (currentGear == 2) { //32kV档位 / 8kV
+                            hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            hvWaitTriggerDialog.seekBar32Trigger.setProgress(currentSetVoltage);
+                        } else if (currentGear == 1) {//16kV档位 / 4kV
+                            hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            hvWaitTriggerDialog.seekBar16Trigger.setProgress(currentSetVoltage);
+                        }
+                    } else {
+                        Toast.makeText(ModeActivity.this, R.string.hv_toast2, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            //设定电压点击“+”按钮事件 //GC20221102
+            hvWaitTriggerDialog.setIvTriggerPlus(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!allowSetHv) {  //GC20221108
+                        Toast.makeText(ModeActivity.this, "请点击电压微调按钮后再操作！", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (currentGear == 2) { //32kV档位 / 8kV
+                        if (currentSetVoltage < 32) {    //GC20211227
+                            currentSetVoltage++;
+                            hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            hvWaitTriggerDialog.seekBar32Trigger.setProgress(currentSetVoltage);
+                        } else {
+                            Toast.makeText(ModeActivity.this, R.string.hv_toast4, Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (currentGear == 1) {//16kV档位 / 4kV
+                        if (currentSetVoltage < 16) {    //GC20211227
+                            currentSetVoltage++;
+                            isSetVoltageChanged = true; //GC20220926 4kV点击“+”设定电压变化时状态记录
+                            hvWaitTriggerDialog.hvTriggerValue.setText("设定电压：" + currentSetVoltage + "kV");
+                            hvWaitTriggerDialog.seekBar16Trigger.setProgress(currentSetVoltage);
+                        } else {
+                            Toast.makeText(ModeActivity.this, R.string.hv_toast3, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+            //点击“电压确认”按钮事件  //GC20221102
+            hvWaitTriggerDialog.setHvConfirm(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //记录改变的设定电压
+                    Constant.setVoltage = currentSetVoltage;
+                    tvInfoSetVoltage.setText(currentSetVoltage + "");
+                    Toast.makeText(ModeActivity.this, R.string.hv_toast, Toast.LENGTH_SHORT).show();
+                    //发送高压设定电压指令    //GC20211209
+                    ConnectService.isHV = true;
+                    command = COMMAND_VOLTAGE_SET;
+                    //电压数值
+                    int temp = currentSetVoltage * 3276 / 32;   //发送高压数值换算  //GC20211227
+//                    int temp =  currentSetVoltage * 3276 / 8;
+                    dataTransfer = (byte) (temp >> 8 & 0xff);
+                    dataTransfer2 = (byte) (temp & 0xff);
+                    //档位
+                    dataTransfer3 = currentGear;    //同 GEAR1 = 0x01 GEAR2 = 0x02
+                    startService();
+                    //按钮UI显示控制    //GC20221102
+                    hvWaitTriggerDialog.tvNoteWait.setText(R.string.wait_trigger);
+                    hvWaitTriggerDialog.llHv.setVisibility(View.VISIBLE);
+                    hvWaitTriggerDialog.llHvConfirm.setVisibility(View.GONE);
+                    if (Constant.WorkingMode == 0) {   //工作方式“单次”时，点击“电压确认”后，放电按钮可点击    //GC20221108
+                        hvWaitTriggerDialog.ivTriggerPULSE.setEnabled(true);
+                        hvWaitTriggerDialog.ivTriggerPULSE.setImageResource(R.drawable.bg_pulse_selector);
+                    }
+                    allowSetHv = false; //设定电压不可调节  //GC20221108
+                    if (currentGear == 2) { //32kV档位 / 8kV
+                        hvWaitTriggerDialog.seekBar32Trigger.setEnabled(false);
+                    } else if (currentGear == 1) {//16kV档位 / 4kV
+                        hvWaitTriggerDialog.seekBar16Trigger.setEnabled(false);
+                    }
+                    handler.postDelayed(() -> {
+                        //测试命令  //GC20221109
+                        command = COMMAND_TEST;
+                        dataTransfer = TESTING;
+                        startService();
+                    }, 50);
+                }
+            });
+            //改为点击“电压微调”按钮事件    //GC20221102    //点击“高压设置”按钮事件
             hvWaitTriggerDialog.setHv(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    hvWaitTriggerDialog.dismiss();
+                    //取消测试
                     cancelTest();
-                    showAutoDialog();
+                    //按钮UI显示控制    //GC20221102
+                    hvWaitTriggerDialog.tvNoteWait.setText(R.string.wait_trigger2);
+                    hvWaitTriggerDialog.llHv.setVisibility(View.GONE);
+                    hvWaitTriggerDialog.llHvConfirm.setVisibility(View.VISIBLE);
+                    //“电压确认”按钮符号初始化   //GC20221115
+                    if (valueAnimatorHv != null) {
+                        valueAnimatorHv.end();    //闪烁动画关闭
+                    }
+                    if (currentSetVoltage != 0) {
+                        hvWaitTriggerDialog.ivHvLightning.setImageResource(R.drawable.lightning);
+                    } else {
+                        hvWaitTriggerDialog.ivHvLightning.setImageResource(R.drawable.lightning_false);
+                    }
+                    if (Constant.WorkingMode == 0) {   //工作方式“单次”时，点击“调节电压”后，放电按钮不可点击   //GC20221108
+                        hvWaitTriggerDialog.ivTriggerPULSE.setEnabled(false);
+                        hvWaitTriggerDialog.ivTriggerPULSE.setImageResource(R.drawable.bg_pulse_false);
+                    }
+                    allowSetHv = true;  //设定电压可调节   //GC20221108
+                    if (currentGear == 2) { //32kV档位 / 8kV
+                        hvWaitTriggerDialog.seekBar32Trigger.setEnabled(true);
+                    } else if (currentGear == 1) {//16kV档位 / 4kV
+                        hvWaitTriggerDialog.seekBar16Trigger.setEnabled(true);
+                    }
                 }
             });
             //点击“取消测试”按钮事件
-            hvWaitTriggerDialog.setTvHvCancel(new View.OnClickListener() {
+            hvWaitTriggerDialog.setLlHvCancel(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (mode == ICM_DECAY) {    //直闪方式取消测试操作    //GC20221109
+                        //当前电压大于2kV     //GC20230112
+                        if (Constant.currentVoltage >= 2) {
+                            dangerousNote();
+                            return;
+                        } else {
+                            cancelTest();
+                        }
+                    } else {
+                        if (!allowSetHv) {  //在显示“电压确认”按钮的状态下退出，不需要取消测试命令//GC20221108
+                            cancelTest();
+                        }
+                    }
                     hvWaitTriggerDialog.dismiss();
-                    cancelTest();
+                    Constant.isShowHVWait = false;   //等待触发对话框显示状态记录     //GC20221109
                     //取消测试时设定电压归0     //GC20220921
                     if (Constant.setVoltage != 0) {
                         handler.postDelayed(ModeActivity.this::setHv0, 20);
                     }
-                    //取消测试时工作方式初始化为单次   //GC20220921
-                    if (Constant.WorkingMode != 0) {
-                        handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 120);
+                    if (mode != ICM_DECAY) {    //直闪方式取消测试方式不重置 //GC20221109
+                        //取消测试时工作方式初始化为单次   //GC20220921
+                        if (Constant.WorkingMode != 0) {
+                            handler.postDelayed(ModeActivity.this::setWorkingModeSingle, 120);
+                        }
                     }
                 }
             });
@@ -8301,6 +9037,8 @@ public class ModeActivity extends BaseActivity {
             tvTest.setEnabled(true);
             Constant.isTesting = false;
             allowSetRange = true;
+            allowSetMode = true;        //取消测试后按钮可以点击   //GC20221019
+            allowSetOperation = true;   //取消测试后按钮可以点击   //GC20221019
             command = COMMAND_TEST;
             dataTransfer = CANCEL_TEST;
             startService();
@@ -8342,6 +9080,21 @@ public class ModeActivity extends BaseActivity {
     }
 
     /**
+     * 工作方式“直流”指令下发 //GC20221109
+     */
+    public void setWorkingModeDC() {
+        //工作方式记录为单次
+        Constant.WorkingMode = 2;
+        //信息栏
+        tvInfoWorkingMode.setText(R.string.DC);
+        //发送单次工作方式指令
+        command = COMMAND_WORKING_MODE;
+        //数据
+        dataTransfer = 0x00;
+        startService();
+    }
+
+    /**
      * 重置设定电压和工作方式  //GC20220921
      */
     public void resetHvWorkingMode() {
@@ -8358,16 +9111,20 @@ public class ModeActivity extends BaseActivity {
                 setWorkingModeSingle();
             }
         }
+        //切换到TDR的操作移动到这里（直闪方式时需要重置方式、另外之前逻辑不完整，未考虑转换至TDR带电压情况）    //GC20221110
+        if (modeClick == 0x11) {
+            handler.postDelayed(() -> {
+                setMode(0x11);
+                modeTest();
+            }, 600);
+        }
     }
 
     /**
      * 故障反馈对话框创建    //GC20220920
      */
     private NoteDialog noteDialog;
-    boolean isQuit = true;
     private void showNoteDialog() {
-        //解决TDR测试问题
-        Constant.isTesting = true;
         //有对话框取先消掉  //GC20220920
         if (tDialog != null) {
             tDialog.dismiss();              //消正在接收数据对话框
@@ -8381,42 +9138,41 @@ public class ModeActivity extends BaseActivity {
         if (switchOnNoteDialog != null) {
             switchOnNoteDialog.dismiss();   //消合闸提示对话框
         }
+        if (switchOnDialog != null) {
+            switchOnDialog.dismiss();       //消实时监测合闸提示对话框  //GC20221203
+        }
+        if (warningNoteDialog != null) {
+            warningNoteDialog.dismiss();    //消接地报警提示对话框    //GC20221206
+        }
         noteDialog = new NoteDialog(this);
         if (!noteDialog.isShowing()) {
             noteDialog.show();
             //外部点击禁止
             noteDialog.setCanceledOnTouchOutside(false);
-            //接地报警指示
-            if (!Constant.isWarning) {
+            /*if (!Constant.isWarning) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_warning_note2));
-                isQuit = false;
-            }
+            }*/ //接地报警指示更换提示    //GC20221206
             if (!Constant.isGear) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_gear_note2));
-                isQuit = true;
             }
             if (!Constant.isWorkingMode) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_working_mode_note2));
-                isQuit = true;
             }
             if (!Constant.isIgnitionCoil) {
                 noteDialog.tvNote.setText(getResources().getString(R.string.hv_ignition_coil_note2));
-                isQuit = true;
             }
             //点击退出按钮事件
             noteDialog.setTvFaultQuit(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     noteDialog.dismiss();
-                    if (isQuit) {
-                        ModeActivity.this.finish(); //结束当前Activity
-                        onDestroy();
-                        Intent startMain = new Intent(Intent.ACTION_MAIN);
-                        startMain.addCategory(Intent.CATEGORY_HOME);
-                        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(startMain);
-                        System.exit(0); //退出程序
-                    }
+                    ModeActivity.this.finish(); //结束当前Activity
+                    onDestroy();
+                    Intent startMain = new Intent(Intent.ACTION_MAIN);
+                    startMain.addCategory(Intent.CATEGORY_HOME);
+                    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(startMain);
+                    System.exit(0); //退出程序
                 }
             });
         }
@@ -8442,6 +9198,7 @@ public class ModeActivity extends BaseActivity {
         } else {
             Toast.makeText(this, getResources().getString(R.string.You_have_no_memory_data_can_not_compare), Toast.LENGTH_SHORT).show();
         }
+        allowSetOperation = true;    //GC20221019
     }
 
     /**
@@ -8456,6 +9213,7 @@ public class ModeActivity extends BaseActivity {
             modeBefore = mode;
             rangeBefore = range;
         }
+        allowSetOperation = true;    //GC20221019
     }
 
     /**

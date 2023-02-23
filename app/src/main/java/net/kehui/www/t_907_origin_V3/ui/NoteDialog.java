@@ -54,8 +54,6 @@ public class NoteDialog extends BaseDialog implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_fault_quit:
-                break;
             default:
                 break;
         }

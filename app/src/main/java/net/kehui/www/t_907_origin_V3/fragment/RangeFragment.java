@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 
+import net.kehui.www.t_907_origin_V3.ConnectService;
 import net.kehui.www.t_907_origin_V3.R;
 import net.kehui.www.t_907_origin_V3.view.ModeActivity;
 
@@ -69,6 +70,14 @@ public class RangeFragment extends Fragment {
     @OnClick({R.id.btn_250m,R.id.btn_500m, R.id.btn_1km, R.id.btn_2km, R.id.btn_4km, R.id.btn_8km, R.id
             .btn_16km, R.id.btn_32km, R.id.btn_64km})
     public void onViewClicked(View view) {
+        if (!ConnectService.isConnected) {
+            ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetRange = true;    //未连接,操作可以点击 //GC20221019
+        }
+        //快速点击限制    //GC20221019
+        if ( ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetRange == false) {
+            return;
+        }
+        ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetRange = false;
         switch (view.getId()) {
             case R.id.btn_250m:
                 ((ModeActivity) Objects.requireNonNull(getActivity())).range = 0x99;

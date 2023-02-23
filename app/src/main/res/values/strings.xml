@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">T-A310</string>
+    <string name="app_name">T-A310 8/4</string>
     <string name="btn_mtd">方式</string>
     <string name="btn_range">范围</string>
     <string name="btn_adj">调节</string>
@@ -8,8 +8,8 @@
     <string name="btn_setting">设置</string>
     <string name="btn_test">测试</string>
     <string name="btn_tdr">低压脉冲</string>
-    <string name="btn_icm">脉冲电流</string><!--脉冲电流-冲闪-->
-    <string name="btn_icm_decay">脉冲电流-直闪</string>
+    <string name="btn_icm">脉冲电流 - 冲闪</string><!--脉冲电流-冲闪//GC20221011-->
+    <string name="btn_icm_decay">脉冲电流 - 直闪</string>
     <string name="btn_sim">多次脉冲</string>
     <string name="btn_decay">衰减法</string>
     <string name="btn_250m">250m</string>
@@ -76,6 +76,7 @@
 
     <string name="btn_cancel">取消测试</string>
     <string name="wait_trigger">等待触发…</string>
+    <string name="wait_trigger2">请调节电压！</string><!--GC20221102-->
     <string name="receive_data">正在接收数据…</string>
     <string name="connecting_wifi">等待WiFi连接…</string>
     <string name="connecting_hw">等待设备连接…</string>
@@ -137,7 +138,7 @@
     <string name="range_text">范&#12288;&#12288;围：</string>
     <string name="cable_length">电缆长度：</string>
     <string name="fault_location_text">故障距离：</string>
-    <string name="phase_text">相&#12288;&#12288;位：</string>
+    <string name="phase_text">相&#12288;&#12288;别：</string>
     <string name="tv_tester">测试人员：</string>
     <string name="test_site_text">测试地点：</string>
     <string name="main_notice">默认测试范围是%1$s。 输入电缆长度，可自动确定范围。设置参数后选择测试方式</string>
@@ -183,28 +184,31 @@
     <string name="chineseSpace">&#12288;</string>
     <string name="testAgain">请再次测试!</string>
     <string name="company_name">山东科汇电力自动化股份有限公司</string>
-    <string name="v_name">V3.0.4</string>
+    <string name="v_name">V3.0.0</string>
 
     <string name="working_mode">工作方式：</string>
     <string name="DC">直流</string>
     <string name="PULSE">单次</string>
     <string name="CYCLIC">周期</string>
-    <string name="TIME">放电周期</string>
+    <string name="TIME">放电周期：</string>  <!--GC20220928-->
     <string name="PULSE2">放电测试</string>
-    <string name="HVINDICATOR">当前电压：</string>
+    <string name="HVINDICATOR">电容电压</string>    <!--GC20220928-->
+    <string name="HVINDICATOR2">电容电压：</string>    <!--GC20220928-->
     <string name="set_voltage">设定电压：</string>
     <string name="test_method">测试方法：</string>
     <string name="grounding_alarm">接地报警：</string>
     <string name="voltage">电压/kV</string>
     <string name="time">时间/s</string>
     <string name="Gear1">16kV</string>
-    <string name="Gear2">32kV</string>
-    <!--<string name="Gear1">4kV</string>-->
-    <!--<string name="Gear2">8kV</string>--><!--GC20211227-->
+    <string name="Gear2">32kV</string>   <!--GC20211227-->
+    <!--<string name="Gear1">4kV</string>
+    <string name="Gear2">8kV</string>-->
     <string name="hv_confirm">电压确认</string>
     <string name="quit">退出</string>
     <string name="hv_toast">电压已确认，等待升压......</string>
-    <string name="hv_toast2">电压值不能为0，请重新设定！</string>
+    <string name="hv_toast2">设定电压值最小为0kV！</string>
+    <string name="hv_toast3">设定电压值最大为16kV！</string>
+    <string name="hv_toast4">设定电压值最大为32kV！</string>    <!--GC20211227-->
     <string name="hv_warning_note">接地正常</string>
     <string name="hv_warning_note2">接地报警</string>
     <string name="hv_gear_note">电压档位正常</string>
@@ -215,7 +219,7 @@
     <string name="hv_capacity_note2">电容有残压</string>
     <string name="hv_ignition_coil_note">高压包正常</string>
     <string name="hv_ignition_coil_note2">高压包故障</string>
-    <string name="enter_test">进入测试界面</string>
+    <string name="enter_test">测&#8195;&#8195;距</string>
     <string name="switching">正在转换测试方式</string>
     <string name="switching_success">测试方式转换成功！</string>
     <string name="switching2">正在转换电压档位</string>
@@ -223,8 +227,12 @@
     <string name="switch_on_note">正在检查设备是否合闸</string>
     <string name="switch_on_note2">设备已合闸，请点击下一步！</string>
     <string name="switch_on_note3">设备未合闸，请先合闸！</string>
+    <string name="warn_note">请检查保护地和辅助地接线！</string><!--//GC20221206-->
     <string name="btn_yes">是，下一步</string>
     <string name="btn_no">返回上一步</string>
     <string name="danger">高压危险！测试前请务必可靠连接保护地</string>
+    <string name="isSetVoltageChanged">设定电压变化，请先点击“电压确认”按钮！</string>
+    <string name="time_toast1">放电周期最小为4s！</string>
+    <string name="time_toast2">放电周期最大为12s！</string>
 
 </resources>

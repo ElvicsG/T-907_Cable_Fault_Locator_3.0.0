@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">T-A310</string>
+    <string name="app_name">T-A310 8/4</string>
     <string name="btn_mtd">MTD</string>
     <string name="btn_range">RNG</string>
     <string name="btn_opt">OPT.</string>
@@ -75,6 +75,7 @@
     <string name="btn_adj">ADJ</string>
     <string name="btn_test">TEST</string>
     <string name="wait_trigger">Armed…</string>
+    <string name="wait_trigger2">请调节电压！</string>
     <string name="receive_data">Receiving Data…</string>
     <string name="connecting_wifi">Waiting For WiFi Connection…</string>
     <string name="connecting_hw">Waiting For Device Connection…</string>
@@ -111,7 +112,7 @@
     <string name="gain_too_low">Gain too low for auto. location</string>
     <string name="cursor_zero_set_success">Cursor zero setting successfully!</string>
     <string name="connect_success">Connect T-A310 success!</string>
-    <string name="connect_failed">Connect T-A310 failed!</string>
+    <string name="connect_failed">T-A310已断开！</string>
     <string name="communication_failed">Please check connecting…</string>
     <string name="no_records">No Data</string>
     <!-- 新的资源 -->
@@ -182,28 +183,30 @@
     <string name="chineseSpace">&#12288;</string>
     <string name="testAgain">Please test again!</string>
     <string name="company_name">Kehui International Ltd.</string>
-    <string name="v_name">V3.0.4</string>
+    <string name="v_name">V3.0.0</string>
 
     <string name="working_mode">Working Mode:</string>
     <string name="DC">D.C.</string>
     <string name="PULSE">PULSE</string>
     <string name="CYCLIC">CYCLIC</string>
-    <string name="TIME">TIME</string>
+    <string name="TIME">TIME:</string>    <!--GC20220928-->
     <string name="PULSE2">PULSE TEST</string>
-    <string name="HVINDICATOR">H.V.INDICATOR:</string>
-    <string name="set_voltage">Set Voltage</string>
+    <string name="HVINDICATOR">H.V.INDICATOR</string>    <!--GC20220928-->
+    <string name="set_voltage">Set Voltage:</string>
     <string name="test_method">TEST METHOD:</string>
     <string name="grounding_alarm">GROUNDING ALARM</string>
     <string name="voltage">V./kV</string>
     <string name="time">TM/s</string>
     <string name="Gear1">16kV</string>
-    <string name="Gear2">32kV</string>
-    <!--<string name="Gear1">4kV</string>-->
-    <!--<string name="Gear2">8kV</string>--><!--GC20211227-->
+    <string name="Gear2">32kV</string>   <!--GC20211227-->
+    <!--<string name="Gear1">4kV</string>
+    <string name="Gear2">8kV</string>-->
     <string name="hv_confirm">Confirm</string>
     <string name="quit">Quit</string>
     <string name="hv_toast">Voltage confirmed, wait for boosting …</string>
-    <string name="hv_toast2">The voltage value cannot be 0, please reset!</string>
+    <string name="hv_toast2">设定电压值最小为0kV!</string>
+    <string name="hv_toast3">设定电压值最大为16kV!</string>
+    <string name="hv_toast4">设定电压值最大为32kV!</string>    <!--GC20211227-->
     <string name="hv_warning_note">接地正常</string>
     <string name="hv_warning_note2">接地报警</string>
     <string name="hv_gear_note">电压档位正常</string>
@@ -223,8 +226,13 @@
     <string name="switch_on_note">正在检查设备是否合闸</string>
     <string name="switch_on_note2">设备已合闸，请点击下一步！</string>
     <string name="switch_on_note3">设备未合闸，请先合闸！</string>
+    <string name="warn_note">请检查保护地和辅助地接线！</string><!--//GC20221206-->
     <string name="btn_yes">是，下一步</string>
     <string name="btn_no">返回上一步</string>
     <string name="danger">高压危险！测试前请务必可靠连接保护地</string>
+    <string name="isSetVoltageChanged">设定电压变化，请先点击“电压确认”按钮！</string>
+    <string name="time_toast1">放电周期最小为4s！</string>
+    <string name="time_toast2">放电周期最大为12s！</string>
+    <string name="HVINDICATOR2">H.V.INDICATOR:</string>
 
 </resources>

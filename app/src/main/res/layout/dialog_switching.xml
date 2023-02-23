@@ -38,7 +38,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_10"
                     android:src="@drawable/ic_wait_empty" />
-
             </LinearLayout>
 
         </androidx.percentlayout.widget.PercentRelativeLayout>

@@ -38,7 +38,7 @@ public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListen
 
         final WindowManager.LayoutParams params = getWindow().getAttributes();
         params.width = (int) ( ScreenUtils.getScreenWidth(getContext()) * 0.5);
-        params.height = (int) (ScreenUtils.getScreenHeight(getContext()) * 0.4);
+        params.height = (int) (ScreenUtils.getScreenHeight(getContext()) * 0.35);
         getWindow().setAttributes(params);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
@@ -48,7 +48,6 @@ public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListen
         //添加对话框,动画图片初始化 //GC20220919
         tvNoteSwitchOn = view.findViewById(R.id.tv_note_switch_on);
         ivScanSwitchOn = view.findViewById(R.id.iv_scan_switch_on);
-        //对话框初始化
         tvYes = view.findViewById(R.id.tv_yes);
         tvNo = view.findViewById(R.id.tv_no);
 
@@ -69,14 +68,14 @@ public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListen
     }
 
     /**
-     * 点击取消测试按钮事件
+     * 点击“是，下一步”按钮事件
      */
     public void setTvYes(View.OnClickListener clickListener) {
         tvYes.setOnClickListener(clickListener);
     }
 
     /**
-     * 点击高压设置按钮事件
+     * 点击“否，上一步”按钮事件
      */
     public void setTvNo(View.OnClickListener clickListener) {
         tvNo.setOnClickListener(clickListener);
@@ -86,7 +85,7 @@ public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_no:
-                dismiss();
+//                dismiss();    //GC20221019
                 break;
             default:
                 break;

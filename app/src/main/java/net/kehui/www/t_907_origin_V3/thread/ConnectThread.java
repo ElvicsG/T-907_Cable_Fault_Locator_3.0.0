@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import net.kehui.www.t_907_origin_V3.ConnectService;
-import net.kehui.www.t_907_origin_V3.view.ModeActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,9 +98,15 @@ public class ConnectThread extends Thread {
                         //处理数据
                         if ((tempBuffer[0] & 0xff) != 235 && !needAddData && !needProcessSimData) {
                             //判断不是数据头：0xeb（235）；不需要补齐数据；不是处理SIM数据——认为无效
-                            Log.e("【新数据处理】", "无效头数据，跳出");
+                            Log.e("【新数据处理】", "无效头数据，跳出" + needAddData + " " + needProcessSimData + " "
+                                    + (tempBuffer[0] & 0xff) + " " + (tempBuffer[1] & 0xff) + " "  + (tempBuffer[2] & 0xff) + " "  + (tempBuffer[3] & 0xff) + " "
+                                    + (tempBuffer[4] & 0xff) + " " + (tempBuffer[5] & 0xff) + " "  + (tempBuffer[6] & 0xff) + " "  + (tempBuffer[7] & 0xff));   //GC20221203
+                            //波形数据混入高压状态信息后抛掉多余部分   //GC20221203
+                            remainByte = 0;
+                            Arrays.fill(tempBuffer, (byte) 0);
                             break;
-                        } else {
+                        }
+                        else {
                             //增加判断数据头0xaa（170）
                             //数据长度：0x03——普通命令，截8个
                             if ((tempBuffer[2] & 0xff) == 170 && (tempBuffer[3] & 0xff) == COMMAND && (tempBuffer[4] & 0xff) == 3) {

@@ -77,13 +77,13 @@ public class ShowRecordsDialog extends BaseDialog implements View.OnClickListene
     ImageView ivClose;
 
     RecyclerView rvRecords;
-    TextView tvCableId;
+    TextView etCableId;
     TextView tvDate;
     TextView tvMode;
     TextView tvRange;
     TextView tvCableLength;
     TextView tvFaultLocation;
-    TextView tvPhase;
+    TextView evPhase;
     TextView tvOperator;
     TextView tvTestSite;
     TextView tvDisplay;
@@ -151,13 +151,13 @@ public class ShowRecordsDialog extends BaseDialog implements View.OnClickListene
     private void initView() {
         ivClose = view.findViewById(R.id.iv_close);
         rvRecords = view.findViewById(R.id.rv_records);
-        tvCableId = view.findViewById(R.id.tv_cable_id);
+        etCableId = view.findViewById(R.id.et_cable_id);
         tvDate = view.findViewById(R.id.tv_date);
         tvMode = view.findViewById(R.id.tv_mode);
         tvRange = view.findViewById(R.id.tv_range);
         tvCableLength = view.findViewById(R.id.tv_cable_length);
         tvFaultLocation = view.findViewById(R.id.tv_fault_location);
-        tvPhase = view.findViewById(R.id.tv_phase);
+        evPhase = view.findViewById(R.id.et_phase);
         tvOperator = view.findViewById(R.id.tv_operator);
         tvTestSite = view.findViewById(R.id.tv_test_site);
         tvDisplay = view.findViewById(R.id.tv_display);
@@ -227,7 +227,7 @@ public class ShowRecordsDialog extends BaseDialog implements View.OnClickListene
     private void setSpMode() {
         modeList.add(getContext().getResources().getString(R.string.btn_tdr));
         modeList.add(getContext().getResources().getString(R.string.btn_icm));
-//        modeList.add(getContext().getResources().getString(R.string.btn_icm_decay));
+        modeList.add(getContext().getResources().getString(R.string.btn_icm_decay));    //直闪方式添加    //GC20221114
         modeList.add(getContext().getResources().getString(R.string.btn_sim));
 //        modeList.add(getContext().getResources().getString(R.string.btn_decay));      //GC20220821
 
@@ -251,8 +251,8 @@ public class ShowRecordsDialog extends BaseDialog implements View.OnClickListene
                         mode = ICM;
                         break;
                     case 2:
-//                        mode = ICM_DECAY;
-                        mode = SIM;     //数据库下拉菜单只有3个   //GC20220821
+                        mode = ICM_DECAY;   //GC20221114
+//                        mode = SIM;     //数据库下拉菜单只有3个   //GC20220821
                         break;
                     case 3:
                         mode = SIM;
@@ -473,7 +473,7 @@ public class ShowRecordsDialog extends BaseDialog implements View.OnClickListene
     }
 
     private void setDataByPosition(Data data) {
-        tvCableId.setText(String.valueOf(data.cableId));
+        etCableId.setText(String.valueOf(data.cableId));
         if (Constant.CurrentSaveUnit == FT_UNIT) {
             if (!TextUtils.isEmpty(data.line)) {
                 if (data.line.equals("0") || data.line.equals("0.0")) {
@@ -504,7 +504,7 @@ public class ShowRecordsDialog extends BaseDialog implements View.OnClickListene
         } else {
             tvFaultLocation.setText(UnitUtils.miToFt(data.location));
         }
-        tvPhase.setText(initPhase(Integer.valueOf(data.phase)));
+        evPhase.setText(initPhase(Integer.valueOf(data.phase)));
         tvOperator.setText(data.tester);
         tvTestSite.setText(data.tester);
 

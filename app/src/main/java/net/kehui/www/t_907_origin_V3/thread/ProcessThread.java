@@ -118,7 +118,10 @@ public class ProcessThread extends Thread {
                 returnStr = "10 脉宽";
                 break;
             case 96:
-                returnStr = "0x61 高压设定";
+                returnStr = "0x60 高压设定";
+                break;
+            case 98:
+                returnStr = "0x62 电压数值";
                 break;
             case 112:
                 returnStr = "0x70 工作方式";

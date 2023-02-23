@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 
+import net.kehui.www.t_907_origin_V3.ConnectService;
 import net.kehui.www.t_907_origin_V3.R;
 import net.kehui.www.t_907_origin_V3.application.Constant;
 import net.kehui.www.t_907_origin_V3.view.ModeActivity;
@@ -82,6 +83,14 @@ public class OperationFragment extends Fragment {
 
     @OnClick({R.id.btn_zoom_in, R.id.btn_zoom_out, R.id.btn_res, R.id.btn_memory, R.id.btn_compare, R.id.wavePrevious, R.id.waveNext,R.id.bt_pulse_width,R.id.btn_zero,R.id.btn_file1,R.id.btn_update1,R.id.btn_lead1})
     public void onViewClicked(View view) {
+        if (!ConnectService.isConnected) {
+            ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = true;    //未连接,操作可以点击 //GC20221019
+        }
+        //快速点击限制    //GC20221019
+        if ( ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation == false) {
+            return;
+        }
+        ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = false;
         switch (view.getId()) {
             case R.id.btn_zoom_in:
                 //GC20190711
@@ -132,13 +141,16 @@ public class OperationFragment extends Fragment {
                     simZero = simZero / 2;
                 }
                 ((ModeActivity) getActivity()).setSimZero(simZero);
+                ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = true;    //GC20221019
                 break;
             case  R.id.btn_file1:
                 ((ModeActivity) getActivity()). showFileView();
+                ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = true;    //GC20221019
                break;
             case R.id.btn_update1:
                 ((ModeActivity) getActivity()).showUp();
                 ((ModeActivity) getActivity()).downloadFile1();
+                ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = true;    //GC20221019
                 break;
             case R.id.btn_lead1:
                 ((ModeActivity) getActivity()).showLeadView1();

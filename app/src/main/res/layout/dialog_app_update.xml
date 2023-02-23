@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
-                android:background="@drawable/shape_solide_0ff6ff"
+                android:background="@drawable/shape_solide_blue"
                 android:gravity="center"
                 android:paddingTop="@dimen/dp_12"
                 android:paddingBottom="@dimen/dp_12"

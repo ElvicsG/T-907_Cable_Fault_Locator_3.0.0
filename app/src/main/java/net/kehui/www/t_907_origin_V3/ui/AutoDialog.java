@@ -1,22 +1,17 @@
 package net.kehui.www.t_907_origin_V3.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -51,9 +46,13 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     public KBubbleSeekBar32 seekBar32;
     public KBubbleSeekBar16 seekBar16;
     public ImageView ivLightning;   //GC20220711
-    TextView tvConfirm;
+    public ImageView ivMinus;
+    public ImageView ivPlus;    //GC20220927
+    public LinearLayout llConfirm;  //GC20221010    改为LinearLayout控件控制
 
-    public EditText etHVINDICATOR;
+    //当前电压  //GC20220928
+    public TextView tvHVINDICATOR;
+    //工作方式旧UI
     public TextView tvWorkingMode;
     public Spinner spWorkingMode;
     public View vWorkingMode;
@@ -64,16 +63,14 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     public RadioButton rbGearDC;
     public RadioButton rbGearPULSE;
     public RadioButton rbGearCYCLIC;
-    public LinearLayout llPULSE;
-    public ImageView ivHVPULSE;
-    public TextView tvPULSE;
     public ImageView ivVoltageHeight;
+    public ImageView ivHVPULSE;
     public LinearLayout llTIME; //GC20220617
     public KBubbleSeekBar12 seekBar12;
-    public LinearLayout llPULSE2;
-    public ImageView ivHVPULSE2;
-    public TextView tvPULSE2;
+    public ImageView ivMinusTime;
+    public ImageView ivPlusTime;    //GC20220927
     TextView tvQuit;
+    public LinearLayout llQuit;    //GC20221010    改为LinearLayout控件控制
 
     private View view;
     private List<String> workingModeList = new ArrayList<>();
@@ -120,9 +117,11 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         seekBar32 = view.findViewById(R.id.seekBar32);
         seekBar16 = view.findViewById(R.id.seekBar16);
         ivLightning = view.findViewById(R.id.iv_lightning); //GC20220711
-        tvConfirm = view.findViewById(R.id.tv_confirm);
+        ivMinus = view.findViewById(R.id.iv_minus);
+        ivPlus = view.findViewById(R.id.iv_plus);   //GC20220927
+        llConfirm = view.findViewById(R.id.ll_confirm); //GC20221010
         //当前电压数值
-        etHVINDICATOR = view.findViewById(R.id.et_HVINDICATOR);
+        tvHVINDICATOR = view.findViewById(R.id.tv_HVINDICATOR);
         //工作方式旧UI
         tvWorkingMode = view.findViewById(R.id.tv_working_mode);
         spWorkingMode = view.findViewById(R.id.sp_working_mode);
@@ -132,80 +131,79 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         rbGearDC = view.findViewById(R.id.rb_gear_DC);
         rbGearPULSE = view.findViewById(R.id.rb_gear_PULSE);
         rbGearCYCLIC = view.findViewById(R.id.rb_gear_CYCLIC);
-        //放电按钮的位置1
-        llPULSE = view.findViewById(R.id.ll_PULSE);
+        //放电按钮
         ivHVPULSE = view.findViewById(R.id.iv_HV_PULSE);
-        tvPULSE = view.findViewById(R.id.tv_PULSE);
         //电压进度条
         ivVoltageHeight = view.findViewById(R.id.iv_voltage_height);
         //周期时间滑动
         llTIME = view.findViewById(R.id.ll_TIME);   //GC20220617
         seekBar12 = view.findViewById(R.id.seekBar12);
-        //放电按钮的位置2
-        llPULSE2 = view.findViewById(R.id.ll_PULSE2);
-        ivHVPULSE2 = view.findViewById(R.id.iv_HV_PULSE2);
-        tvPULSE2 = view.findViewById(R.id.tv_PULSE2);
-        tvQuit = view.findViewById(R.id.tv_quit);
+        ivMinusTime = view.findViewById(R.id.iv_minus_time);
+        ivPlusTime = view.findViewById(R.id.iv_plus_time);  //GC20220927
+        llQuit = view.findViewById(R.id.btn_back);   //GC20221010
 
         //叉号退出  //GC20220713
         ivCloseAuto.setOnClickListener(this);
-        tvConfirm.setOnClickListener(this);
-        tvQuit.setOnClickListener(this);
+        llConfirm.setOnClickListener(this); //GC20221010
+        llQuit.setOnClickListener(this);
     }
 
+    /**
+     * 界面初始化
+     */
     private void initData() {
-        //接地报警初始化
-        if (!Constant.isWarning) {
-            ivWaring.setImageResource(R.drawable.light_red);
-        } else {
+        //接地报警
+        if (Constant.isWarning) {
             ivWaring.setImageResource(R.drawable.light_gray);
+        } else {
+            ivWaring.setImageResource(R.drawable.light_red);
         }
         //电压档位故障
-        if (!Constant.isGear) {
-            tvHvGear.setText(R.string.hv_gear_note2);
-            tvHvGear.setTextColor(getContext().getResources().getColor(R.color.T_red));
-        } else {
+        if (Constant.isGear) {
             tvHvGear.setText(R.string.hv_gear_note);
             tvHvGear.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        } else {
+            tvHvGear.setText(R.string.hv_gear_note2);
+            tvHvGear.setTextColor(getContext().getResources().getColor(R.color.T_red));
         }
         //工作方式故障
-        if (!Constant.isWorkingMode) {
-            tvHvWorkingMode.setText(R.string.hv_working_mode_note2);
-            tvHvWorkingMode.setTextColor(getContext().getResources().getColor(R.color.T_red));
-        } else {
+        if (Constant.isWorkingMode) {
             tvHvWorkingMode.setText(R.string.hv_working_mode_note);
             tvHvWorkingMode.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        } else {
+            tvHvWorkingMode.setText(R.string.hv_working_mode_note2);
+            tvHvWorkingMode.setTextColor(getContext().getResources().getColor(R.color.T_red));
         }
         //电容有残压
-        if (!Constant.isCapacitor) {
-            tvHvCapacitor.setText(R.string.hv_capacity_note2);
-            tvHvCapacitor.setTextColor(getContext().getResources().getColor(R.color.T_red));
-        } else {
+        if (Constant.isCapacitor) {
             tvHvCapacitor.setText(R.string.hv_capacity_note);
             tvHvCapacitor.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        } else {
+            tvHvCapacitor.setText(R.string.hv_capacity_note2);
+            tvHvCapacitor.setTextColor(getContext().getResources().getColor(R.color.T_red));
         }
         //高压包状态初始化
-        if (!Constant.isIgnitionCoil) {
-            tvHvIgnitionCoil.setText(R.string.hv_ignition_coil_note2);
-            tvHvIgnitionCoil.setTextColor(getContext().getResources().getColor(R.color.T_red));
-        } else {
+        if (Constant.isIgnitionCoil) {
             tvHvIgnitionCoil.setText(R.string.hv_ignition_coil_note);
             tvHvIgnitionCoil.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+        } else {
+            tvHvIgnitionCoil.setText(R.string.hv_ignition_coil_note2);
+            tvHvIgnitionCoil.setTextColor(getContext().getResources().getColor(R.color.T_red));
         }
         //seekBar电压显示初始化
         hvValue.setText("设定电压：0kV");
         //当前电压显示初始化
         setEtHVINDICATOR();
-        //工作方式初始化
+        //工作方式初始化旧UI
         setSpWorkingMode();
     }
 
     /**
-     * 当前电压显示初始化
+     * 当前电压初始化
      */
     private void setEtHVINDICATOR() {
-        etHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
-        etHVINDICATOR.setEnabled(false);
+        tvHVINDICATOR.setText(new DecimalFormat("0.00").format(Constant.currentVoltage));
+        tvHVINDICATOR.setEnabled(false);
         int heightPosition = 0;
         //根据最大值计算进度条高度
         double a = Constant.currentVoltage / Constant.setVoltage;
@@ -272,7 +270,7 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     }
 
     /**
-     * 工作方式初始化
+     * 工作方式初始化旧UI
      */
     private void setSpWorkingMode() {
         workingModeList.add(getContext().getResources().getString(R.string.PULSE));
@@ -284,7 +282,6 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, workingModeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spWorkingMode.setAdapter(adapter);
-
     }
 
     /**
@@ -295,6 +292,27 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     }
 
     /**
+     * 设定电压点击减号 //GC20220927
+     */
+    public void setIvMinus(View.OnClickListener clickListener) {
+        ivMinus.setOnClickListener(clickListener);
+    }
+
+    /**
+     * 设定电压点击加号 //GC20220927
+     */
+    public void setIvPlus(View.OnClickListener clickListener) {
+        ivPlus.setOnClickListener(clickListener);
+    }
+
+    /**
+     * 点击电压确认按钮事件
+     */
+    public void setLlConfirmButton(View.OnClickListener clickListener) {
+        llConfirm.setOnClickListener(clickListener);    //GC20221010
+    }
+
+    /**
      * 监听工作方式选项变化   //GC20220913
      */
     public void setRadioGroupMode(RadioGroup.OnCheckedChangeListener checkedChangeListener) {
@@ -302,25 +320,31 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     }
 
     /**
-     * 点击电压确认按钮事件
-     */
-    public void setTvConfirmButton(View.OnClickListener clickListener) {
-        tvConfirm.setOnClickListener(clickListener);
-    }
-
-    /**
      * 点击单次放电按钮事件
      */
     public void setIvHVPULSE(View.OnClickListener clickListener) {
         ivHVPULSE.setOnClickListener(clickListener);
-        ivHVPULSE2.setOnClickListener(clickListener);
+    }
+
+    /**
+     * 点击减号 //GC20220927
+     */
+    public void setIvMinusTime(View.OnClickListener clickListener) {
+        ivMinusTime.setOnClickListener(clickListener);
+    }
+
+    /**
+     * 点击加号 //GC20220927
+     */
+    public void setIvPlusTime(View.OnClickListener clickListener) {
+        ivPlusTime.setOnClickListener(clickListener);
     }
 
     /**
      * 点击进入测试界面（退出）按钮事件
      */
     public void setQuit(View.OnClickListener clickListener) {
-        tvQuit.setOnClickListener(clickListener);
+        llQuit.setOnClickListener(clickListener);   //GC20221010
     }
 
     /**
@@ -334,7 +358,7 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_close_auto:
-                dismiss();
+//                dismiss();    //GC20221110
                 break;
             case R.id.tv_quit:
                 break;

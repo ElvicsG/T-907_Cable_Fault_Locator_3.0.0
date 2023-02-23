@@ -41,12 +41,14 @@ public class Constant {
      * 全自动高压参数
      */
     public static int WorkingMode = 0;
-    public static int gear = 2; //初始化档位为32kV / 或8kV    //GC20211227
+    public static int gear = 2; //初始化档位为32kV / 或8kV
     public static int setVoltage = 0;
     public static double currentVoltage;
     public static int time = 5;
     public static Boolean isShowHV = false;
+    public static Boolean isShowHVWait = false; //GC20221109
     public static Boolean isWarning = true;
+    public static Boolean isSwitchOn = true;    //GC20221203
     public static Boolean isIgnitionCoil = true;
     public static Boolean isCapacitor = true;
     public static Boolean isWorkingMode = true;
