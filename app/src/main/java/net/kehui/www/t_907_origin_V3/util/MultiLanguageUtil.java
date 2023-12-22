@@ -72,7 +72,7 @@ public class MultiLanguageUtil {
      * @return
      */
     private Locale getLanguageLocale() {
-        String languageType = StateUtils.getString(MyApplication.getInstances(), AppConfig.CURRENT_LANGUAGE, "follow_sys");
+        String languageType = StateUtils.getString(MyApplication.getInstances(), AppConfig.CURRENT_LANGUAGE, "follow_sys"); //默认跟随系统语言  //GC20230912
         StateUtils.setString(MyApplication.getInstances(), AppConfig.CURRENT_LANGUAGE, languageType);
 
         if (languageType.equals("follow_sys")) {

@@ -43,6 +43,7 @@ public class HvWaitTriggerDialog extends BaseDialog implements View.OnClickListe
     public LinearLayout llHv;
     public LinearLayout llHvConfirm;
     public ImageView ivHvLightning;   //GC20221115
+    public ImageView ivHvLightning2;   //GC20230228
     public LinearLayout llHvCancel;
 
     private View view;
@@ -83,6 +84,7 @@ public class HvWaitTriggerDialog extends BaseDialog implements View.OnClickListe
         llHv = view.findViewById(R.id.ll_hv);
         llHvConfirm = view.findViewById(R.id.ll_hv_confirm);
         ivHvLightning = view.findViewById(R.id.iv_hv_lightning); //GC20221115
+        ivHvLightning2 = view.findViewById(R.id.iv_hv_lightning2); //GC20230228
         llHvCancel = view.findViewById(R.id.ll_hv_cancel);
 
         llHvCancel.setOnClickListener(this);
@@ -96,7 +98,21 @@ public class HvWaitTriggerDialog extends BaseDialog implements View.OnClickListe
         tvTriggerHVINDICATOR.setEnabled(false);
         int heightPosition = 0;
         //根据最大值计算进度条高度
-        double a = Constant.currentVoltage / Constant.setVoltage;
+//        double a = Constant.currentVoltage / Constant.setVoltage;
+        //根据电压档位选择最大值换算 32/16 //GC20231027
+        int maxHV = 0;
+        switch (Constant.gear) {
+            case 1:
+                maxHV = 16;
+                break;
+            case 2:
+                maxHV = 32;
+                break;
+            default:
+                break;
+        }
+        double a = Constant.currentVoltage / maxHV;
+
         int b = (int) (a * 100);
         if (b >= 0 && b < 10) {
         } else if (b >= 10 && b < 20) {

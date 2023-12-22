@@ -19,6 +19,7 @@ import net.kehui.www.t_907_origin_V3.base.BaseActivity;
 import net.kehui.www.t_907_origin_V3.application.Constant;
 import net.kehui.www.t_907_origin_V3.thread.ConnectThread;
 import net.kehui.www.t_907_origin_V3.thread.ProcessThread;
+import net.kehui.www.t_907_origin_V3.tookit.IWifiDisConnectListener;
 import net.kehui.www.t_907_origin_V3.util.WifiUtil;
 import net.kehui.www.t_907_origin_V3.tookit.IWifiConnectListener;
 import net.kehui.www.t_907_origin_V3.tookit.WifiManagerProxy;
@@ -28,6 +29,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -60,6 +62,10 @@ public class ConnectService extends Service {
      */
     public static boolean isConnected;
     /**
+     * 用于判断是否执行DEVICE_DO_CONNECT   //GC20230508
+     */
+    public static boolean doConnect = false;
+    /**
      * 是否正在连接中    //20200523
      */
     private boolean isConnecting;
@@ -77,7 +83,7 @@ public class ConnectService extends Service {
      * 阻塞列队 //数据生产者队列，生产的数据放入队列
      */
     public static ArrayBlockingQueue bytesDataQueue;
-    public static Boolean isWifiConnect = false;
+//    public static Boolean isWifiConnect = false;  //GC20230508
 
     static Socket socket;
 
@@ -99,7 +105,7 @@ public class ConnectService extends Service {
 
     @Override
     public void onCreate() {
-        WifiUtil wifiUtil = new WifiUtil(getApplicationContext());
+        /*WifiUtil wifiUtil = new WifiUtil(getApplicationContext());
         //WIFI网卡可用
         if (wifiUtil.checkState() == 3) {
             if (wifiUtil.getSSID().contains(Constant.SSID)) {
@@ -111,7 +117,8 @@ public class ConnectService extends Service {
             }
         } else {
             handler.sendEmptyMessage(DEVICE_DO_CONNECT);
-        }
+        }*/
+        handler.sendEmptyMessage(DEVICE_DO_CONNECT);    //尝试去执行连接操作 //GC20230508
         //EN20200324
         Log.e("【SOCKET连接】", "服务启动");
 
@@ -156,6 +163,7 @@ public class ConnectService extends Service {
                 break;
             case DEVICE_DISCONNECTED:
 //                Toast.makeText(ConnectService.this, getResources().getString(R.string.disconnect), Toast.LENGTH_LONG).show();
+                sendBroadcast(BROADCAST_ACTION_DEVICE_CONNECT_FAILURE, null, null); //GC20230510
                 //连接断开时，重置变量 //EN20200324
                 socket = null;
                 connectThread = null;
@@ -164,8 +172,7 @@ public class ConnectService extends Service {
             case DEVICE_DO_CONNECT:
                 //Toast.makeText(ConnectService.this, getResources().getString(R.string.communication_failed), Toast.LENGTH_LONG).show();
                 if (!isConnecting) {
-                    connectWifi();
-                    connectDevice();
+                    connectWifi();  //连接指定WiFi  //GC20230509
                 }
                 break;
             case GET_COMMAND:
@@ -200,13 +207,19 @@ public class ConnectService extends Service {
 //                if (info != null && isWifiConnect == false) { //jk20210714
                 if (info != null) {
 //                    if ((info.isConnected() && info.getExtraInfo().contains(Constant.SSID)) && !isWifiConnect) {  //jk20210714
-                    if (info.isConnected() && !isWifiConnect) {
+                    /*if (info.isConnected() && !isWifiConnect) {
                         //EN20200324
                         Log.e("【SOCKET连接】", "网络连接状态变化，重连");
                         handler.sendEmptyMessage(DEVICE_DO_CONNECT);
+                    }*/ //GC20230508
+                    if (info.isConnected() && !doConnect) { //添加doConnect，平板WIFI已连接到设定的SSID，不重复执行连接操作   //GC20230508
+                        Log.e("【SOCKET连接】", "网络连接状态变化，WiFi连接，尝试去执行连接操作");
+                        handler.sendEmptyMessage(DEVICE_DO_CONNECT);
                     }
                 } else {
-                    isWifiConnect = false;
+                    doConnect = false;  //断开连接  //GC20230508
+                    Log.e("【SOCKET连接】", "网络连接状态变化，WiFi断开，执行断开操作");
+//                    isWifiConnect = false;    //GC20230508
                     //todo 断开链接的通知
                     //GT 无连接第1次走这里
                     handler.sendEmptyMessage(DEVICE_DISCONNECTED);
@@ -217,7 +230,7 @@ public class ConnectService extends Service {
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
-                    sendBroadcast(BROADCAST_ACTION_DEVICE_CONNECT_FAILURE, null, null);
+//                    sendBroadcast(BROADCAST_ACTION_DEVICE_CONNECT_FAILURE, null, null);   //GC20230508
                 }
             }
         }
@@ -230,25 +243,55 @@ public class ConnectService extends Service {
             wifiUtil.openWifi();
         }
         try {
-            if (!wifiUtil.getSSID().contains(Constant.SSID)) {
-//                wifiUtil.addNetwork(wifiUtil.createWifiInfo(Constant.SSID, "123456789", 3));  //GC20220621
+            //获取可用网络的SSID   //GC20230113
+            String currentSSID = wifiUtil.getSSID();
+            if (currentSSID != null) {
+                currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
+            }
+            if (!Objects.equals(currentSSID, Constant.SSID)) {  //不能用contains，设备编号都包括T-907，会造成连接到其它非设定编号的T-907  //GC20230508
+                Log.e("【SOCKET连接】", "平板WIFI未连接到设定的SSID ");  //GC20230508
+//                wifiUtil.addNetwork(wifiUtil.createWifiInfo(Constant.SSID, "123456789", 3));  //旧的连接写法 //GC20220621
                 WifiManagerProxy.get().init(getApplication());
+                //断开已连接的其它WiFi  //GC20230113
+                if (currentSSID != null) {
+                    if (!currentSSID.equals("unknown ssid")) {  //"unknown ssid"状态为未连接任何网络，所以不需要去断开 //GC20230508
+                        WifiManagerProxy.get().disConnect(currentSSID, new IWifiDisConnectListener() {
+                            @Override
+                            public void onDisConnectSuccess() {
+                                Log.e("【SOCKET连接】", "onDisConnectSuccess://取消已连接的SSID成功 ");
+                            }
+
+                            @Override
+                            public void onDisConnectFail(String errorMsg) {
+                                Log.e("【SOCKET连接】", "onDisConnectFail: " + errorMsg + "//取消已连接的SSID失败 ");
+                            }
+                        });
+                    }
+                }
                 WifiManagerProxy.get().connect(Constant.SSID, "123456789", new IWifiConnectListener() {
                     @Override
                     public void onConnectStart() {
-                        Log.i("TAG", "onConnectStart: ");
+                        Log.e("【SOCKET连接】", "onConnectStart://IWifiConnectListener，开始监听网络变化 "); //GC20230508
                     }
 
                     @Override
                     public void onConnectSuccess() {
-                        Log.i("TAG", "onConnectSuccess: ");
+                        Log.e("【SOCKET连接】", "onConnectSuccess://连接设定的SSID成功 ");
+                        doConnect = true;   //GC20230508
+                        connectDevice();    //连接到设定SSID后才会建立设备连接  //GC20230509
                     }
 
                     @Override
                     public void onConnectFail(String errorMsg) {
-                        Log.i("TAG", "onConnectFail: " + errorMsg);
+                        Log.e("【SOCKET连接】", "onConnectFail: " + errorMsg + "//连接设定的SSID失败 ");   //GC20230508
                     }
                 });
+            } else {
+                if (!doConnect) {   //安卓10连接有可能走这儿，避免重复执行connectDevice   //GC20230509
+                    Log.e("【SOCKET连接】", "平板WIFI已连接到设定的SSID ");
+                    connectDevice();    //连接到设定SSID后才会建立设备连接  //GC20230509
+                    doConnect = true;   //GC20230508
+                }
             }
         } catch (Exception l_Ex) {
         }
@@ -265,24 +308,24 @@ public class ConnectService extends Service {
             try {
                 if (!isConnected) {
                     isConnecting = true;
-                    Log.e("【SOCKET连接】", "开始连接");
+                    Log.e("【SOCKET连接】", "开始执行设备连接操作");  //GC20230510
                     if (socket == null) {
-                        Log.e("【SOCKET连接】", "尝试建立连接");
                         socket = new Socket(Constant.DEVICE_IP, PORT);
                         socket.setKeepAlive(true);
+                        Log.e("【SOCKET连接】", "建立socket连接");  //GC20230510
                     }
                     if (connectThread == null) {
-                        Log.e("【SOCKET连接】", "启动接收数据线程connectThread");
                         connectThread = new ConnectThread(socket, handler, Constant.DEVICE_IP);
                         connectThread.start();
+                        Log.e("【SOCKET连接】", "启动接收数据线程connectThread");
                     }
                     if (processThread == null) {
-                        Log.e("【SOCKET连接】", "启动接收数据线程connectThread");
                         processThread = new ProcessThread(handler);
                         processThread.start();
+                        Log.e("【SOCKET连接】", "启动接收数据线程connectThread");
                     }
-                    Log.e("【SOCKET连接】", "连接成功结束");
                     isConnecting = false;
+                    Log.e("【SOCKET连接】", "设备连接成功，整个连接过程结束"); //GC20230510
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -298,6 +341,7 @@ public class ConnectService extends Service {
                 handler.sendEmptyMessage(DEVICE_DISCONNECTED);
                 Log.e("【SOCKET连接】", "连接失败重连");
                 isConnecting = false;
+                doConnect = false;   //GC20230510
                 handler.sendEmptyMessageDelayed(DEVICE_DO_CONNECT, 2000);
             }
         });
@@ -518,7 +562,7 @@ public class ConnectService extends Service {
     }
 
     /**
-     *发送广播
+     * 发送广播
      */
     public void sendBroadcast(String action, String extraKey, int[] extra) {
         try {

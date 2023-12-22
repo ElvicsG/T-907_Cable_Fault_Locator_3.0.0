@@ -1,6 +1,7 @@
 package net.kehui.www.t_907_origin_V3.ui;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -456,6 +457,7 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
         } else {
             data.line = "";
         }
+        data.line = tvCableLength.getText().toString(); //save界面保存电缆长度  //GC20231211
 
         data.phase = Constant.Phase + "";
         data.tester = tvOperator.getText().toString().trim();
@@ -513,44 +515,88 @@ public class SaveRecordsDialog extends BaseDialog implements View.OnClickListene
      */
     private void createFileWithByte(byte[] bytes) {
         //在sd卡中设置新目录存放文件
-        String path  = Environment.getExternalStorageDirectory().getPath();
-        File file = new File(path + "/A310");
-        //创建FileOutputStream对象
-        FileOutputStream outputStream = null;
-        //创建BufferedOutputStream对象
-        BufferedOutputStream bufferedOutputStream = null;
-        try {
-            // 如果目录不存在则创建
-            if (!file.exists()) {
-                file.mkdir();
-            }
-            // 在文件系统中根据路径创建一个新的空文件
-            file.createNewFile();
-            // 获取FileOutputStream对象
-            outputStream = new FileOutputStream(file + "/" + fileName);
-            // 获取BufferedOutputStream对象
-            bufferedOutputStream = new BufferedOutputStream(outputStream);
-            // 往文件所在的缓冲输出流中写byte数据
-            bufferedOutputStream.write(bytes);
-            // 刷出缓冲输出流，该步很关键，要是不执行flush()方法，那么文件的内容是空的。
-            bufferedOutputStream.flush();
-        } catch (Exception e) {
-            // 打印异常信息
-            e.printStackTrace();
-        } finally {
-            // 关闭创建的流对象
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {    //GC20231208
+            String path = Environment.getExternalStorageDirectory().getPath();
+            File file = new File(path + "/A310");   //GC20230922    存储文件夹位置
+            //创建FileOutputStream对象
+            FileOutputStream outputStream = null;
+            //创建BufferedOutputStream对象
+            BufferedOutputStream bufferedOutputStream = null;
+            try {
+                // 如果目录不存在则创建
+                if (!file.exists()) {
+                    file.mkdir();
+                }
+                // 在文件系统中根据路径创建一个新的空文件
+                file.createNewFile();
+                // 获取FileOutputStream对象
+                outputStream = new FileOutputStream(file + "/" + fileName);
+                // 获取BufferedOutputStream对象
+                bufferedOutputStream = new BufferedOutputStream(outputStream);
+                // 往文件所在的缓冲输出流中写byte数据
+                bufferedOutputStream.write(bytes);
+                // 刷出缓冲输出流，该步很关键，要是不执行flush()方法，那么文件的内容是空的。
+                bufferedOutputStream.flush();
+            } catch (Exception e) {
+                // 打印异常信息
+                e.printStackTrace();
+            } finally {
+                // 关闭创建的流对象
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (bufferedOutputStream != null) {
+                    try {
+                        bufferedOutputStream.close();
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                    }
                 }
             }
-            if (bufferedOutputStream != null) {
-                try {
-                    bufferedOutputStream.close();
-                } catch (Exception e2) {
-                    e2.printStackTrace();
+        } else {
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/"; //GC20231208
+            File file = new File(path + "/A310");   //GC20230922    存储文件夹位置
+            //创建FileOutputStream对象
+            FileOutputStream outputStream = null;
+            //创建BufferedOutputStream对象
+            BufferedOutputStream bufferedOutputStream = null;
+            try {
+                // 如果目录不存在则创建
+                if (!file.exists()) {
+                    file.mkdir();
+                }
+                // 在文件系统中根据路径创建一个新的空文件
+                file.createNewFile();
+                // 获取FileOutputStream对象
+                outputStream = new FileOutputStream(file + "/" + fileName);
+                // 获取BufferedOutputStream对象
+                bufferedOutputStream = new BufferedOutputStream(outputStream);
+                // 往文件所在的缓冲输出流中写byte数据
+                bufferedOutputStream.write(bytes);
+                // 刷出缓冲输出流，该步很关键，要是不执行flush()方法，那么文件的内容是空的。
+                bufferedOutputStream.flush();
+            } catch (Exception e) {
+                // 打印异常信息
+                e.printStackTrace();
+            } finally {
+                // 关闭创建的流对象
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (bufferedOutputStream != null) {
+                    try {
+                        bufferedOutputStream.close();
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                    }
                 }
             }
         }

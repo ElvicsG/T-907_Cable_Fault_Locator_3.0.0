@@ -157,7 +157,7 @@ public class KBubbleSeekBar32 extends View {
         mProgress = ta.getFloat(R.styleable.KBubbleSeekBar32_bsb_progress, mMin);
         isFloatType = ta.getBoolean(R.styleable.KBubbleSeekBar32_bsb_is_float_type, false);
         //滑轨大小  dp2px(2)
-        mTrackSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_track_size, dp2px(24));  //滑轨窄一些旧28 //GC20220928
+        mTrackSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_track_size, dp2px(32));  //GC20230222 旧24   //滑轨窄一些旧28 //GC20220928
         mSecondTrackSize = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_second_track_size,
             mTrackSize + dp2px(2));
         mThumbRadius = ta.getDimensionPixelSize(R.styleable.KBubbleSeekBar32_bsb_thumb_radius, mSecondTrackSize / 2 + dp2px(1));

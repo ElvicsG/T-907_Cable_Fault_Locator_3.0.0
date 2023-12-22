@@ -46,9 +46,17 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
     public KBubbleSeekBar32 seekBar32;
     public KBubbleSeekBar16 seekBar16;
     public ImageView ivLightning;   //GC20220711
+    public ImageView ivLightning2;   //GC20230228
     public ImageView ivMinus;
     public ImageView ivPlus;    //GC20220927
     public LinearLayout llConfirm;  //GC20221010    改为LinearLayout控件控制
+    /**
+     * 寻找击穿电压控UI添加  //GC20231009
+     */
+    public LinearLayout llGetBreakdownVoltage;
+    public TextView hvValueBreakdown;
+    public TextView hvValueBreakdownNote;
+    public TextView hvValueBreakdownKV;
 
     //当前电压  //GC20220928
     public TextView tvHVINDICATOR;
@@ -117,9 +125,14 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         seekBar32 = view.findViewById(R.id.seekBar32);
         seekBar16 = view.findViewById(R.id.seekBar16);
         ivLightning = view.findViewById(R.id.iv_lightning); //GC20220711
+        ivLightning2 = view.findViewById(R.id.iv_lightning2); //GC20230228
         ivMinus = view.findViewById(R.id.iv_minus);
         ivPlus = view.findViewById(R.id.iv_plus);   //GC20220927
         llConfirm = view.findViewById(R.id.ll_confirm); //GC20221010
+        llGetBreakdownVoltage = view.findViewById(R.id.ll_getBreakdownVoltage); //GC20231009
+        hvValueBreakdown = view.findViewById(R.id.tv_value_Breakdown);          //GC20231009
+        hvValueBreakdownNote = view.findViewById(R.id.tv_note_Breakdown);       //GC20231009
+        hvValueBreakdownKV = view.findViewById(R.id.tv_kV);                     //GC20231009
         //当前电压数值
         tvHVINDICATOR = view.findViewById(R.id.tv_HVINDICATOR);
         //工作方式旧UI
@@ -146,6 +159,7 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         ivCloseAuto.setOnClickListener(this);
         llConfirm.setOnClickListener(this); //GC20221010
         llQuit.setOnClickListener(this);
+        llGetBreakdownVoltage.setOnClickListener(this); //GC20231009
     }
 
     /**
@@ -191,7 +205,9 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
             tvHvIgnitionCoil.setTextColor(getContext().getResources().getColor(R.color.T_red));
         }
         //seekBar电压显示初始化
-        hvValue.setText("设定电压：0kV");
+//        hvValue.setText("设定电压：0kV");
+        hvValue.setText(0 + ""); //多语言支持 //GC20230912
+        hvValueBreakdown.setText(0 + "");    //击穿电压初始化  //GC20231009
         //当前电压显示初始化
         setEtHVINDICATOR();
         //工作方式初始化旧UI
@@ -206,7 +222,21 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
         tvHVINDICATOR.setEnabled(false);
         int heightPosition = 0;
         //根据最大值计算进度条高度
-        double a = Constant.currentVoltage / Constant.setVoltage;
+//        double a = Constant.currentVoltage / Constant.setVoltage;
+        //根据电压档位选择最大值换算 32/16 //GC20231027
+        int maxHV = 0;
+        switch (Constant.gear) {
+            case 1:
+                maxHV = 16;
+                break;
+            case 2:
+                maxHV = 32;
+                break;
+            default:
+                break;
+        }
+        double a = Constant.currentVoltage / maxHV;
+
         int b = (int) (a * 100);
         if (b >= 0 && b < 10) {
         } else if (b >= 10 && b < 20) {
@@ -310,6 +340,13 @@ public class AutoDialog extends BaseDialog implements View.OnClickListener {
      */
     public void setLlConfirmButton(View.OnClickListener clickListener) {
         llConfirm.setOnClickListener(clickListener);    //GC20221010
+    }
+
+    /**
+     * 点击寻找击穿电压按钮事件 //GC20231009
+     */
+    public void setLlGetBreakdownVoltageButton(View.OnClickListener clickListener) {
+        llGetBreakdownVoltage.setOnClickListener(clickListener);
     }
 
     /**

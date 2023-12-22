@@ -19,6 +19,7 @@ public class NoteDialog extends BaseDialog implements View.OnClickListener {
 
     public TextView tvNote;
     public TextView tvQuit;
+    public TextView tvOffline;  //GC20231111
 
     private View view;
 
@@ -42,6 +43,16 @@ public class NoteDialog extends BaseDialog implements View.OnClickListener {
         tvNote = view.findViewById(R.id.tv_note);
         tvQuit = view.findViewById(R.id.tv_fault_quit);
         tvQuit.setOnClickListener(this);
+        //离线使用  //GC20231111
+        tvOffline = view.findViewById(R.id.tv_offline);
+        tvOffline.setOnClickListener(this);
+    }
+
+    /**
+     * 点击离线使用按钮事件   //GC20231111
+     */
+    public void setTvOffline(View.OnClickListener clickListener) {
+        tvOffline.setOnClickListener(clickListener);
     }
 
     /**

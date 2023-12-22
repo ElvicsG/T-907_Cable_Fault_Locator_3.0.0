@@ -26,7 +26,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"><!--//GC20231208-->
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="net.kehui.www.t_907_origin_V3.fileprovider"

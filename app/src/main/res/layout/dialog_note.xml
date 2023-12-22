@@ -55,6 +55,21 @@
                         android:text="" />
 
                     <TextView
+                        android:id="@+id/tv_offline"
+                        android:layout_width="@dimen/dp_60"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_12"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:background="@drawable/shape_stroke_gray_99"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/dp_5"
+                        android:paddingBottom="@dimen/dp_5"
+                        android:text="@string/offline"
+                        android:textColor="@color/T_4D"
+                        android:textSize="@dimen/sp_12"
+                        android:visibility="gone" />
+
+                    <TextView
                         android:id="@+id/tv_fault_quit"
                         android:layout_width="@dimen/dp_60"
                         android:layout_height="wrap_content"

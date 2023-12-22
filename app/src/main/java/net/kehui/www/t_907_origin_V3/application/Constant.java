@@ -5,7 +5,7 @@ package net.kehui.www.t_907_origin_V3.application;
  * @date 2019/7/8
  */
 public class Constant {
-    public static final String SSID = "T-A310";  //GC20220411   //gc调试
+    public static final String SSID = "T-A310"; //要连接的WiFi名字    //gc调试
     public static final String DEVICE_IP = "192.168.5.143";
     public static final String BASE_API = "http://cfl.kehui.cn/";
     public static final String PARAM_INFO_KEY = "param_info_key";
@@ -36,27 +36,6 @@ public class Constant {
     public static double CurrentLocation;
     public static double SaveLocation;
     public static int[] Para;
-
-    /**
-     * 全自动高压参数
-     */
-    public static int WorkingMode = 0;
-    public static int gear = 2; //初始化档位为32kV / 或8kV
-    public static int setVoltage = 0;
-    public static double currentVoltage;
-    public static int time = 5;
-    public static Boolean isShowHV = false;
-    public static Boolean isShowHVWait = false; //GC20221109
-    public static Boolean isWarning = true;
-    public static Boolean isSwitchOn = true;    //GC20221203
-    public static Boolean isIgnitionCoil = true;
-    public static Boolean isCapacitor = true;
-    public static Boolean isWorkingMode = true;
-    public static Boolean isGear = true;
-    public static Boolean isClickSim = false;       //GC20220806
-    public static Boolean isClickLocate = false;    //GC20220809
-
-
     /**
      * 非SIM波形和SIM第一条波形
      */
@@ -99,5 +78,37 @@ public class Constant {
      * 是否需要补齐波形数据
      */
     public static boolean needAddData = false;
+
+    /**
+     * 全自动高压参数
+     */
+    public static int WorkingMode = 0;
+    public static int gear = 2; //初始化档位为32kV / 或8kV
+    public static int setVoltage = 0;
+    public static double currentVoltage;
+    public static int time = 5;
+    /**
+     * 对话框的显示状态记录
+     */
+    public static Boolean isShowHV = false;
+    public static Boolean isShowHVWait = false; //GC20221109
+    public static Boolean isShowEnsureHV = false; //GC20230301
+
+    public static Boolean isSwitchOn = true;    //GC20221203
+    public static Boolean isWarning = true;
+    public static Boolean isIgnitionCoil = true;
+    public static Boolean isCapacitor = true;
+    public static Boolean isWorkingMode = true;
+    public static Boolean isGear = true;
+
+    public static Boolean isClickSim = false;       //GC20220806
+    public static Boolean isClickLocate = false;    //GC20220809
+
+    public static Boolean hasConnected = false;     //是否连接设备成功过 //GC20231111
+    public static Boolean isOffline = false;        //是否是离线使用模式 //GC20231111
+    public static Boolean isShowNoteDialog = false; //是否是在显示NoteDialog  //GC20231111
+    public static Boolean isShowSwitchOnNoteDialog = false; //是否是在显示SwitchOnNoteDialog  //GC20231112
+
+    public static Boolean allowSave;   //GC20231208
 
 }

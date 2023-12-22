@@ -144,12 +144,12 @@ public class OperationFragment extends Fragment {
                 ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = true;    //GC20221019
                 break;
             case  R.id.btn_file1:
-                ((ModeActivity) getActivity()). showFileView();
+                ((ModeActivity) getActivity()).showFileView();
                 ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = true;    //GC20221019
                break;
             case R.id.btn_update1:
                 ((ModeActivity) getActivity()).showUp();
-                ((ModeActivity) getActivity()).downloadFile1();
+//                ((ModeActivity) getActivity()).downloadFile1();   //更新变为语言切换  //GC20230912
                 ((ModeActivity) Objects.requireNonNull(getActivity())).allowSetOperation = true;    //GC20221019
                 break;
             case R.id.btn_lead1:

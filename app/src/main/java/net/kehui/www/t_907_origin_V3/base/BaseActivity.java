@@ -33,6 +33,8 @@ public class BaseActivity extends AppCompatActivity {
     public boolean isFirstStart;    //GC20220802
     public boolean alreadyDisplayWave;  //GC20220822
     public boolean isSetVoltageChanged;  //GC20220926
+    public boolean isSetHVVoltageChanged;  //GC20230224
+    public boolean needEnsure;  //GC20230227
     public boolean needSet0;  //GC20221010
     public boolean allowSetRange;   //GC20221019
     public boolean allowSetMode;
@@ -141,7 +143,7 @@ public class BaseActivity extends AppCompatActivity {
     public int balanceState;
     public boolean isLongClick;
     public boolean longTestInit;
-    public boolean balanceIsReady;
+    public boolean balanceIsReady = true;   //初始化为true 平衡调节去掉（T-A310/2000）   //GC20231027
     public boolean rangeIsReady;
     public int rangeAdjust = 0;
     public int medianValue = 128;  //基准数
@@ -246,8 +248,8 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 发送高压控制相关指令  //GC20211206
      * 0x60 高压设定（10个字节）
-     * eb90aa55 05 60 0c cc 02 sum   0x0ccc：32kV 0x02：30mA档位 / 8kV.120mA
-     * eb90aa55 05 60 06 66 01 sum   0x0666：16kV 0x01：60mA档位 / 4kV.240mA
+     * eb90aa55 05 60 0c cc 02 sum   0x0ccc：32（8）kV   0x02：32kV档位30mA  /  8kV档位120mA
+     * eb90aa55 05 60 06 66 01 sum   0x0666：16（4）kV   0x01：16kV档位60mA  /  4kV档位240mA
      * 0x61 开关指令（8个字节）
      * eb90aa55 03 61 01 sum    01:高压开 02：高压关 （未使用）
      * 0x62 电压查询指令
@@ -257,6 +259,8 @@ public class BaseActivity extends AppCompatActivity {
      * 0x71 单次放电指令
      * eb90aa55 03 71 01 75    01：放电   //GC20211209
      * 0x90 查询是否合闸指令    //GC20220919
+     * eb90aa55 03 90 01
+     * 0xA0 发送电容放电指令
      */
     public final static int COMMAND_VOLTAGE_SET = 0x60;
     public final static int COMMAND_VOLTAGE_QUERY = 0x62;
@@ -381,6 +385,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
+        //系统语言等设置发生改变时会调用此方法，需要要重置app语言     //GC20230912
         super.attachBaseContext(MultiLanguageUtil.attachBaseContext(newBase));
     }
 
@@ -495,7 +500,6 @@ public class BaseActivity extends AppCompatActivity {
 /*——————————3.0.1版本整理——————————*/
 //20200520  数据库相关
 //GC20210125    波形数据以文件形式保存
-//GC20220411    连接WiFi名字
 //GC20220413    seekBar控件添加
 //GC20220414    档位变化实时记录档位和电压数值
 
@@ -574,22 +578,56 @@ public class BaseActivity extends AppCompatActivity {
 //GC20221206    接地报警提示和退出优化，接地报警时电压和工作方式重置；UI加减号拉开距离；UI电容电压字体变大
 //GC20221210    工作方式是“直流”可以点击直接放电
 
+/*——————————3.0.7版本整理——————————*/   //显示已更新到3.0.7
+//GC20230222    滑轨、加减按钮变大好操作，界面布局微调
+//GC20230224    测距升压界面逻辑和高压设置界面统一
+//GC20230225    故障放电延时
+//GC20230227    设定电压确认逻辑调整
+//GC20230228    设定电压增加红色闪电
+
+/*———T-907 / A310 / 2000 / A309 同步修改———*/
+//GC20230911    Activity页面切换结构修改/SIM方式无延时   //1、直闪方式没有延时 / 2、保存输入字数限制、输入限制 //GC20231207
+//GC20230912    多语言切换功能添加
+//GC20230913    数据库记录倒叙显示/根据方式显示不同的波形记录————列表不翻转//GC20231116
+//GC20230922    存储文件夹位置          //1、android9以后对外部权限的改动 / 2、无有效数据时不保存    //GC20231208
+//GC20230113    添加断开已连接的其它WiFi的功能
+//GC20230508    WiFi连接逻辑重新梳理
+//GC20230509    连接到设定SSID后才会建立设备连接
+//GC20230510    遗漏补充
+//GC20231211    测试地点加载错误，误添加tester / save界面保存电缆长度
+//GC20231226    数据库数据打开后再次保存时增益赋值
+
+//————————与T-2000完全同步修改，与T-A309部分同步————————
+//GC20231013    故障放电紧跟电容放电命令————————（该修改已经屏蔽）
+//GC20231027    平衡调节去掉（T-A310/2000） / 电压值反馈进度条根据电压档位选择最大值换算 / 电容电压显示UI调节
+//GC20231031    初始化工作方式为单次
+//GC20231108    延时1.5s恢复点击放电按钮
+//GC20231111    非TDR方式下直接关机会显示“设备未合闸”，改为WiFi断开后刷新提示“已断开”
+//GC20231112    主动检测分合闸对话框下，不再显示实时合闸检测对话框
 
 
+/*——————————待验证添加——————————*/
+//GC20231008    击穿电压判断
+//GC20231009    击穿电压判断UI设计
+//GC20231010    波形未击穿计算全长    //G?20231010 算法与907L不同
+/*——————————待验证添加——————————*/
 
-//合闸后进入高压界面再分闸状态查询
+
+//GT20220801    数据接收改动
+//GT屏蔽电量获取
+//GT屏蔽算法
+//907主板调试 需要屏蔽
+//gc调试 要连接的WiFi名字
 /*——————————算法调整——————————*/
 //GT20220822    增益参数修改
 //jk20220922    TDR算法开路波形容错调整
 //jk20221019    SIM算法数组下标越界异常处理
 //jk20221020    数组容错处理
+//GC20231107    容错处理BUG修复
 /*——————————算法调整——————————*/
-//GT20220801    数据接收改动
-//GT屏蔽电量获取
-//GT屏蔽算法
-//907主板调试 需要屏蔽
-//gc调试 改WiFi名字
-/*——————————T-A310_4/8版本修改——————————*/
+
+/*——————————T-A310_4/8版本转换所需修改——————————*/
 //GC20211227    高压包由32kV变为8kV
 //GC20220903    转换开关时间缩短
-/*——————————T-A310_4/8版本修改——————————*/
+//GC20230301    32/16版本转换
+/*——————————T-A310_4/8版本转换所需修改——————————*/

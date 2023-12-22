@@ -28,9 +28,9 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="@dimen/dp_6"
-        android:text="V3.0.6 - 4/8"
+        android:text="V3.0.7.2 - 32/16"
         android:textColor="@color/white"
-        android:textSize="@dimen/sp_6" /><!--版本号添加//GC20220914-->
+        android:textSize="@dimen/sp_6" /><!--版本号添加//GC20220914--><!--//GC20230301-->
 
     <!--高压设置栏宽度占12.5%//GC20220914-->
     <RelativeLayout

@@ -37,8 +37,8 @@ public class SwitchOnNoteDialog extends BaseDialog implements View.OnClickListen
         initView();
 
         final WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.width = (int) ( ScreenUtils.getScreenWidth(getContext()) * 0.5);
-        params.height = (int) (ScreenUtils.getScreenHeight(getContext()) * 0.35);
+        params.width = (int) ( ScreenUtils.getScreenWidth(getContext()) * 0.45);
+        params.height = (int) (ScreenUtils.getScreenHeight(getContext()) * 0.3);
         getWindow().setAttributes(params);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 

@@ -87,11 +87,10 @@ public class SplashActivity extends AppCompatActivity implements EasyPermissions
                     sleep(2000);
                     //startService();
                     Intent intent = new Intent();
-                    intent.setClass(SplashActivity.this, MainActivity.class);
+                    intent.setClass(SplashActivity.this, ModeActivity.class);   //直接进入Mode界面方法修改，旧方法启动MainActivity    //GC20230911
                     //20200521  启动界面添加
                     intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
-                    //启动MainActivity
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();
